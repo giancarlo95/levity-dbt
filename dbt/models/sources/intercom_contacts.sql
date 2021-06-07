@@ -1,5 +1,6 @@
 select 
 ch.id as contact_id,
+ch.email as contact_email,
 ch.location_country as contact_country
 from {{ source('intercom', 'contact_history') }} ch
 inner join (
