@@ -1,0 +1,11 @@
+version: 2
+
+models:
+    - name: geography
+      description: This models shows the distribution of users across countries.
+      columns:
+          - name: user_id
+          - name: user_email_address
+          - name: user_country
+            
+         
