@@ -1,0 +1,6 @@
+version: 2
+
+sources:
+  - name: intercom
+    tables:
+      - name: contact_history
