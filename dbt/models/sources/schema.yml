@@ -1,0 +1,29 @@
+version: 2
+
+models:
+    - name: intercom_contacts
+      description: intercom contacts with most updated demographics information
+      columns: 
+        - name: contact_id
+          tests:
+            - not_null
+            - unique
+        - name: contact_email
+          tests:
+            - not_null
+            - unique
+        - name: contact_country
+    - name: production_users
+      description: real users of the platform together with onboarding date
+      columns:
+        - name: user_id
+          tests:
+            - not_null
+            - unique
+        - name: user_email_address
+          tests:
+            - not_null
+            - unique
+        - name: date_user_onboarded
+            - not null
+
