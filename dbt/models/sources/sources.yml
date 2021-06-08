@@ -4,8 +4,10 @@ sources:
   - name: intercom
     tables:
       - name: contact_history
+        description: '{{ doc("intercom.contact_history") }}'
   - name: google_cloud_postgresql_public
     tables:
       - name: auth_user
       - name: accounts_userprofile
-      - name: datasets_dataset
+
+      
