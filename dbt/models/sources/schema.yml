@@ -13,17 +13,112 @@ models:
             - not_null
             - unique
         - name: contact_country
-    - name: production_users
-      description: real users of the platform together with onboarding date
+    - name: auth_user
       columns:
         - name: user_id
-          tests:
-            - not_null
-            - unique
-        - name: user_email_address
-          tests:
-            - not_null
-            - unique
         - name: date_user_onboarded
-            - not null
-
+        - name: user_email_address
+        - name: is_staff
+        - name: _fivetran_deleted		
+        - name: _fivetran_synced		
+        - name: first_name
+        - name: is_active			
+        - name: is_superuser		
+        - name: last_login	
+        - name: last_name	
+        - name: password		
+        - name: username  
+    - name: accounts_userprofile
+      columns:
+        - name: user_id
+        - name: is_approved
+        - name: id		
+        - name: _fivetran_deleted		
+        - name: _fivetran_synced		
+        - name: frontegg_user_id			
+        - name: is_service_account
+    - name: datasets_dataset
+      columns:
+        - name: aiblock_id 	
+        - name: _fivetran_deleted	
+        - name: _fivetran_synced		
+        - name: date_aiblock_created
+        - name: aiblock_description		
+        - name: emoji	
+        - name: labelers_per_item		
+        - name: multi_label	
+        - name: name	
+        - name: user_id 
+        - name: project_id	
+        - name: status		
+        - name: template,		
+        - name: aiblock_data_type	
+        - name: updated_at  
+    - name: datasets_data
+      columns:
+        - name: datapoint_id                    
+        - name: _fivetran_deleted      
+        - name: _fivetran_synced 
+        - name: date_datapoint_uploaded            
+        - name: aiblock_id             
+        - name: original_file_name  
+        - name: user_id               
+        - name: remote_url  
+        - name: storage_id  
+        - name: text  
+        - name: updated_at 	
+    - name: prediction_models_trainingrun
+      columns:
+        - name: training_id
+        - name: _fivetran_deleted
+        - name: _fivetran_synced
+        - name: version_id
+        - name: date_training_run 
+        - name: user_id
+        - name: updated_at
+    - name: prediction_models_classifier
+      columns:
+        - name: classifier_id
+        - name: _fivetran_deleted 
+        - name: _fivetran_synced 
+        - name: created_at
+        - name: aiblock_id 
+        - name: emoji 
+        - name: hitl_setting 
+        - name: is_enabled
+        - name: max_error_rate 
+        - name: user_id 
+        - name: project_id
+        - name: status  
+        - name: updated_at
+        - name: valohai_deployment_id
+    - name: prediction_models_classifierversion
+      columns:
+        - name: version_id 
+        - name: _fivetran_deleted 
+        - name: _fivetran_synced 
+        - name: classifier_id 
+        - name: created_at
+        - name: evaluation 
+        - name: fake 
+        - name: user_id 
+        - name: performance_score
+        - name: seconds_left
+        - name: status
+        - name: template,  
+        - name: training_progress
+        - name: updated_at
+        - name: valohai_endpoint_id
+        - name: valohai_endpoint_url 
+        - name: valohai_execution_id 
+        - name: valohai_version_id
+        - name: valohai_version_name
+    - name: prediction_models_prediction
+      columns:
+        - name: prediction_id,		
+        - name: _fivetran_deleted,		
+        - name: _fivetran_synced,			
+        - name: classifier_id,			    
+        - name: date_prediction_made			
+        - name: user_id,		
+        - name: updated_at		

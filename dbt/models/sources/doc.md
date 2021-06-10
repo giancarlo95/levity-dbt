@@ -1,4 +1,4 @@
-{% docs intercom.contact_history %}
+{% docs contact_history %}
 
 https://fivetran.com/docs/applications/intercom
 
