@@ -28,7 +28,7 @@ WITH prediction_models_prediction AS (
     INNER JOIN datasets_dataset ON 
         prediction_models_classifier.aiblock_id=datasets_dataset.aiblock_id  
 
-), 
+)
 
 SELECT 
     user_id,

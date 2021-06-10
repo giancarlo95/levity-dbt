@@ -1,0 +1,18 @@
+version: 2
+
+models:
+    - name: funnel_chart
+      columns:
+        - name: Step
+        - name: Count
+    - name: funnel_table
+      columns:
+        - name: user_email_address
+        - name: date_user_onboarded
+        - name: date_first_aiblock_created
+        - name: date_first_somedata_uploaded
+        - name: date_first_40datapoints_uploaded
+        - name: date_first_training_run
+        - name: date_first_prediction_made
+        - name: date_first_50predictions_made
+         

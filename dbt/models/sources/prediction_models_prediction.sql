@@ -9,7 +9,7 @@ WITH source AS (
         _fivetran_deleted,		
         _fivetran_synced,			
         classifier_id,			    
-        created_at                  AS date_prediction_made			
+        created_at                  AS date_prediction_made,		
         owner_id                    AS user_id,		
         updated_at			
 	

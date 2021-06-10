@@ -28,11 +28,13 @@ models:
         - name: user_id
         - name: date_first_training_run
     - name: prediction_made  
-      description: users who made at least 1 AI Block together with date when the first prediction was made
+      description: users who made at least 1 prediction through at least 1 AI Block together with date when the first prediction was made
       columns:
         - name: user_id
         - name: date_first_prediction_made
-    - name: funnel
+    - name: made_50predictions  
+      description: users who made at least 50 predictions through at least 1 AI Block together with date when the first 50 prediction were made
       columns:
-        - name: Step
-        - name: Count
+        - name: user_id
+        - name: date_first_prediction_made
+    

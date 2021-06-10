@@ -10,7 +10,7 @@ WITH source AS (
         _fivetran_synced,		
         classifier_id,		
         created_at,		
-        default,	
+        --default,	
         evaluation,		
         fake,		
         owner_id                      AS user_id,		

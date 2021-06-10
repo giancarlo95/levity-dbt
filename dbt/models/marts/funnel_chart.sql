@@ -1,3 +1,9 @@
+{{
+  config(
+    materialized = 'table',
+    )
+}}
+
 WITH onboarded_users AS (
 
     SELECT * FROM {{ref('onboarded_users')}}
@@ -22,6 +28,10 @@ WITH onboarded_users AS (
 
     SELECT * FROM {{ref('made_prediction')}}
 
+), made_50predictions AS (
+
+    SELECT * FROM {{ref('made_50predictions')}}
+
 ), final AS (
 
     SELECT 
@@ -31,7 +41,8 @@ WITH onboarded_users AS (
         uploaded_data.date_first_somedata_uploaded,
         uploaded_40datapoints.date_first_40datapoints_uploaded,
         trained_ai_block.date_first_training_run,
-        made_prediction.date_first_prediction_made
+        made_prediction.date_first_prediction_made,
+        made_50predictions.date_first_50predictions_made
     FROM onboarded_users
     LEFT JOIN created_ai_block ON 
         onboarded_users.user_id=created_ai_block.user_id
@@ -42,7 +53,9 @@ WITH onboarded_users AS (
     LEFT JOIN trained_ai_block ON
         onboarded_users.user_id=trained_ai_block.user_id
     LEFT JOIN made_prediction ON
-        onboarded_users.user_id=made_prediction.user_id    
+        onboarded_users.user_id=made_prediction.user_id 
+    LEFT JOIN made_50predictions ON
+        onboarded_users.user_id=made_50predictions.user_id    
 
 ), final_transposed AS (
 
@@ -51,7 +64,8 @@ WITH onboarded_users AS (
     SELECT 'C.Uploaded data to at least 1 AI Block' AS Step, (SELECT COUNT(date_first_somedata_uploaded) FROM final) AS Count UNION ALL
     SELECT 'D.Uploaded at least 40 data points to at least 1 AI Block' AS Step, (SELECT COUNT(date_first_40datapoints_uploaded) FROM final) AS Count UNION ALL
     SELECT 'E.Trained at least 1 AI Block' AS Step, (SELECT COUNT(date_first_training_run) FROM final) AS Count UNION ALL
-    SELECT 'F.Made at least 1 prediction through at least 1 AI Block' AS Step, (SELECT COUNT(date_first_prediction_made) FROM final) AS Count
+    SELECT 'F.Made at least 1 prediction through at least 1 AI Block' AS Step, (SELECT COUNT(date_first_prediction_made) FROM final) AS Count UNION ALL
+    SELECT 'G.Made at least 50 predictions through at least 1 AI Block' AS Step, (SELECT COUNT(date_first_50predictions_made) FROM final) AS Count
 
 )
 
