@@ -16,7 +16,12 @@ models:
       description: users who uploaded data to at least 1 AI Block together with date of the first data upload
       columns:
         - name: user_id
-        - name: date_first_datapoint_uploaded
+        - name: date_first_somedata_uploaded
+    - name: uploaded_labeldata
+      description: users who uploaded labelled data to at least 1 AI Block together with date of the first data upload
+      columns:
+        - name: user_id
+        - name: date_first_labelled_datapoint_uploaded        
     - name: uploaded_40datapoints  
       description: users who uploaded at least 40 data points to at least 1 AI Block together with date when the first >40 data uploaded ended
       columns:  

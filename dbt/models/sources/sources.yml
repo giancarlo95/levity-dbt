@@ -4,17 +4,22 @@ sources:
   - name: intercom
     tables:
       - name: contact_history
-        description: '{{ doc("contact_history") }}'
-  - name: google_cloud_postgresql_public
+      - name: contact_tag_history
+      - name: tag
+  - name: public
     tables:
-      - name: auth_user
-      - name: accounts_userprofile
-      - name: datasets_dataset
-      - name: datasets_data
-      - name: prediction_models_trainingrun
-      - name: prediction_models_prediction
-      - name: prediction_models_classifier
-      - name: prediction_models_classifierversion
+      - name: production_auth_user
+      - name: production_accounts_userprofile
+      - name: production_datasets_dataset
+      - name: production_datasets_datalabel
+      - name: production_datasets_data
+      - name: production_prediction_models_trainingrun
+      - name: production_prediction_models_prediction
+      - name: production_prediction_models_classifier
+      - name: production_prediction_models_classifierversion
+      - name: production_workflows_workflow
+      - name: production_workflows_block
+      - name: production_workflows_classifierblock
 
 
       

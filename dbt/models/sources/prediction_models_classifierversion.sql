@@ -1,19 +1,17 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'prediction_models_classifierversion') }}
+    SELECT * FROM {{ source('public', 'production_prediction_models_classifierversion') }}
 
 ), renamed AS (
 
     SELECT
-        id                           AS version_id,		
-        _fivetran_deleted,		
-        _fivetran_synced,		
+        id                                            AS version_id,			
         classifier_id,		
         created_at,		
         --default,	
         evaluation,		
         fake,		
-        owner_id                      AS user_id,		
+        CAST(owner_id AS STRING)                      AS user_id,		
         performance_score,		
         seconds_left,		
         status,	
@@ -24,7 +22,9 @@ WITH source AS (
         valohai_endpoint_url,	
         valohai_execution_id,	
         valohai_version_id,	
-        valohai_version_name	
+        valohai_version_name,
+        _airbyte_emitted_at,	
+        _airbyte_production_prediction_models_classifierversion_hashid 
     FROM 
         source
 

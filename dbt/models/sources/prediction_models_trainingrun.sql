@@ -1,17 +1,17 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'prediction_models_trainingrun')}}
+    SELECT * FROM {{ source('public', 'production_prediction_models_trainingrun')}}
 
 ), renamed AS (
 
     SELECT
-        id                          AS training_id,		
-        _fivetran_deleted,	
-        _fivetran_synced,	
-        classifier_version_id       AS version_id,	
-        created_at                  AS date_training_run,	
-        owner_id                    AS user_id,
-        updated_at	
+        id                                          AS training_id,			
+        classifier_version_id                       AS version_id,	
+        created_at                                  AS date_training_run,	
+        CAST(owner_id AS STRING)                    AS user_id,
+        updated_at,
+        _airbyte_emitted_at,	
+        _airbyte_production_prediction_models_trainingrun_hashid 	
     FROM 
         source
 

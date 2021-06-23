@@ -1,19 +1,19 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'accounts_userprofile') }}
+    SELECT * FROM {{ source('public', 'production_accounts_userprofile') }}
 
 ),
 
 renamed AS (
 
     SELECT
-        id,	
-        _fivetran_deleted,		
-        _fivetran_synced,		
+        id,			
         frontegg_user_id,		
         is_approved,		
         is_service_account,		
-        user_id    
+        CAST(user_id AS STRING) AS user_id,
+        _airbyte_emitted_at,	
+        _airbyte_production_accounts_userprofile_hashid  
     FROM source
 
 )

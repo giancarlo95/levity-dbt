@@ -7,6 +7,7 @@ models:
         - name: Count
     - name: funnel_table
       columns:
+        - name: user_id
         - name: user_email_address
         - name: date_user_onboarded
         - name: date_first_aiblock_created

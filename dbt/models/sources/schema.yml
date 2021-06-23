@@ -1,17 +1,9 @@
 version: 2
 
 models:
-    - name: intercom_contacts
-      description: intercom contacts with most updated demographics information
+    - name: contact_history
       columns: 
         - name: contact_id
-          tests:
-            - not_null
-            - unique
-        - name: contact_email
-          tests:
-            - not_null
-            - unique
         - name: contact_country
     - name: auth_user
       columns:
@@ -121,4 +113,54 @@ models:
         - name: classifier_id,			    
         - name: date_prediction_made			
         - name: user_id,		
+        - name: updated_at	
+    - name: workflows_workflow
+      columns:
+        - name: flow_id			
+        - name: _fivetran_deleted			
+        - name: _fivetran_synced			
+        - name: date_flow_created			
+        - name: flow_description		
+        - name: name			
+        - name: user_id	
+        - name: flow_status		
+        - name: updated_at	
+    - name: workflows_block
+      columns:
+        - name: block_id		
+        - name: _fivetran_deleted	
+        - name: _fivetran_synced		
+        - name: date_block_created		
+        - name: user_id	
+        - name: parent_id	
+        - name: is_trigger	
+        - name: block_type		
         - name: updated_at		
+        - name: flow_id	
+    - name: workflows_classifierblock
+      columns:
+        - name: classifierblock_id		
+        - name: _fivetran_deleted		
+        - name: _fivetran_synced		
+        - name: block_id		
+        - name: classifier_id		
+        - name: created_at                         
+        - name: output_status		
+        - name: user_id	
+        - name: status		
+        - name: type		
+        - name: updated_at
+    - name: datasets_datalabel
+      columns:
+        - name: id		
+        - name: _fivetran_deleted	
+        - name: _fivetran_synced			
+        - name: bounding_box_id		
+        - name: classifier_version_id			
+        - name: confidence_score		
+        - name: date_labelled_datapoint_created			
+        - name: datapoint_id			
+        - name: label_id			
+        - name: user_id	
+        - name: task_action_id			
+        - name: updated_at				

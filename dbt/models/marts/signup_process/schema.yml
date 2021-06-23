@@ -1,0 +1,10 @@
+version: 2
+
+models:
+    - name: approved_flag
+      columns:
+        - name: user_email_address
+        - name: account_approved
+        
+    
+         
