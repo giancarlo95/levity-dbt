@@ -1,0 +1,7 @@
+schedules:
+  - name: hourly
+    schedule: "@hourly"
+    environment: production
+    commands:
+         - dbt run
+    owner_email: giancarlo@levity.ai 
