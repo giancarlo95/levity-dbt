@@ -1,10 +1,44 @@
 version: 2
 
 models:
-    - name: contact_history
+    - name: contact_enhanced
       columns: 
-        - name: contact_id
-        - name: contact_country
+        - name: contact_id	
+        - name: admin_id		
+        - name: created_at			
+        - name: updated_at			
+        - name: signed_up_at			
+        - name: contact_name			
+        - name: contact_role			
+        - name: contact_email			
+        - name: last_replied_at			
+        - name: last_email_clicked_at			
+        - name: last_email_opened_at			
+        - name: last_contacted_at			
+        - name: is_unsubscribed_from_emails		
+        - name: custom_utm_campaign			
+        - name: custom_utm_term			
+        - name: custom_utm_source			
+        - name: custom_utm_medium			
+        - name: custom_utm_content			
+        - name: custom_referral_url			
+        - name: custom_lead_score		
+        - name: custom_company_size			
+        - name: custom_company_industry			
+        - name: custom_organization_type			
+        - name: custom_type_of_data			
+        - name: custom_use_case_ai_block			
+        - name: custom_use_case_pattern			
+        - name: custom_use_case			
+        - name: custom_ai_type	STRING		
+        - name: custom_employee_role			
+        - name: custom_tool_experience			
+        - name: custom_source			
+        - name: custom_sentiment			
+        - name: custom_account_approved		
+        - name: latest_contact_index		
+        - name: all_contact_tags			
+        - name: all_contact_company_names			
     - name: auth_user
       columns:
         - name: user_id

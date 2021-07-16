@@ -1,11 +1,9 @@
 version: 2
 
 sources:
-  - name: intercom
+  - name: dbt_giancarlo_intercom
     tables:
-      - name: contact_history
-      - name: contact_tag_history
-      - name: tag
+      - name: intercom__contact_enhanced
   - name: public
     tables:
       - name: production_auth_user
