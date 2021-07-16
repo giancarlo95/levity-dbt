@@ -7,7 +7,7 @@ WITH source AS (
     SELECT
         id                                            AS version_id,			
         classifier_id,		
-        created_at,		
+        CAST(created_at  AS TIMESTAMP)                AS date_version_created,		
         --default,	
         evaluation,		
         fake,		
@@ -17,7 +17,7 @@ WITH source AS (
         status,	
         template,		
         training_progress,		
-        updated_at,		
+        CAST(updated_at  AS TIMESTAMP)                AS date_version_updated,		
         valohai_endpoint_id,	
         valohai_endpoint_url,	
         valohai_execution_id,	

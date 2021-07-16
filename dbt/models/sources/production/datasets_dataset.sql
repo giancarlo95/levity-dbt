@@ -8,7 +8,7 @@ renamed AS (
 
     SELECT
        id                                   AS aiblock_id,   			
-       created_at                           AS date_aiblock_created,	
+       CAST(created_at AS TIMESTAMP)        AS date_aiblock_created,	
        description                          AS aiblock_description,		
        emoji,		
        labelers_per_item,		
@@ -18,8 +18,8 @@ renamed AS (
        project_id,		
        status,		
        template,		
-       type	                AS aiblock_data_type,	
-       updated_at,
+       type	                                AS aiblock_data_type,	
+       CAST(updated_at AS TIMESTAMP)        AS date_aiblock_updated,
        _airbyte_emitted_at,	
         _airbyte_production_datasets_dataset_hashid   
     FROM source

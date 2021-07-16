@@ -5,11 +5,11 @@ WITH source AS (
 ), renamed AS (
 
     SELECT
-        id	                        AS prediction_id,					
+        id	                                          AS prediction_id,					
         classifier_id,			    
-        created_at                  AS date_prediction_made,		
-        CAST(owner_id AS STRING)    AS user_id,		
-        updated_at,
+        CAST(created_at AS TIMESTAMP)                 AS date_prediction_made,		
+        CAST(owner_id AS STRING)                      AS user_id,		
+        CAST(updated_at AS TIMESTAMP)                 AS date_prediction_updated,
         _airbyte_emitted_at,	
         _airbyte_production_prediction_models_prediction_hashid 		
 	

@@ -9,7 +9,7 @@ WITH auth_user AS (
     WHERE
        is_staff=FALSE
        AND NOT(user_email_address LIKE '%@angularventures.com' OR user_email_address LIKE '%@discovery-ventures.com' OR user_email_address LIKE '%@levity.ai')
-       AND NOT(user_email_address IN ('abcaisodjaiosdjioasd@gmail.com', 'adil.islam619@gmail.com', 'milanjose999@gmail.com', 'hanna.kleinings@gmail.com'))
+       AND NOT(user_email_address IN ('abcaisodjaiosdjioasd@gmail.com', 'adil.islam619@gmail.com', 'milanjose999@gmail.com', 'hanna.kleinings@gmail.com', 'aymenbenothmenabo@gmail.com'))
 
 ), accounts_userprofile AS (
 

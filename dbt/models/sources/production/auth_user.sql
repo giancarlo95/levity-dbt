@@ -8,7 +8,7 @@ renamed AS (
 
     SELECT
         CAST(id AS STRING)              AS user_id,			
-        date_joined	                    AS date_user_onboarded,
+        CAST(date_joined AS TIMESTAMP)  AS date_user_onboarded,
         email	                        AS user_email_address,	
         first_name,	
         is_active,		

@@ -10,12 +10,12 @@ renamed AS (
         id                                  AS classifierblock_id,				
         block_id,		
         classifier_id,		
-        created_at,                         
+        CAST(created_at AS TIMESTAMP)       AS date_classifierblock_created,                         
         output_status,		
         CAST(owner_id AS STRING)            AS user_id,	
         status,		
         type,		
-        updated_at,
+        CAST(updated_at AS TIMESTAMP)       AS date_classifierblock_updated,
         _airbyte_emitted_at,	
         _airbyte_production_workflows_classifierblock_hashid 		
     

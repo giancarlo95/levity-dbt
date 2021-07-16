@@ -1,0 +1,3 @@
+packages:
+  - package: fivetran/intercom
+    version: 0.2.2
