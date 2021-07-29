@@ -7,8 +7,7 @@ WITH source AS (
 renamed AS (
 
     SELECT
-        id,			
-        frontegg_user_id,		
+        id,				
         is_approved,		
         is_service_account,		
         CAST(user_id AS STRING) AS user_id,

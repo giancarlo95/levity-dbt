@@ -4,6 +4,27 @@ sources:
   - name: dbt_giancarlo_intercom
     tables:
       - name: intercom__contact_enhanced
+      - name: intercom__company_enhanced
+  - name: intercom 
+    tables:
+      - name: contact_history
+  - name: google_analytics
+    tables:
+      - name: users
+  - name: labs
+    tables: 
+      - name: vetevo
+  - name: django_backend_api
+    tables:
+      - name: dataset_created
+      - name: dataset_updated
+      - name: dataset_deleted
+  - name: google_cloud_function_frontegg_complete
+    tables:
+      - name: user_table
+      - name: tenant_table
+      - name: user_tenant_table
+      - name: tenant_metadata_table
   - name: public
     tables:
       - name: production_auth_user
