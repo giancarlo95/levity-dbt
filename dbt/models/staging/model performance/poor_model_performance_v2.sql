@@ -65,15 +65,6 @@ WITH prediction_models_classifier AS (
     FROM 
         {{ref('prediction_models_trainingrun')}}
 
-), user_table AS (
-
-    SELECT 
-        * 
-    FROM 
-        {{ref('user_table')}}
-    WHERE 
-         NOT(user_email_address LIKE '%@angularventures.com' OR user_email_address LIKE '%@discovery-ventures.com' OR user_email_address LIKE '%@levity.ai')
-
 ), final AS (
 
     SELECT
@@ -84,8 +75,8 @@ WITH prediction_models_classifier AS (
             ELSE 0 
         END                                                                                                       AS is_deleted,
         CASE 
-            WHEN onboarded_users.user_id IS NULL THEN user_table.user_id 
-            ELSE onboarded_users.user_id 
+            WHEN onboarded_users.user_id IS NULL THEN 0 
+            ELSE 1 
         END                                                                                                       AS is_approved,
         date_training_run,
         CASE 
@@ -95,11 +86,9 @@ WITH prediction_models_classifier AS (
         END                                                                                                       AS is_good
     FROM prediction_models_classifierversion_filtered
     LEFT JOIN onboarded_users
-         ON onboarded_users.user_id=prediction_models_classifierversion_filtered.old_user_id
+         ON onboarded_users.user_id=prediction_models_classifierversion_filtered.user_id
     LEFT JOIN prediction_models_trainingrun
          ON prediction_models_trainingrun.version_id=prediction_models_classifierversion_filtered.version_id
-    LEFT JOIN user_table
-         ON user_table.user_id=prediction_models_classifierversion_filtered.user_id
 
 )
 
@@ -109,7 +98,7 @@ SELECT
     MAX(is_good)                             AS is_good
 FROM final
 WHERE 
-    is_approved IS NOT NULL 
+    is_approved=1 
     AND (is_good=1 OR is_good=0)
     AND is_deleted=0
 GROUP BY 
