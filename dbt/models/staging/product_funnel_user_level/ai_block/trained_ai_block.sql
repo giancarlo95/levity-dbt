@@ -8,7 +8,7 @@ WITH prediction_models_trainingrun AS (
         classifier_id,
         aiblock_id
     FROM 
-        {{ref('prediction_models_classifier')}}
+        {{ref('prediction_models_classifier_deleted')}}
 
 ), datasets_dataset AS (
 
@@ -16,7 +16,7 @@ WITH prediction_models_trainingrun AS (
         aiblock_id,
         aiblock_description
     FROM
-        {{ref('datasets_dataset')}}
+        {{ref('datasets_dataset_deleted')}}
     WHERE 
         aiblock_description IS NULL
 
@@ -26,7 +26,7 @@ WITH prediction_models_trainingrun AS (
         version_id,
         classifier_id
     FROM 
-        {{ref('prediction_models_classifierversion')}}
+        {{ref('prediction_models_classifierversion_deleted')}}
 
 ), prediction_models_classifier_filtered AS (
 

@@ -8,6 +8,9 @@ sources:
   - name: intercom 
     tables:
       - name: contact_history
+  - name: google_sheets
+    tables: 
+      - name: typeform_first_step
   - name: google_analytics
     tables:
       - name: users
@@ -16,9 +19,14 @@ sources:
       - name: vetevo
   - name: django_backend_api
     tables:
-      - name: dataset_created
-      - name: dataset_updated
       - name: dataset_deleted
+      - name: block_deleted
+      - name: workflow_deleted
+      - name: label_deleted
+      - name: classifier_deleted
+      - name: classifier_version_deleted
+      - name: classifier_block_deleted
+      - name: data_deleted
   - name: google_cloud_function_frontegg_complete
     tables:
       - name: user_table

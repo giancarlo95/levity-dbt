@@ -3,7 +3,7 @@ WITH datasets_data_large AS (
     SELECT
 		aiblock_id
 	FROM
-		{{ref('datasets_data')}}
+		{{ref('datasets_data_deleted')}}
 	GROUP BY
 		aiblock_id
 	HAVING
@@ -13,7 +13,7 @@ WITH datasets_data_large AS (
 
     SELECT 
         aiblock_id
-    FROM {{ref('datasets_dataset')}}
+    FROM {{ref('datasets_dataset_deleted')}}
     WHERE 
         aiblock_description IS NULL
 
@@ -24,7 +24,7 @@ WITH datasets_data_large AS (
        aiblock_id,
 	   date_datapoint_uploaded
     FROM 
-       {{ref('datasets_data')}}
+       {{ref('datasets_data_deleted')}}
 
 ), final AS (
 

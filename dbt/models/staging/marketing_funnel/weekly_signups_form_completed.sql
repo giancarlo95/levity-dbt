@@ -3,6 +3,7 @@ WITH contact_enhanced AS (
     SELECT 
         contact_id,
         contact_email,
+        contact_role,
         CASE 
             WHEN signed_up_at IS NULL THEN created_at
             ELSE signed_up_at 
@@ -35,6 +36,7 @@ WITH contact_enhanced AS (
         contact_enhanced
     WHERE 
         internal_user=0
+        AND contact_role="user"
 
 ) 
 
@@ -42,7 +44,7 @@ SELECT
     year,
     week_number,
     week_end,
-    COUNT(contact_id)                                      AS number_of_signups
+    COUNT(contact_id)                                      AS number_of_forms
 FROM 
     transformed
 INNER JOIN typeform_first_step 

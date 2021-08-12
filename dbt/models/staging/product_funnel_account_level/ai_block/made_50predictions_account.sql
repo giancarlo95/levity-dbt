@@ -12,7 +12,7 @@ WITH prediction_models_prediction_large AS (
 ), prediction_models_prediction AS (
 
     SELECT 
-        user_id,
+        account_id,
         classifier_id,
         date_prediction_made
     FROM 
@@ -24,7 +24,7 @@ WITH prediction_models_prediction_large AS (
         classifier_id,
         aiblock_id
     FROM 
-        {{ref('prediction_models_classifier')}}
+        {{ref('prediction_models_classifier_deleted')}}
 
 ), datasets_dataset AS (
 
@@ -32,7 +32,7 @@ WITH prediction_models_prediction_large AS (
         aiblock_id,
         aiblock_description
     FROM
-        {{ref('datasets_dataset')}}
+        {{ref('datasets_dataset_deleted')}}
     WHERE 
         aiblock_description IS NULL
 
@@ -47,7 +47,7 @@ WITH prediction_models_prediction_large AS (
 ), final AS (
 
     SELECT 
-        user_id,
+        account_id,
         prediction_models_prediction_large.classifier_id,
         date_prediction_made
     FROM prediction_models_prediction
@@ -59,24 +59,24 @@ WITH prediction_models_prediction_large AS (
 ), final_ordered AS (
 
     SELECT 
-        user_id,
+        account_id,
         classifier_id,
         date_prediction_made,
-        ROW_NUMBER() OVER (PARTITION BY user_id, classifier_id ORDER BY date_prediction_made) AS RowNumber
+        ROW_NUMBER() OVER (PARTITION BY account_id, classifier_id ORDER BY date_prediction_made) AS RowNumber
     FROM 
         final
 
 )
 
 SELECT 
-    user_id,
+    account_id,
     MIN(date_prediction_made)     AS date_first_50predictions_made
 FROM 
     final_ordered
 WHERE 
     RowNumber=50
 GROUP BY
-    user_id
+    account_id
 
 
 

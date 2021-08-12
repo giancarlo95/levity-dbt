@@ -14,7 +14,7 @@ renamed AS (
         _fivetran_synced,			
         created_at                           AS date_user_onboarded,			
         current_frontegg_tenant_id           AS logged_account_id,			
-        email	                             AS user_email_address,		
+        LOWER(email)                         AS user_email_address,		
         is_locked,			
         is_mfa_enrolled,		
         is_verified,			
