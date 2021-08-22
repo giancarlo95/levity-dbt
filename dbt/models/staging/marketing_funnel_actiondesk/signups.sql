@@ -21,8 +21,8 @@ WITH contact_enhanced AS (
 ), typeform_first_step AS (
 
     SELECT 
-        DISTINCT email_address,
-        true                    AS typeform
+        DISTINCT  LOWER(email_address)       AS email_address,
+        true                                 AS typeform
     FROM 
        {{ref('typeform_first_step')}}
 
@@ -60,35 +60,65 @@ WITH contact_enhanced AS (
     WHERE 
         EXTRACT(DAYOFWEEK FROM date)=7
 
+), final AS (
+
+    SELECT 
+        contact_email,
+        all_contact_company_names,
+        CASE 
+            WHEN all_contact_company_names="Audibene" THEN MAX(account_id) OVER(PARTITION BY all_contact_company_names)
+            ELSE account_id
+        END                                                                         AS account_id,                                                                         
+        CASE 
+            WHEN typeform IS NULL THEN false
+            ELSE typeform
+        END                                                                         AS typeform,
+        contact_role,
+        custom_type_of_data,
+        date_signed_up,
+        week_end,
+        previous_week_users,
+        access_call_booked,
+        CASE 
+            WHEN flag IS NULL THEN false
+            ELSE true 
+        END                                                                          AS onboarded,
+        date_user_onboarded,
+        user_id
+    FROM 
+        transformed
+    LEFT JOIN typeform_first_step 
+        ON typeform_first_step.email_address=transformed.contact_email
+    LEFT JOIN onboarded_user_accounts 
+        ON transformed.contact_email=onboarded_user_accounts.user_email_address
+    LEFT JOIN users 
+        ON transformed.week_end=users.date
+    WHERE 
+        contact_email IS NOT NULL
+
 )
 
 SELECT 
     contact_email,
     all_contact_company_names,
     CASE 
-        WHEN typeform IS NULL THEN false
-        ELSE typeform
-    END                                               AS typeform,
+            WHEN all_contact_company_names IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY all_contact_company_names ORDER BY date_signed_up ASC) 
+            ELSE NULL 
+    END                                                                         AS signup_expansion,
+    typeform,
     contact_role,
     custom_type_of_data,
     date_signed_up,
     week_end,
     previous_week_users,
     access_call_booked,
-    CASE 
-        WHEN flag IS NULL THEN false
-        ELSE true 
-    END                                               AS onboarded,
+    onboarded,
     date_user_onboarded,
     account_id,
-    user_id
-FROM 
-    transformed
-LEFT JOIN typeform_first_step 
-    ON typeform_first_step.email_address=transformed.contact_email
-LEFT JOIN onboarded_user_accounts 
-    ON transformed.contact_email=onboarded_user_accounts.user_email_address
-LEFT JOIN users 
-    ON transformed.week_end=users.date
-WHERE 
-    contact_email IS NOT NULL
+    CASE 
+            WHEN account_id IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY date_user_onboarded ASC) 
+            ELSE NULL 
+    END                                                                          AS onboarding_expansion,
+    user_id  
+FROM  
+    final

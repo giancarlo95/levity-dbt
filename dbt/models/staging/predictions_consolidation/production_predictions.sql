@@ -1,21 +1,21 @@
-WITH prediction_models_prediction_full AS (
+WITH prediction_models_prediction AS (
 
-    SELECT * FROM {{ ref('prediction_models_prediction_full') }}
+    SELECT * FROM {{ ref('prediction_models_prediction') }}
 
-), onboarded_users AS (
+), onboarded_accounts AS (
 
-    SELECT * FROM {{ ref('onboarded_users') }}
+    SELECT * FROM {{ ref('onboarded_accounts') }}
 
 )
 
 SELECT 
-    account_id,
+    prediction_models_prediction.account_id,
     EXTRACT(DATE FROM date_prediction_made)            AS date,
     COUNT(*)                                           AS predictions_count
 FROM 
-    prediction_models_prediction_full
+    prediction_models_prediction
 INNER JOIN 
-    onboarded_users ON onboarded_users.user_id=prediction_models_prediction_full.user_id
+    onboarded_accounts ON onboarded_accounts.account_id=prediction_models_prediction.account_id
 GROUP BY
     account_id,
     EXTRACT(DATE FROM date_prediction_made)
