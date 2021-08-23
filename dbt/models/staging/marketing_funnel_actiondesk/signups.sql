@@ -35,7 +35,10 @@ WITH contact_enhanced AS (
         all_contact_company_names,
         access_call_booked,
         CAST(signed_up_at AS DATE)                             AS date_signed_up,
-        LAST_DAY(CAST(signed_up_at AS DATE), WEEK)             AS week_end
+        LAST_DAY(CAST(signed_up_at AS DATE), WEEK)             AS week_end,
+        EXTRACT(WEEK FROM CAST(signed_up_at AS DATE))          AS week,
+        EXTRACT(YEAR FROM CAST(signed_up_at AS DATE))          AS year,
+        CONCAT(EXTRACT(YEAR FROM CAST(signed_up_at AS DATE)), EXTRACT(WEEK FROM CAST(signed_up_at AS DATE))) AS year_week 
     FROM 
         contact_enhanced
 
