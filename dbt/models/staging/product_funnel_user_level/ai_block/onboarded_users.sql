@@ -75,7 +75,7 @@ WITH auth_user AS (
         CASE 
             WHEN auth_user.date_user_onboarded IS NULL THEN user_table.date_user_onboarded
             ELSE auth_user.date_user_onboarded
-        END                                                                                                           AS date_user_onboarded
+        END                                         AS date_user_onboarded
     FROM 
         final_dedup 
     LEFT JOIN 

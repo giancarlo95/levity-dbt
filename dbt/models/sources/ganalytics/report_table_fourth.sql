@@ -1,13 +1,13 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_function_google_analytics_report','report_table') }}
+    SELECT * FROM {{ source('google_cloud_function_google_analytics_report','report_table_fourth') }}
 
 ),
 
 renamed AS (
 
-    SELECT
-        medium,			
+    SELECT	
+        has_social_source_referral,	
         CAST(year_week AS STRING) AS year_week,	
         SUBSTRING(CAST(year_week AS STRING),5,6) AS week,
         _fivetran_batch,			

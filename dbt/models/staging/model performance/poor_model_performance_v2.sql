@@ -51,12 +51,12 @@ WITH prediction_models_classifier AS (
     INNER JOIN prediction_models_classifier_filtered ON 
         prediction_models_classifierversion.classifier_id=prediction_models_classifier_filtered.classifier_id 
 
-), onboarded_users AS (
+), onboarded_accounts AS (
 
     SELECT 
         * 
     FROM 
-        {{ref('onboarded_users')}}
+        {{ref('onboarded_accounts')}}
 
 ), prediction_models_trainingrun AS (
 
@@ -75,7 +75,7 @@ WITH prediction_models_classifier AS (
             ELSE 0 
         END                                                                                                       AS is_deleted,
         CASE 
-            WHEN onboarded_users.user_id IS NULL THEN 0 
+            WHEN onboarded_accounts.account_id IS NULL THEN 0 
             ELSE 1 
         END                                                                                                       AS is_approved,
         date_training_run,
@@ -85,7 +85,7 @@ WITH prediction_models_classifier AS (
             ELSE 1 
         END                                                                                                       AS is_good
     FROM prediction_models_classifierversion_filtered
-    LEFT JOIN onboarded_users
+    LEFT JOIN onboarded_accounts
          ON onboarded_users.user_id=prediction_models_classifierversion_filtered.user_id
     LEFT JOIN prediction_models_trainingrun
          ON prediction_models_trainingrun.version_id=prediction_models_classifierversion_filtered.version_id

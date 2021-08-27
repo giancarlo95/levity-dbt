@@ -5,6 +5,11 @@ WITH contact_enhanced AS (
         contact_email,
         contact_role,
         custom_type_of_data,
+        CASE 
+            WHEN custom_lead_score>30 THEN "high score"
+            WHEN custom_lead_score<=30 THEN "low score"
+            WHEN custom_lead_score IS NULL THEN NULL
+        END                                 AS score,
         all_contact_company_names,
         CASE 
             WHEN signed_up_at IS NULL THEN created_at
@@ -13,7 +18,12 @@ WITH contact_enhanced AS (
         CASE 
             WHEN all_contact_tags_fill LIKE "%Access Call booked%" THEN true
             ELSE false
-        END                                 AS access_call_booked
+        END                                 AS access_call_booked,
+        CASE 
+            WHEN all_contact_tags_fill LIKE "%Hanna pre-qualified%" THEN "pre-qualified"
+            WHEN all_contact_tags_fill LIKE "%Gero Pre-qualified%" THEN "pre-qualified"
+            ELSE "not pre-qualified"
+        END                                 AS qualification
     FROM 
        {{ref('contact_enhanced')}}
     
@@ -32,8 +42,10 @@ WITH contact_enhanced AS (
         contact_email,
         contact_role,
         custom_type_of_data,
+        score,
         all_contact_company_names,
         access_call_booked,
+        qualification,
         CAST(signed_up_at AS DATE)                             AS date_signed_up,
         LAST_DAY(CAST(signed_up_at AS DATE), WEEK)             AS week_end,
         EXTRACT(WEEK FROM CAST(signed_up_at AS DATE))          AS week,
@@ -53,16 +65,6 @@ WITH contact_enhanced AS (
     FROM 
         {{ref('onboarded_user_accounts')}}
 
-), users AS (
-
-    SELECT 
-        date,
-        previous_week_users
-    FROM 
-        {{ref('users')}}
-    WHERE 
-        EXTRACT(DAYOFWEEK FROM date)=7
-
 ), final AS (
 
     SELECT 
@@ -78,10 +80,11 @@ WITH contact_enhanced AS (
         END                                                                         AS typeform,
         contact_role,
         custom_type_of_data,
+        score,
         date_signed_up,
         week_end,
-        previous_week_users,
         access_call_booked,
+        qualification,
         CASE 
             WHEN flag IS NULL THEN false
             ELSE true 
@@ -94,8 +97,6 @@ WITH contact_enhanced AS (
         ON typeform_first_step.email_address=transformed.contact_email
     LEFT JOIN onboarded_user_accounts 
         ON transformed.contact_email=onboarded_user_accounts.user_email_address
-    LEFT JOIN users 
-        ON transformed.week_end=users.date
     WHERE 
         contact_email IS NOT NULL
 
@@ -111,10 +112,11 @@ SELECT
     typeform,
     contact_role,
     custom_type_of_data,
+    score,
     date_signed_up,
     week_end,
-    previous_week_users,
     access_call_booked,
+    qualification,
     onboarded,
     date_user_onboarded,
     account_id,
@@ -122,6 +124,6 @@ SELECT
             WHEN account_id IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY date_user_onboarded ASC) 
             ELSE NULL 
     END                                                                          AS onboarding_expansion,
-    user_id  
+    user_id
 FROM  
     final

@@ -17,6 +17,15 @@ sources:
   - name: google_cloud_function_google_analytics_report
     tables: 
       - name: report_table
+      - name: report_table_second
+      - name: report_table_third
+      - name: report_table_fourth
+      - name: report_table_fifth
+  - name: frontegg_1vuiodrwm6cvzejkiqmgp3zna0n
+    tables:
+      - name: user_invited
+      - name: user_removed
+      - name: user_signed_in
   - name: labs
     tables: 
       - name: vetevo
