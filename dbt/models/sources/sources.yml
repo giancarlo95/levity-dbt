@@ -11,6 +11,14 @@ sources:
   - name: google_sheets
     tables: 
       - name: typeform_first_step
+  - name: colabel
+    tables:
+      - name: aliases
+      - name: identifies
+      - name: pages
+      - name: sign_up
+      - name: tracks
+      - name: users
   - name: google_analytics
     tables:
       - name: users

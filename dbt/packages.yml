@@ -1,3 +1,5 @@
 packages:
   - package: fivetran/intercom
-    version: 0.2.2
+    version: 0.3.0
+  - package: dbt-labs/segment
+    version: 0.6.0

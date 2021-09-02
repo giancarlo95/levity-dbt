@@ -86,7 +86,7 @@ WITH prediction_models_classifier AS (
         END                                                                                                       AS is_good
     FROM prediction_models_classifierversion_filtered
     LEFT JOIN onboarded_accounts
-         ON onboarded_users.user_id=prediction_models_classifierversion_filtered.user_id
+         ON onboarded_accounts.account_id=prediction_models_classifierversion_filtered.user_id
     LEFT JOIN prediction_models_trainingrun
          ON prediction_models_trainingrun.version_id=prediction_models_classifierversion_filtered.version_id
 

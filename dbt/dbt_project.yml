@@ -24,6 +24,10 @@ clean-targets:         # directories to be removed by `dbt clean`
     - "target"
     - "dbt_modules"
 
+# dbt_project.yml
+vars:
+  segment:
+    segment_page_views_table: "{{ref('pages_dedup')}}"
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
