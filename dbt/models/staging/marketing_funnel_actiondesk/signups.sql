@@ -126,7 +126,7 @@ SELECT
     CASE 
         WHEN account_id IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY date_user_onboarded ASC) 
         ELSE NULL 
-    END                                                                          AS onboarding_expansion,
+    END                                                                         AS onboarding_expansion,
     user_id
 FROM  
     final
