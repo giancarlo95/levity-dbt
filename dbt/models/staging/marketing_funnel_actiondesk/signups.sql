@@ -50,6 +50,7 @@ WITH contact_enhanced AS (
         LAST_DAY(CAST(signed_up_at AS DATE), WEEK)             AS week_end,
         EXTRACT(WEEK FROM CAST(signed_up_at AS DATE))          AS week,
         EXTRACT(YEAR FROM CAST(signed_up_at AS DATE))          AS year,
+        DATE_TRUNC(CAST(signed_up_at AS DATE), MONTH)          AS month_begin,
         CONCAT(EXTRACT(YEAR FROM CAST(signed_up_at AS DATE)), EXTRACT(WEEK FROM CAST(signed_up_at AS DATE))) AS year_week 
     FROM 
         contact_enhanced
@@ -71,18 +72,19 @@ WITH contact_enhanced AS (
         contact_email,
         all_contact_company_names,
         CASE 
-            WHEN all_contact_company_names="Audibene" THEN MAX(account_id) OVER(PARTITION BY all_contact_company_names)
+            WHEN all_contact_company_names="Audibene" AND flag IS NOT NULL THEN MAX(account_id) OVER(PARTITION BY all_contact_company_names)
             ELSE account_id
         END                                                                         AS account_id,                                                                         
         CASE 
-            WHEN typeform IS NULL THEN false
-            ELSE typeform
+            WHEN typeform IS NULL OR DATE_DIFF(date_signed_up, "2021-06-07", DAY)<0 THEN false
+            ELSE true
         END                                                                         AS typeform,
         contact_role,
         custom_type_of_data,
         score,
         date_signed_up,
         week_end,
+        month_begin,
         access_call_booked,
         qualification,
         CASE 
@@ -106,8 +108,8 @@ SELECT
     contact_email,
     all_contact_company_names,
     CASE 
-            WHEN all_contact_company_names IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY all_contact_company_names ORDER BY date_signed_up ASC) 
-            ELSE NULL 
+        WHEN all_contact_company_names IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY all_contact_company_names ORDER BY date_signed_up ASC) 
+        ELSE NULL 
     END                                                                         AS signup_expansion,
     typeform,
     contact_role,
@@ -115,14 +117,15 @@ SELECT
     score,
     date_signed_up,
     week_end,
+    month_begin,
     access_call_booked,
     qualification,
     onboarded,
     date_user_onboarded,
     account_id,
     CASE 
-            WHEN account_id IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY date_user_onboarded ASC) 
-            ELSE NULL 
+        WHEN account_id IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY date_user_onboarded ASC) 
+        ELSE NULL 
     END                                                                          AS onboarding_expansion,
     user_id
 FROM  
