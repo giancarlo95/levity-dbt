@@ -3,16 +3,30 @@ version: 2
 models:
   - name: signups
     columns:
-      - name: order_id
+      - name: access_call_booked
         tests:
-          - unique
           - not_null
-      - name: status
+      - name: qualification
         tests:
+          - not_null
           - accepted_values:
-              values: ['placed', 'shipped', 'completed', 'returned']
-      - name: customer_id
+              values: ['pre-qualified','not pre-qualified']
+  - name: onboarded_users
+    columns:
+      - name: user_email_address
         tests:
           - relationships:
-              to: ref('customers')
-              field: id
+                to: ref('signups')
+                field: contact_email
+          - not_null
+          - unique 
+      - name: user_id 
+        tests:
+          - not_null
+          - unique
+      - name: date_user_onboarded
+        tests:
+          - not_null
+      - name: logged_account_id
+        tests:
+          - not_null

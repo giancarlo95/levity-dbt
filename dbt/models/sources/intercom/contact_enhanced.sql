@@ -5,33 +5,38 @@ WITH source AS (
     FROM 
         {{ source('dbt_giancarlo_intercom', 'intercom__contact_enhanced') }}
 
-), deleted_records AS (
+), all_contacts AS (
 
     SELECT 
-        id,
-        _fivetran_deleted
+        *
     FROM 
-        {{ ref('deleted_records') }}
+        {{ ref('all_contacts') }}
 
 ), final AS (
 
     SELECT 
-        contact_id,	
+        source.contact_id,	
         admin_id,		
-        created_at,			
+        source.created_at,			
         updated_at,			
-        signed_up_at,			
+        CASE 
+            WHEN signed_up_at IS NULL AND contact_role='user' THEN source.created_at
+            ELSE signed_up_at
+        END                                                                         AS signed_up_at,			
         contact_name,
         REGEXP_EXTRACT(contact_name, r"[^\s]+")                                     AS contact_first_name,
         REGEXP_REPLACE(contact_name, REGEXP_EXTRACT(contact_name, r"[^\s]+"), "")	AS contact_last_name,		
-        contact_role,			
-        contact_email,
+        CASE
+            WHEN all_contact_tags LIKE "%lead%" THEN "lead"
+            ELSE contact_role
+        END                                                                         AS contact_role,			
+        source.contact_email,
+        --CASE 
+            --WHEN source.contact_email LIKE "%@levity.ai%" THEN 1
+            --ELSE 0   
+        --END                                                                        AS residual,
         CASE 
-            WHEN contact_email LIKE "%@levity.ai%" THEN 1
-            ELSE 0   
-        END                                                                         AS residual,
-        CASE 
-            WHEN contact_email IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY contact_email ORDER BY contact_role DESC)
+            WHEN source.contact_email IS NOT NULL THEN ROW_NUMBER() OVER (PARTITION BY source.contact_email ORDER BY contact_role DESC)
             ELSE 1
         END                                                                         AS screen,
         last_replied_at,			
@@ -53,7 +58,8 @@ WITH source AS (
         custom_use_case_ai_block,			
         custom_use_case_pattern,			
         custom_use_case,			
-        custom_ai_type,			
+        custom_ai_type,
+        custom_status,			
         custom_employee_role,			
         custom_tool_experience,			
         custom_source,			
@@ -61,16 +67,13 @@ WITH source AS (
         custom_account_approved,		
         latest_contact_index,		
         all_contact_tags,
-        MAX(all_contact_tags) OVER (PARTITION BY contact_email)                  AS all_contact_tags_fill,
         CASE 
-            WHEN MAX(all_contact_tags) OVER (PARTITION BY contact_email) LIKE '%Company: Levity%' THEN true
+            WHEN all_contact_tags LIKE '%Company: Levity%' THEN true
             ELSE false 
         END                                                                      AS internal_user,
         all_contact_company_names	
     FROM source
-    LEFT JOIN deleted_records ON deleted_records.id=source.contact_id
-    WHERE 
-        deleted_records._fivetran_deleted IS NULL
+    INNER JOIN all_contacts ON all_contacts.contact_id=source.contact_id
 
 ) 
 
@@ -80,8 +83,8 @@ FROM final
 WHERE 
     internal_user=false 
     AND screen=1
-    AND residual=0
     
+
 
 
 

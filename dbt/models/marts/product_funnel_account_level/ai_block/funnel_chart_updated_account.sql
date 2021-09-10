@@ -7,7 +7,7 @@
 WITH onboarded_accounts AS (
 
     SELECT 
-        account_id,
+        logged_account_id      AS account_id,
         date_account_onboarded AS timing,
         'A.Onboarded accounts' AS Funnel_step 
     FROM {{ref('onboarded_accounts')}}

@@ -8,6 +8,8 @@ sources:
   - name: intercom 
     tables:
       - name: contact_history
+      - name: company_history
+      - name: contact_company_history
   - name: google_sheets
     tables: 
       - name: typeform_first_step
@@ -19,21 +21,16 @@ sources:
       - name: sign_up
       - name: tracks
       - name: users
-  - name: google_analytics
+  - name: google_cloud_function_intercom_contacts
     tables:
-      - name: users
-  - name: google_cloud_function_google_analytics_report
-    tables: 
-      - name: report_table
-      - name: report_table_second
-      - name: report_table_third
-      - name: report_table_fourth
-      - name: report_table_fifth
+      - name: contact_table
   - name: frontegg_1vuiodrwm6cvzejkiqmgp3zna0n
     tables:
       - name: user_invited
       - name: user_removed
       - name: user_signed_in
+      - name: users
+      - name: user_created
   - name: labs
     tables: 
       - name: vetevo

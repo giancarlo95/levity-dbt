@@ -15,7 +15,7 @@ SELECT
 FROM 
     prediction_models_prediction
 INNER JOIN 
-    onboarded_accounts ON onboarded_accounts.account_id=prediction_models_prediction.account_id
+    onboarded_accounts ON onboarded_accounts.logged_account_id=prediction_models_prediction.account_id
 GROUP BY
-    account_id,
+    prediction_models_prediction.account_id,
     EXTRACT(DATE FROM date_prediction_made)
