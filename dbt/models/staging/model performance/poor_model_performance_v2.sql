@@ -41,6 +41,7 @@ WITH prediction_models_classifier AS (
 
     SELECT 
         user_id,
+        account_id,
         old_user_id,
         prediction_models_classifierversion.classifier_id,
         version_id,			
@@ -75,7 +76,7 @@ WITH prediction_models_classifier AS (
             ELSE 0 
         END                                                                                                       AS is_deleted,
         CASE 
-            WHEN onboarded_accounts.account_id IS NULL THEN 0 
+            WHEN onboarded_accounts.logged_account_id IS NULL THEN 0 
             ELSE 1 
         END                                                                                                       AS is_approved,
         date_training_run,
@@ -86,7 +87,7 @@ WITH prediction_models_classifier AS (
         END                                                                                                       AS is_good
     FROM prediction_models_classifierversion_filtered
     LEFT JOIN onboarded_accounts
-         ON onboarded_accounts.account_id=prediction_models_classifierversion_filtered.user_id
+         ON onboarded_accounts.logged_account_id=prediction_models_classifierversion_filtered.account_id
     LEFT JOIN prediction_models_trainingrun
          ON prediction_models_trainingrun.version_id=prediction_models_classifierversion_filtered.version_id
 
