@@ -10,6 +10,9 @@ WITH onboarded_users AS (
 
 SELECT 
     logged_account_id,
+    -- to avoid remaking all the charts in the dashboard
+    logged_account_id                      AS account_id,
+    -- 
     MIN(user_email_address)                AS sample_user,
     MIN(date_user_onboarded)               AS date_account_onboarded,
     MAX(customer_status)                   AS customer_status,
