@@ -17,7 +17,8 @@ WITH datasets_dataset AS (
 SELECT 
     datasets_dataset.aiblock_id,   			
     date_aiblock_created,	
-    aiblock_description,		
+    aiblock_description,
+    is_template,		
     emoji,		
     labelers_per_item,		
     multi_label,	

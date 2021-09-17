@@ -15,28 +15,27 @@ WITH all_contacts AS (
 ), duplicate AS (
 
     SELECT 
-        contact_name,
-        contact_domain,
-        COUNT(DISTINCT contact_id)
+        contact_enhanced_raw.contact_email,
+        COUNT(DISTINCT contact_enhanced_raw.contact_id)
     FROM contact_enhanced_raw
+    INNER JOIN all_contacts ON all_contacts.contact_id=contact_enhanced_raw.contact_id
     GROUP BY 
-        contact_name,
-        contact_domain
+        contact_enhanced_raw.contact_email
     HAVING
-        COUNT(DISTINCT contact_id)>1
+        COUNT(DISTINCT contact_enhanced_raw.contact_id)>1
 
 )
 
 SELECT 
     contact_enhanced_raw.contact_id,	
     admin_id,		
-    contact_enhanced_raw.created_at,			
+    created_at,			
     updated_at,			
     signed_up_at,			
-    contact_enhanced_raw.contact_name,
+    contact_name,
     contact_role,			
     contact_enhanced_raw.contact_email,
-    contact_enhanced_raw.contact_domain,
+    contact_domain,
     last_replied_at,			
     last_email_clicked_at,			
     last_email_opened_at,			
@@ -67,5 +66,4 @@ SELECT
     all_contact_tags,
     all_contact_company_names
 FROM contact_enhanced_raw
-INNER JOIN duplicate ON duplicate.contact_name=contact_enhanced_raw.contact_name AND duplicate.contact_domain=contact_enhanced_raw.contact_domain
-INNER JOIN all_contacts ON all_contacts.contact_id=contact_enhanced_raw.contact_id
+INNER JOIN duplicate ON duplicate.contact_email=contact_enhanced_raw.contact_email

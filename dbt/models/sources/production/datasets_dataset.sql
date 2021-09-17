@@ -9,7 +9,11 @@ renamed AS (
     SELECT
        id                                   AS aiblock_id,   			
        CAST(created_at AS TIMESTAMP)        AS date_aiblock_created,	
-       description                          AS aiblock_description,		
+       description                          AS aiblock_description,	
+       CASE 
+            WHEN description IS NULL then "no"	
+            ELSE "yes"
+       END                                  AS is_template,
        emoji,		
        labelers_per_item,		
        multi_label,	

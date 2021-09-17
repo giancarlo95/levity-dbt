@@ -10,7 +10,7 @@ renamed AS (
         *
     FROM 
         source
-
+        
 )
 
 SELECT *
