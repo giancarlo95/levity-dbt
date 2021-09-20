@@ -14,3 +14,6 @@ SELECT
     created_at			
 FROM 
     source
+WHERE 
+    DATE(_fivetran_synced)=CURRENT_DATE()
+

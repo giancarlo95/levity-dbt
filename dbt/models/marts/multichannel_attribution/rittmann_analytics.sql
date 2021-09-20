@@ -103,9 +103,7 @@ WITH segment_web_sessions__stitched AS (
 )
 
 SELECT 
-    anonymous_id,
-    first_email_confirmation_date,
-    session_id,
+    *,
     even_click_attrib_pct*is_paid            AS paid_homogeneous,
     even_click_attrib_pct*is_direct          AS direct_homogeneous,
     even_click_attrib_pct*is_SEO             AS SEO_homogeneous,
