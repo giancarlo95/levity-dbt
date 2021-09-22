@@ -64,6 +64,9 @@ sources:
       - name: production_workflows_workflow
       - name: production_workflows_block
       - name: production_workflows_classifierblock
+  - name: google_cloud_postgresql_public
+    tables: 
+      - name: workflows_flowstep
 
 
       
