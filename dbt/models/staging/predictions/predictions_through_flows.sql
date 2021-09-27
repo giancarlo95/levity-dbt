@@ -2,13 +2,15 @@ WITH prediction_models_prediction AS (
 
     SELECT 
         * 
-    FROM {{ ref('prediction_models_prediction') }}
+    FROM 
+        {{ ref('prediction_models_prediction') }}
 
 ), onboarded_accounts AS (
 
     SELECT 
         * 
-    FROM {{ ref('onboarded_accounts') }}
+    FROM 
+        {{ ref('onboarded_accounts') }}
 
 ), workflows_classifierblock AS (
 
@@ -37,7 +39,10 @@ WITH prediction_models_prediction AS (
 ), workflows_flowstep AS (
 
     SELECT 
-        DISTINCT flow_id, date_step_created
+        DISTINCT 
+            account_id,
+            flow_id, 
+            TIMESTAMP_TRUNC(date_step_created, MINUTE) AS date_step_created_minute
     FROM 
         {{ref('workflows_flowstep')}}
 
@@ -74,10 +79,13 @@ WITH prediction_models_prediction AS (
 ) 
 
 SELECT 
+    prediction_models_prediction.prediction_id,
     prediction_models_prediction.account_id,
     prediction_models_prediction.date_prediction_made,
     workflows_block_enriched.is_template,
-    workflows_flowstep.flow_id
+    workflows_flowstep.flow_id,
+    workflows_flowstep.date_step_created_minute,
+    workflows_block_enriched.classifier_id
 FROM 
     prediction_models_prediction
 INNER JOIN onboarded_accounts 
@@ -85,4 +93,6 @@ INNER JOIN onboarded_accounts
 INNER JOIN workflows_block_enriched ON
     workflows_block_enriched.classifier_id=prediction_models_prediction.classifier_id
 INNER JOIN workflows_flowstep ON
-    workflows_flowstep.flow_id=workflows_block_enriched.flow_id AND DATETIME_DIFF(prediction_models_prediction.date_prediction_made, workflows_flowstep.date_step_created, SECOND)<5 AND DATETIME_DIFF(prediction_models_prediction.date_prediction_made, workflows_flowstep.date_step_created, SECOND)>-5 
+    workflows_flowstep.flow_id=workflows_block_enriched.flow_id 
+    AND TIMESTAMP_TRUNC(date_prediction_made, MINUTE)=date_step_created_minute 
+    AND workflows_flowstep.account_id=prediction_models_prediction.account_id
