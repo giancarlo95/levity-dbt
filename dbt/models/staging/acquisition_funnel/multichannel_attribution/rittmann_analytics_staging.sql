@@ -9,9 +9,9 @@ WITH segment_web_sessions__stitched AS (
 
     SELECT 
         anonymous_id,
-        MIN(received_at) AS first_email_confirmation_date
+        MIN(timestamp) AS first_email_confirmation_date
     FROM
-        {{ref("sign_up")}}
+        {{ref("sign_up_view")}}
     GROUP BY
         anonymous_id
 

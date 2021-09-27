@@ -44,16 +44,6 @@ models:
         - name: account_id
         - name: predictions_count
         - name: date_prediction_made
-    - name: dataset_created
-      columns:		
-        - name: event_code			
-        - name: event_date		
-        - name: user_id
-    - name: dataset_updated
-      columns:		
-        - name: event_code			
-        - name: event_date		
-        - name: user_id	
     - name: dataset_deleted
       columns:		
         - name: event_code			
@@ -218,10 +208,4 @@ models:
         - name: user_id	
         - name: task_action_id			
         - name: updated_at	
-    - name: users
-      columns:
-        - name: _fivetran_id		
-        - name: date		
-        - name: profile		
-        - name: previous_week_users		
-        - name: _fivetran_synced					
+    				
