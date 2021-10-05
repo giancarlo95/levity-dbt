@@ -1,9 +1,9 @@
-WITH rittmann_analytics_staging AS (
+WITH email_confirmation_staging AS (
        
     SELECT 
         *
     FROM
-        {{ref("rittmann_analytics_staging")}}
+        {{ref("email_confirmation_staging")}}
 
 )
 
@@ -22,7 +22,7 @@ SELECT
     first_touch_attrib_pct*is_internal       AS internal_first_touch,
     first_touch_attrib_pct*is_residual       AS residual_first_touch
 FROM   
-    rittmann_analytics_staging
+    email_confirmation_staging
 
 
 
