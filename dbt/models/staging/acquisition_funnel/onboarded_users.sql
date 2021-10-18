@@ -123,5 +123,3 @@ LEFT JOIN
     user_created ON user_created.user_id=final.user_id
 LEFT JOIN 
     accounts_paymentplan ON accounts_paymentplan.account_id=final.logged_account_id
-LEFT JOIN   
-    accounts_paymentplan AS other ON other.user_id=final.user_id
