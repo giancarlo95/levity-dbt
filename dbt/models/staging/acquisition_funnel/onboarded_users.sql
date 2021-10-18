@@ -57,6 +57,21 @@ WITH auth_user AS (
         internal_user=false
         AND contact_role="user"
 
+), accounts_paymentplan AS (
+
+    SELECT
+        *
+    FROM 
+        (SELECT 
+            account_id,
+            ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY date_plan_updated DESC) AS index,
+            plan_type,
+            plan_status
+        FROM 
+           {{ref('accounts_paymentplan')}}) AS plans_all_times
+    WHERE 
+        index=1
+
 ), final AS (
 
     SELECT 
@@ -94,10 +109,19 @@ SELECT
         ELSE "Added"  
     END                                                                                                         AS flag,
     MAX(contact_enhanced.custom_status) OVER (PARTITION BY final.logged_account_id)                             AS customer_status,
-    MAX(contact_enhanced.all_contact_company_names) OVER (PARTITION BY final.logged_account_id)                 AS company_name                
+    MAX(contact_enhanced.all_contact_company_names) OVER (PARTITION BY final.logged_account_id)                 AS company_name,
+    accounts_paymentplan.plan_type,
+    CASE 
+        WHEN accounts_paymentplan.plan_status="active" THEN true
+        ELSE false
+    END                                                                                                         AS plan_status,           
 FROM 
     final
 INNER JOIN 
     contact_enhanced ON contact_enhanced.contact_email=final.user_email_address
 LEFT JOIN 
     user_created ON user_created.user_id=final.user_id
+LEFT JOIN 
+    accounts_paymentplan ON accounts_paymentplan.account_id=final.logged_account_id
+LEFT JOIN   
+    accounts_paymentplan AS other ON other.user_id=final.user_id

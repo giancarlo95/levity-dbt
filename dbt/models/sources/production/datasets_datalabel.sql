@@ -7,7 +7,7 @@ WITH source AS (
 renamed AS (
 
     SELECT
-        id,					
+        id                                        AS aiblock_id,					
         bounding_box_id,		
         classifier_version_id,			
         confidence_score,		
