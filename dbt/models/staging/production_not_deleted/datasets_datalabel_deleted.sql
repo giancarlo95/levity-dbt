@@ -9,7 +9,7 @@ WITH datasets_datalabel AS (
 ), final AS (
 
     SELECT 
-        id,					
+        aiblock_id,					
         bounding_box_id,		
         classifier_version_id,			
         confidence_score,		
@@ -40,7 +40,7 @@ WITH datasets_datalabel AS (
 )
 
 SELECT 
-    id,					
+    aiblock_id,					
     bounding_box_id,		
     final.classifier_version_id,			
     confidence_score,		
