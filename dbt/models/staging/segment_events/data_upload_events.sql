@@ -12,7 +12,8 @@ WITH datasets_data AS (
 ), datasets_dataset AS (
 
     SELECT 
-        user_id
+        user_id,
+        aiblock_id
     FROM
         {{ref('datasets_dataset')}}
 
@@ -27,12 +28,14 @@ WITH datasets_data AS (
     FROM datasets_data dsd
     INNER JOIN datasets_dataset dst ON dsd.aiblock_id = dst.aiblock_id
     GROUP BY 1, 2, 3 
-    ORDER BY 4 DESC;
+    ORDER BY 4 DESC
 
 )
 
 
 SELECT 
     *
-FROM final
-WHERE DATE(TIMESTAMP_TRUNC(time_stamp, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY);
+FROM 
+    final
+WHERE 
+    DATE(TIMESTAMP_TRUNC(time_stamp, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY)

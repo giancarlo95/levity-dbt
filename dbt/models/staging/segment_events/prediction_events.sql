@@ -29,11 +29,13 @@ WITH prediction_models_classifier AS (
     FROM prediction_models_prediction pmp
     INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
     GROUP BY 1, 2, 3
-    ORDER BY 3 DESC;
+    ORDER BY 3 DESC
 )
 
 
 SELECT
     *
-FROM final
-WHERE DATE(TIMESTAMP_TRUNC(time_stamp, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY);
+FROM 
+    final
+WHERE 
+    DATE(TIMESTAMP_TRUNC(time_stamp, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY)
