@@ -268,6 +268,144 @@ sources:
                     field: user_id
             - name: uuid_ts
       - name: users
+  - name: website_try_prod
+    description: Dataset representation of the 'Website Production' Segment source
+    tables:
+      - name: identifies_view
+      - name: button_clicked_view
+        columns:
+            - name: action
+              tests:
+                - accepted_values:
+                    values: ['Get Started']
+            - name: anonymous_id
+              description: The anonymous ID of the user
+              tests:
+                - not_null
+            - name: context_ip
+            - name: context_library_name
+            - name: context_library_version
+            - name: context_locale
+            - name: context_page_path
+            - name: context_page_url
+            - name: context_user_agent
+            - name: event
+              description: The slug of the event name, so you can join the tracks table
+              tests:
+                - relationships:
+                    to: ref('tracks_view')
+                    field: event
+            - name: event_text
+              description: The name of the event
+            - name: id
+              description: The unique ID of the track call itself
+              tests:
+                - unique
+                - not_null
+            - name: loaded_at
+            - name: original_timestamp
+              description: Not useful for analysis
+            - name: received_at
+              description: It guarantees max query speed, but does not ensure chronology of events
+            - name: sent_at
+              description: Not useful for analysis 
+            - name: timestamp
+              description: It should be used for queries based on event chronology
+            - name: user_id
+              description: The unique ID of the user 
+              tests:
+                - relationships:
+                    to: ref('user_table')
+                    field: user_id
+            - name: uuid_ts
+      
+      - name: pages_view
+        columns:
+                - name: anonymous_id
+                  description: The anonymous ID of the user
+                  tests:
+                    - not_null	
+                - name: context_campaign_content		
+                - name: context_campaign_medium		
+                - name: context_campaign_name			
+                - name: context_campaign_source		
+                - name: context_campaign_term	
+                - name: context_ip
+                - name: context_library_name
+                - name: context_library_version
+                - name: context_locale
+                - name: context_page_path
+                - name: context_page_search
+                - name: context_page_referrer
+                - name: context_page_url
+                - name: context_user_agent
+                - name: id
+                  description: The unique ID of the track call itself
+                  tests:
+                    - unique
+                    - not_null
+                - name: loaded_at
+                - name: original_timestamp
+                  description: Not useful for analysis
+                - name: path
+                - name: received_at
+                  description: It guarantees max query speed, but does not ensure chronology of events
+                - name: referrer
+                - name: search
+                - name: sent_at
+                  description: Not useful for analysis 
+                - name: timestamp
+                  description: It should be used for queries based on event chronology
+                - name: url
+                - name: user_id
+                  description: The unique ID of the user 
+                  tests:
+                    - relationships:
+                        to: ref('user_table')
+                        field: user_id
+                - name: uuid_ts
+      
+      - name: tracks_view
+        columns:
+            - name: anonymous_id
+              description: The anonymous ID of the user
+              tests:
+                - not_null
+            - name: context_ip
+            - name: context_library_name
+            - name: context_library_version
+            - name: context_locale
+            - name: context_page_path
+            - name: context_page_referrer
+            - name: context_page_url
+            - name: context_user_agent
+            - name: context_visual_tagger
+            - name: event
+              description: The slug of the event name
+            - name: event_text
+              description: The name of the event
+            - name: id
+              description: The unique ID of the track call itself
+              tests:
+                - unique
+                - not_null
+            - name: loaded_at
+            - name: original_timestamp
+              description: Not useful for analysis
+            - name: received_at
+              description: It guarantees max query speed, but does not ensure chronology of events
+            - name: sent_at
+              description: Not useful for analysis 
+            - name: timestamp
+              description: It should be used for queries based on event chronology
+            - name: user_id
+              description: The unique ID of the user 
+              tests:
+                - relationships:
+                    to: ref('user_table')
+                    field: user_id
+            - name: uuid_ts
+      - name: users_view
   - name: google_cloud_function_intercom_contacts
     description: Dataset containing all the tables that result from a customized Fivetran Intercom integration
     tables:
@@ -308,23 +446,21 @@ sources:
     description: Dataset generated by the Airbyte PostgreSQL production database integration
     tables:
       - name: production_auth_user
+      - name: production_accounts_paymentplan
       - name: production_accounts_userprofile
       - name: production_datasets_dataset
       - name: production_datasets_datalabel
+      - name: production_datasets_label
       - name: production_datasets_data
       - name: production_prediction_models_trainingrun
       - name: production_prediction_models_prediction
       - name: production_prediction_models_classifier
       - name: production_prediction_models_classifierversion
       - name: production_workflows_workflow
+      - name: production_workflows_flowstep
       - name: production_workflows_block
       - name: production_workflows_classifierblock
-  - name: google_cloud_postgresql_public
-    description: Dataset generated by the Fivetran PostgreSQL production database integration
-    tables: 
-      - name: workflows_flowstep
-      - name: accounts_paymentplan
-      - name: datasets_label
+  
 
 
       
