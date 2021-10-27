@@ -3,7 +3,6 @@ WITH workflows_workflow AS (
     SELECT 
         flow_id,
         flow_status,
-        name,
         user_id
     FROM 
         {{ref('workflows_workflow')}}

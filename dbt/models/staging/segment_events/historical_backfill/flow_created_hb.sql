@@ -3,7 +3,6 @@ WITH workflows_workflow AS (
     SELECT 
         flow_id,
         date_flow_created,
-        name,
         user_id
     FROM 
         {{ref('workflows_workflow')}}
@@ -21,7 +20,6 @@ WITH workflows_workflow AS (
     SELECT
         flow_id,
         date_flow_created,
-        name, 
         user_id,
         user_email_address
     FROM workflows_workflow wfw 
