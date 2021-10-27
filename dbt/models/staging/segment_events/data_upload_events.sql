@@ -11,9 +11,15 @@ WITH datasets_data AS (
 
 ), onboarded_users AS (
 
+<<<<<<< HEAD
     SELECT
         user_id,
         user_email_address
+=======
+    SELECT 
+        user_id,
+        aiblock_id
+>>>>>>> 70404971c39a5e1781675504ed0a4d962b05d253
     FROM
         {{ref('onboarded_users')}}
 ),
@@ -44,6 +50,7 @@ datasets_dataset AS (
 
 
 SELECT 
+<<<<<<< HEAD
     final.user_id,
     aiblock_id, 
     company_id,
@@ -52,3 +59,10 @@ SELECT
     time_stamp
 FROM final
 INNER JOIN onboarded_users obu ON final.user_id = obu.user_id
+=======
+    *
+FROM 
+    final
+WHERE 
+    DATE(TIMESTAMP_TRUNC(time_stamp, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY)
+>>>>>>> 70404971c39a5e1781675504ed0a4d962b05d253
