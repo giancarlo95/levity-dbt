@@ -435,6 +435,9 @@ sources:
       - name: classifier_version_deleted
       - name: classifier_block_deleted
       - name: data_deleted
+      - name: ai_block_created
+      - name: ai_block_deleted
+      - name: ai_block_template_cloned
   - name: google_cloud_function_frontegg_complete
     description: Dataset containing all the tables that result from a customized Fivetran Frotegg integration 
     tables:
