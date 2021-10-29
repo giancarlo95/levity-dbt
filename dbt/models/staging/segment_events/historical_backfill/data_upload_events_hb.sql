@@ -16,6 +16,14 @@ WITH datasets_data AS (
         aiblock_id
     FROM {{ref('datasets_dataset')}}
 
+), onboarded_users AS (
+
+    SELECT
+        user_id,
+        user_email_address
+    FROM
+        {{ref('onboarded_users')}}
+        
 ), final AS (
     
     SELECT 
@@ -23,9 +31,11 @@ WITH datasets_data AS (
         dsd.aiblock_id AS aiblock_id,
         dsd.account_id AS company_id,
         COUNT(dsd.datapoint_id) AS net_data_points, 
-        DATE_TRUNC(dsd.date_datapoint_uploaded, DAY) AS time_stamp 
+        DATE_TRUNC(dsd.date_datapoint_uploaded, DAY) AS time_stamp,
+        user_email_address 
     FROM datasets_data dsd
     INNER JOIN datasets_dataset dst ON dsd.aiblock_id = dst.aiblock_id
+    INNER JOIN onboarded_users ob ON dsd.user_id = ob.user_id
     GROUP BY 1, 2, 3, 5
     ORDER BY 4 DESC
 
@@ -35,3 +45,4 @@ WITH datasets_data AS (
 SELECT 
     *
 FROM final
+WHERE TIMESTAMP_DIFF(TIMESTAMP "2021-10-28 23:59:59+00", time_stamp, HOUR)>0
