@@ -2,11 +2,12 @@ WITH datasets_dataset AS (
 
     SELECT 
         aiblock_id,
-        is_template,
         user_id,
         account_id
     FROM 
         {{ref('datasets_dataset')}}
+    WHERE 
+        is_template="yes"
 
 )
 

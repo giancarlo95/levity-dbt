@@ -6,6 +6,8 @@ WITH datasets_dataset AS (
         account_id
     FROM 
         {{ref('datasets_dataset')}}
+    WHERE 
+        is_template="no"
 
 )
 

@@ -1,53 +1,50 @@
-WITH prediction_model_classifierversion AS (
+WITH prediction_models_trainingrun AS (
 
     SELECT 
-        *
+        * 
     FROM 
-        {{ref('prediction_model_classifierversion')}}
+        {{ref('prediction_models_trainingrun')}}
+    WHERE 
+        version_id IS NOT NULL
 
-), prediction_model_classifier AS (
-    
+), prediction_models_classifier AS (
+
     SELECT 
-        *
+        classifier_id,
+        aiblock_id
     FROM 
-        {{ref('prediction_model_classifier')}}
+        {{ref('prediction_models_classifier')}}
 
-), prediction_model_trainingrun AS (
-    
+), prediction_models_classifierversion AS (
+
     SELECT 
-        *
+        classifier_id,
+        version_id,
+        performance_score
     FROM 
-        {{ref('prediction_model_trainingrun')}}
-    WHERE version_id IS NOT NULL;
+        {{ref('prediction_models_classifierversion')}}
 
-), model_performance (
+), prediction_models_classifierversion_enriched AS (
 
     SELECT 
-        performance_score, 
+        prediction_models_classifierversion.classifier_id,    
         aiblock_id,
-        user_id,
-        account_id, 
-        classifier_id
-    FROM prediction_model_classifierversion 
-    INNER JOIN prediction_model_classifier pmc ON pmcv.classifier_id = pmc.classifier_id
+        version_id,
+        performance_score
+    FROM prediction_models_classifierversion
+    INNER JOIN prediction_models_classifier ON 
+        prediction_models_classifierversion.classifier_id=prediction_models_classifier.classifier_id 
 
-), date_trained AS (
-
-    SELECT
-        date_version_created,
-        classifier_id
-    FROM prediction_model_classifier pmc
-    INNER JOIN prediction_model_trainingrun pmt ON pmc.version_id = pmt.version_id
 )
 
-SELECT
-    user_id,
-    account_id,
+SELECT 
+    prediction_models_trainingrun.account_id,
+    prediction_models_trainingrun.user_id,
     aiblock_id,
     performance_score,
-    date_version_created
-FROM model_performance mp 
-INNER JOIN date_trained dt ON mp.classifier_id = dt.classifier_id
-
+    date_training_run
+FROM prediction_models_trainingrun
+INNER JOIN prediction_models_classifierversion_enriched ON
+    prediction_models_classifierversion_enriched.version_id=prediction_models_trainingrun.version_id
 
 
