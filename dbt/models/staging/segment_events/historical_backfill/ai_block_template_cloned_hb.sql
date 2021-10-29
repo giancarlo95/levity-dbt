@@ -1,16 +1,18 @@
-WITH datasets_data AS (
+WITH datasets_dataset AS (
 
     SELECT 
-        *
-    FROM 
-        {{ref('datasets_data')}}
-
-), onboarded_users AS (
-
-    SELECT
+        aiblock_id,
+        is_template,
         user_id,
-        user_email_address
-    FROM
-        {{ref('onboarded_users')}}
-        
+        account_id
+    FROM 
+        {{ref('datasets_dataset')}}
+
 )
+
+/* For ai_block_template_cloned we need the same info as ai_block_created + is_template field. */
+
+SELECT
+    *
+FROM datasets_dataset
+

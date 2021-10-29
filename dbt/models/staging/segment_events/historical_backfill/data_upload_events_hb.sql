@@ -9,17 +9,7 @@ WITH datasets_data AS (
     FROM 
         {{ref('datasets_data')}}
 
-), onboarded_users AS (
-
-    SELECT
-        user_id,
-        user_email_address
-    FROM
-        {{ref('onboarded_users')}}
-),
-
-
-datasets_dataset AS (
+), datasets_dataset AS (
 
     SELECT
         user_id,
@@ -33,22 +23,15 @@ datasets_dataset AS (
         dsd.aiblock_id AS aiblock_id,
         dsd.account_id AS company_id,
         COUNT(dsd.datapoint_id) AS net_data_points, 
-        MAX(dsd.date_datapoint_uploaded) AS time_stamp
+        DATE_TRUNC(dsd.date_datapoint_uploaded, DAY) AS time_stamp 
     FROM datasets_data dsd
     INNER JOIN datasets_dataset dst ON dsd.aiblock_id = dst.aiblock_id
-    WHERE DATE(TIMESTAMP_TRUNC(dsd.date_datapoint_uploaded, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY)
-    GROUP BY 1, 2, 3 
+    GROUP BY 1, 2, 3, 5
     ORDER BY 4 DESC
 
 )
 
 
 SELECT 
-    final.user_id,
-    aiblock_id, 
-    company_id,
-    obu.user_email_address,
-    net_data_points,
-    time_stamp
+    *
 FROM final
-INNER JOIN onboarded_users obu ON final.user_id = obu.user_id

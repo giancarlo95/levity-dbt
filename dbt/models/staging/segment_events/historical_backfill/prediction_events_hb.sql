@@ -7,14 +7,6 @@ WITH prediction_models_classifier AS (
     FROM 
         {{ref('prediction_models_classifier')}}
 
-), onboarded_users AS (
-
-    SELECT
-        user_id,
-        user_email_address
-    FROM
-        {{ref('onboarded_users')}}
-
 ), prediction_models_prediction AS (
 
     SELECT
@@ -33,21 +25,14 @@ WITH prediction_models_classifier AS (
         pmp.account_id AS company_id,
         pmc.aiblock_id AS aiblock_id,
         COUNT(pmp.prediction_id) AS total_predictions_24h,
-        MAX(pmp.date_prediction_made) AS time_stamp
+        DATE_TRUNC(pmp.date_prediction_made, DAY) AS time_stamp 
     FROM prediction_models_prediction pmp
     INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
-    WHERE DATE(TIMESTAMP_TRUNC(pmp.date_prediction_made, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY)
-    GROUP BY 1, 2, 3
+    GROUP BY 1, 2, 3, 5
     ORDER BY 4 DESC
 )
 
 
 SELECT
-    final.user_id,
-    company_id,
-    aiblock_id,
-    obu.user_email_address AS email_address,
-    total_predictions_24h,
-    time_stamp
+    *
 FROM final
-INNER JOIN onboarded_users obu ON final.user_id = obu.user_id
