@@ -11,7 +11,7 @@ renamed AS (
         _fivetran_batch,		
         _fivetran_deleted,			
         _fivetran_index,			
-        _fivetran_synced,			
+        DATE(_fivetran_synced)               AS date_fivetran_synced,			
         created_at                           AS date_user_onboarded,			
         current_frontegg_tenant_id           AS logged_account_id,			
         LOWER(email)                         AS user_email_address,		
@@ -27,3 +27,4 @@ renamed AS (
 
 SELECT *
 FROM renamed
+WHERE date_fivetran_synced=CURRENT_DATE()
