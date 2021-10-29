@@ -36,7 +36,7 @@ WITH datasets_data AS (
     FROM datasets_data dsd
     INNER JOIN datasets_dataset dst ON dsd.aiblock_id = dst.aiblock_id
     INNER JOIN onboarded_users ob ON dsd.user_id = ob.user_id
-    GROUP BY 1, 2, 3, 5
+    GROUP BY 1, 2, 3, 5, 6
     ORDER BY 4 DESC
 
 )

@@ -38,7 +38,7 @@ WITH prediction_models_classifier AS (
     FROM prediction_models_prediction pmp
     INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
     INNER JOIN onboarded_users ob ON pmp.user_id = ob.user_id
-    GROUP BY 1, 2, 3, 5
+    GROUP BY 1, 2, 3, 5, 6
     ORDER BY 4 DESC
 )
 
