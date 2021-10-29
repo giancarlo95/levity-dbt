@@ -38,16 +38,11 @@ WITH prediction_models_classifier AS (
     INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
     WHERE DATE(TIMESTAMP_TRUNC(pmp.date_prediction_made, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY)
     GROUP BY 1, 2, 3
-<<<<<<< HEAD
     ORDER BY 4 DESC
-=======
-    ORDER BY 3 DESC
->>>>>>> 70404971c39a5e1781675504ed0a4d962b05d253
 )
 
 
 SELECT
-<<<<<<< HEAD
     final.user_id,
     company_id,
     aiblock_id,
@@ -56,10 +51,3 @@ SELECT
     time_stamp
 FROM final
 INNER JOIN onboarded_users obu ON final.user_id = obu.user_id
-=======
-    *
-FROM 
-    final
-WHERE 
-    DATE(TIMESTAMP_TRUNC(time_stamp, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY)
->>>>>>> 70404971c39a5e1781675504ed0a4d962b05d253

@@ -3,7 +3,8 @@ WITH datasets_dataset AS (
     SELECT 
         aiblock_id,
         user_id,
-        account_id
+        account_id,
+        date_aiblock_created
     FROM 
         {{ref('datasets_dataset')}}
     WHERE 
