@@ -14,3 +14,4 @@ WITH workflows_workflow AS (
 SELECT 
     *
 FROM workflows_workflow
+WHERE TIMESTAMP_DIFF(TIMESTAMP "2021-09-21 00:00:00+00", date_flow_created, HOUR)>0

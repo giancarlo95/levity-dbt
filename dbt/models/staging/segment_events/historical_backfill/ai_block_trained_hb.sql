@@ -44,7 +44,7 @@ SELECT
     performance_score,
     date_training_run
 FROM prediction_models_trainingrun
-INNER JOIN prediction_models_classifierversion_enriched ON
-    prediction_models_classifierversion_enriched.version_id=prediction_models_trainingrun.version_id
+INNER JOIN prediction_models_classifierversion_enriched ON prediction_models_classifierversion_enriched.version_id=prediction_models_trainingrun.version_id
+WHERE TIMESTAMP_DIFF(TIMESTAMP "2021-09-21 00:00:00+00", date_training_run, HOUR)>0
 
 
