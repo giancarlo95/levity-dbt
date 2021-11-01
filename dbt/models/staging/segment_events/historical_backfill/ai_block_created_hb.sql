@@ -9,6 +9,7 @@ WITH datasets_dataset AS (
         {{ref('datasets_dataset')}}
     WHERE 
         is_template="no"
+        AND TIMESTAMP_DIFF(TIMESTAMP "2021-09-21 00:00:00+00", date_aiblock_created, HOUR)>0
 
 )
 
