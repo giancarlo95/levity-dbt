@@ -32,10 +32,9 @@ WITH datasets_data AS (
         dsd.account_id AS company_id,
         COUNT(dsd.datapoint_id) AS net_data_points, 
         DATE_TRUNC(dsd.date_datapoint_uploaded, DAY) AS time_stamp,
-        user_email_address 
     FROM datasets_data dsd
     INNER JOIN datasets_dataset dst ON dsd.aiblock_id = dst.aiblock_id
-    GROUP BY 1, 2, 3, 5, 6
+    GROUP BY 1, 2, 3, 5
     ORDER BY 4 DESC
 
 )
