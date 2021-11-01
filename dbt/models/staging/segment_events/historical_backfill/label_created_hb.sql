@@ -9,7 +9,22 @@ WITH datasets_label AS (
     FROM 
         {{ref('datasets_label')}}
 
+), onboarded_users AS (
+
+    SELECT
+        user_id,
+        user_email_address
+    FROM
+        {{ref('onboarded_users')}}
+        
 )
 
-SELECT *
-FROM datasets_label
+SELECT 
+    dl.user_id,
+    label_id,
+    label_name,
+    aiblock_id,
+    account_id,
+    user_email_address
+FROM datasets_label dl
+INNER JOIN onboarded_users ob ON dl.user_id = ob.user_id
