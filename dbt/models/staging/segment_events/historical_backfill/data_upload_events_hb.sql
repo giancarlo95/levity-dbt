@@ -42,7 +42,12 @@ WITH datasets_data AS (
 
 
 SELECT 
-    *
+    final.user_id,
+    aiblock_id,
+    company_id,
+    net_data_points,
+    time_stamp,
+    user_email_address
 FROM final
 INNER JOIN onboarded_users ob ON final.user_id = ob.user_id
 WHERE TIMESTAMP_DIFF(TIMESTAMP "2021-10-28 23:59:59+00", time_stamp, HOUR)>0

@@ -42,6 +42,11 @@ WITH prediction_models_classifier AS (
 
 
 SELECT
-    *
+    final.user_id,
+    company_id,
+    aiblock_id,
+    total_predictions_24h,
+    time_stamp,
+    user_email_address
 FROM final
 INNER JOIN onboarded_users ob ON final.user_id = ob.user_id
