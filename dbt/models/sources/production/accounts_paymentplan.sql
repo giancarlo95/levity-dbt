@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('public', 'production_accounts_paymentplan') }}
+    SELECT * FROM {{ source('google_cloud_postgresql_public', 'accounts_paymentplan') }}
 
 ),
 
@@ -29,8 +29,10 @@ renamed AS (
         updated_at                       AS date_plan_updated,			
         frontegg_tenant_id               AS account_id,			
         frontegg_user_id                 AS user_id,
-        _airbyte_emitted_at,	
-        _airbyte_production_accounts_paymentplan_hashid	  
+        --_airbyte_emitted_at,	
+        --_airbyte_production_accounts_paymentplan_hashid
+        _fivetran_deleted,
+        _fivetran_synced	  
     FROM source
 
 )

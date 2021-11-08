@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('public', 'production_auth_user') }}
+    SELECT * FROM {{ source('google_cloud_postgresql_public', 'auth_user') }}
 
 ),
 
@@ -18,8 +18,10 @@ renamed AS (
         last_name,	
         password,		
         username,
-        _airbyte_emitted_at,	
-        _airbyte_production_auth_user_hashid   
+        --_airbyte_emitted_at,	
+        --_airbyte_production_accounts_paymentplan_hashid
+        _fivetran_deleted,
+        _fivetran_synced   
     FROM 
         source
     WHERE 

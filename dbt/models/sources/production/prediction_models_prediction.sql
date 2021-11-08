@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('public', 'production_prediction_models_prediction') }}
+    SELECT * FROM {{ source('google_cloud_postgresql_public', 'prediction_models_prediction') }}
 
 ), renamed AS (
 
@@ -12,8 +12,10 @@ WITH source AS (
         frontegg_user_id                              AS user_id,
         frontegg_tenant_id                            AS account_id,		
         CAST(updated_at AS TIMESTAMP)                 AS date_prediction_updated,
-        _airbyte_emitted_at,	
-        _airbyte_production_prediction_models_prediction_hashid 		
+        --_airbyte_emitted_at,	
+        --_airbyte_production_accounts_paymentplan_hashid
+        _fivetran_deleted,
+        _fivetran_synced 		
 	
     FROM 
         source
