@@ -8,8 +8,7 @@ renamed AS (
 
     SELECT
         *,
-        _id		                                        AS aiblock_id,	
-        event      			
+        _id		                                        AS aiblock_id     			
     FROM 
         source
 
