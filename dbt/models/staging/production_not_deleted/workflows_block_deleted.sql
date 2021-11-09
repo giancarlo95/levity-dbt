@@ -24,9 +24,7 @@ SELECT
     is_trigger,	
     block_type,		
     date_block_updated,		
-    flow_id,
-    _airbyte_emitted_at,	
-    _airbyte_production_workflows_block_hashid
+    flow_id
 FROM 
     workflows_block
 LEFT JOIN 

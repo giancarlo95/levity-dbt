@@ -32,9 +32,7 @@ WITH datasets_data AS (
     remote_url,  
     storage_id,  
     text, 
-    date_datapoint_updated,
-    _airbyte_emitted_at,	
-    _airbyte_production_datasets_data_hashid
+    date_datapoint_updated
     FROM 
         datasets_data
     INNER JOIN 
@@ -53,9 +51,7 @@ SELECT
     remote_url,  
     storage_id,  
     text, 
-    date_datapoint_updated,
-    _airbyte_emitted_at,	
-    _airbyte_production_datasets_data_hashid
+    date_datapoint_updated
 FROM 
     final
 LEFT JOIN 

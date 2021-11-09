@@ -23,9 +23,7 @@ SELECT
     user_id,
     account_id,	
     flow_status,		
-    date_flow_updated,
-    _airbyte_emitted_at,	
-    _airbyte_production_workflows_workflow_hashid 
+    date_flow_updated
 FROM 
     workflows_workflow
 LEFT JOIN 

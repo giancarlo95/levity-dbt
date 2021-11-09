@@ -19,20 +19,11 @@ SELECT
     date_aiblock_created,	
     aiblock_description,
     is_template,		
-    emoji,		
-    labelers_per_item,		
-    multi_label,	
-    name,	
     old_user_id,
     user_id,
-    account_id,	
-    project_id,		
-    status,		
-    template,		
+    account_id,			
     aiblock_data_type,	
-    date_aiblock_updated,
-    _airbyte_emitted_at,	
-    _airbyte_production_datasets_dataset_hashid
+    date_aiblock_updated
 FROM 
     datasets_dataset
 LEFT JOIN 

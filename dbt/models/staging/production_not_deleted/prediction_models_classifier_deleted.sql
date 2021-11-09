@@ -28,9 +28,7 @@ SELECT
     project_id,	
     status,		
     updated_at,	
-    valohai_deployment_id,
-    _airbyte_emitted_at,	
-    _airbyte_production_prediction_models_classifier_hashid 
+    valohai_deployment_id
 FROM 
     prediction_models_classifier
 LEFT JOIN 

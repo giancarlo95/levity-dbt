@@ -7,7 +7,6 @@ WITH source AS (
 renamed AS (
 
     SELECT
-        *,
         _id		                                        AS aiblock_id     			
     FROM 
         source

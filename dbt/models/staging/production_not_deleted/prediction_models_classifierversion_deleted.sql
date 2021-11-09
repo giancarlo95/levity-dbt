@@ -34,9 +34,7 @@ SELECT
     valohai_endpoint_url,	
     valohai_execution_id,	
     valohai_version_id,	
-    valohai_version_name,
-    _airbyte_emitted_at,	
-    _airbyte_production_prediction_models_classifierversion_hashid 
+    valohai_version_name
 FROM 
     prediction_models_classifierversion
 LEFT JOIN 

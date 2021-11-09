@@ -20,9 +20,7 @@ WITH datasets_datalabel AS (
         user_id,
         account_id,
         task_action_id,			
-        date_labelled_datapoint_updated,
-        _airbyte_emitted_at,	
-        _airbyte_production_datasets_datalabel_hashid
+        date_labelled_datapoint_updated
     FROM 
         datasets_datalabel
     LEFT JOIN 
