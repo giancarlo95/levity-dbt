@@ -21,7 +21,8 @@ WITH datasets_data AS (
 ), onboarded_accounts AS (
 
     SELECT
-        account_id
+        account_id,
+        sample_user
     FROM
         {{ref('onboarded_accounts')}}
         
@@ -50,6 +51,7 @@ WITH datasets_data AS (
 SELECT 
     final.user_id,
     final.account_id,
+    sample_user,
     aiblock_id,
     is_template,
     net_data_points,

@@ -31,7 +31,8 @@ WITH prediction_models_classifier AS (
 ), onboarded_accounts AS (
 
     SELECT
-        account_id
+        account_id,
+        sample_user
     FROM
         {{ref('onboarded_accounts')}}
         
@@ -61,6 +62,7 @@ WITH prediction_models_classifier AS (
 SELECT
     user_id,
     final.account_id,
+    sample_user,
     aiblock_id,
     is_template,
     total_predictions,
