@@ -1,6 +1,6 @@
 schedules:
   - name: hourly
-    schedule: "@hourly"
+    schedule: "15 * * * *" 
     environment: production
     commands:
          - dbt seed

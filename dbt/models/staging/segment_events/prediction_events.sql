@@ -45,13 +45,13 @@ WITH prediction_models_classifier AS (
         pmc.aiblock_id                                        AS aiblock_id,
         is_template,
         name,
-        DATE_TRUNC(pmp.date_prediction_made, DAY)             AS relevant_day,
+        TIMESTAMP_TRUNC(pmp.date_prediction_made, HOUR)       AS relevant_day_hour,
         COUNT(pmp.prediction_id)                              AS total_predictions,
         MAX(date_prediction_made)                             AS time_stamp
     FROM prediction_models_prediction pmp
     INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
     INNER JOIN datasets_dataset dd ON dd.aiblock_id=pmc.aiblock_id
-    WHERE DATE(TIMESTAMP_TRUNC(pmp.date_prediction_made, DAY)) = DATE_SUB(CURRENT_DATE(),INTERVAL 1 DAY)
+    WHERE TIMESTAMP_TRUNC(pmp.date_prediction_made, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 1 HOUR), HOUR)
     GROUP BY 
         1, 
         2, 

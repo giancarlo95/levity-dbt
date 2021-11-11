@@ -31,6 +31,8 @@ WITH datasets_data AS (
         date_training_run
     FROM
         {{ref('prediction_models_trainingrun')}}
+    WHERE 
+        version_id IS NOT NULL
 
 ), last_trainings AS (
 
