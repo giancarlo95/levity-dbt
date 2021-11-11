@@ -51,7 +51,7 @@ WITH prediction_models_classifier AS (
     FROM prediction_models_prediction pmp
     INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
     INNER JOIN datasets_dataset dd ON dd.aiblock_id=pmc.aiblock_id
-    WHERE TIMESTAMP_TRUNC(pmp.date_prediction_made, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 1 HOUR), HOUR)
+    WHERE TIMESTAMP_TRUNC(pmp.date_prediction_made, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 2 HOUR), HOUR)
     GROUP BY 
         1, 
         2, 
