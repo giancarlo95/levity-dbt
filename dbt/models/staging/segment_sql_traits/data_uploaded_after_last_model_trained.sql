@@ -59,7 +59,7 @@ SELECT
 FROM
     final f
 INNER JOIN last_trainings lt ON lt.user_id=f.user_id
-WHERE TIMESTAMP_DIFF(date_datapoint_uploaded, date_last_training_run, HOUR)>0
+WHERE TIMESTAMP_DIFF(date_datapoint_uploaded, date_last_training_run, MINUTE)>0
 GROUP BY
     f.user_id
 
