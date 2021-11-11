@@ -15,7 +15,8 @@ WITH datasets_data AS (
         user_id,
         account_id,
         aiblock_id,
-        is_template
+        is_template,
+        name
     FROM {{ref('datasets_dataset')}}
 
 ), onboarded_accounts AS (
@@ -33,6 +34,7 @@ WITH datasets_data AS (
         dsd.account_id,
         dsd.aiblock_id                                           AS aiblock_id,
         is_template,
+        name,
         DATE_TRUNC(dsd.date_datapoint_uploaded, DAY)             AS relevant_day,
         COUNT(dsd.datapoint_id)                                  AS net_data_points, 
         MAX(dsd.date_datapoint_uploaded)                         AS time_stamp,
@@ -44,7 +46,8 @@ WITH datasets_data AS (
         2, 
         3, 
         4,
-        5
+        5,
+        6
 
 )
 
@@ -54,6 +57,7 @@ SELECT
     sample_user,
     aiblock_id,
     is_template,
+    name,
     net_data_points,
     relevant_day,
     time_stamp
