@@ -9,13 +9,6 @@ WITH datasets_data AS (
     FROM 
         {{ref('datasets_data')}}
 
-), onboarded_users AS (
-
-    SELECT
-        user_id
-    FROM
-        {{ref('onboarded_users')}}
-        
 ), datasets_dataset AS (
 
     SELECT
