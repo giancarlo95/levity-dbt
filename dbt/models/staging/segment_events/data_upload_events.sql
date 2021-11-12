@@ -31,6 +31,10 @@ WITH datasets_data AS (
     
     SELECT 
         IFNULL(dsd.user_id, dst.user_id)                         AS user_id,
+        CASE 
+            WHEN dsd.user_id IS NULL THEN "yes"
+            ELSE "no"
+        END                                                      AS is_human_in_the_loop,
         dsd.account_id,
         dsd.aiblock_id                                           AS aiblock_id,
         is_template,
@@ -47,12 +51,14 @@ WITH datasets_data AS (
         3, 
         4,
         5,
-        6
+        6,
+        7
 
 )
 
 SELECT 
     final.user_id,
+    is_human_in_the_loop,
     final.account_id,
     sample_user,
     aiblock_id,
