@@ -25,7 +25,8 @@ WITH prediction_models_classifier AS (
         account_id,
         aiblock_id,
         is_template,
-        name
+        aiblock_name,
+        aiblock_description
     FROM 
         {{ref('datasets_dataset')}}
 
@@ -44,7 +45,8 @@ WITH prediction_models_classifier AS (
         pmp.account_id,
         pmc.aiblock_id                                        AS aiblock_id,
         is_template,
-        name,
+        aiblock_name,
+        aiblock_description,
         TIMESTAMP_TRUNC(pmp.date_prediction_made, HOUR)       AS relevant_day_hour,
         COUNT(pmp.prediction_id)                              AS total_predictions,
         MAX(date_prediction_made)                             AS time_stamp
@@ -58,7 +60,8 @@ WITH prediction_models_classifier AS (
         3, 
         4,
         5,
-        6
+        6,
+        7
 
 )
 
@@ -68,7 +71,8 @@ SELECT
     sample_user,
     aiblock_id,
     is_template,
-    name,
+    aiblock_name,
+    aiblock_description,
     total_predictions,
     time_stamp
 FROM final
