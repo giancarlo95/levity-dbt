@@ -15,7 +15,8 @@ WITH auth_user AS (
        logged_account_id,
        user_name,
        user_email_address,
-       date_user_onboarded
+       date_user_onboarded,
+       is_deleted
     FROM 
        {{ref("user_table")}}
     WHERE 
@@ -87,7 +88,8 @@ WITH auth_user AS (
         CASE 
             WHEN auth_user.date_user_onboarded IS NULL THEN user_table.date_user_onboarded
             ELSE auth_user.date_user_onboarded
-        END                                         AS date_user_onboarded
+        END                                         AS date_user_onboarded,
+        user_table.is_deleted
     FROM user_table
     LEFT JOIN 
         datasets_dataset ON datasets_dataset.user_id=user_table.user_id
@@ -104,6 +106,7 @@ SELECT
     final.old_user_id,
     final.user_email_address,
     final.date_user_onboarded                                                                                   AS date_user_onboarded,
+    final.is_deleted,
     CASE
         WHEN user_created.user_id IS NULL THEN "Onboarded" 
         ELSE "Added"  

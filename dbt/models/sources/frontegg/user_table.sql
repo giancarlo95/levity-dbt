@@ -25,6 +25,10 @@ renamed AS (
 
 )
 
-SELECT *
+SELECT 
+    *,
+    CASE 
+        WHEN date_fivetran_synced=CURRENT_DATE() THEN 0
+        ELSE 1
+    END AS is_deleted
 FROM renamed
-WHERE date_fivetran_synced=CURRENT_DATE()
