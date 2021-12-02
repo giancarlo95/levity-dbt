@@ -3,7 +3,7 @@ WITH source AS (
     SELECT 
         * 
     FROM 
-        {{ source('dbt_giancarlo_intercom', 'intercom__company_enhanced') }}
+        {{ source('dbt_prod_intercom', 'intercom__company_enhanced') }}
 
 )
 
