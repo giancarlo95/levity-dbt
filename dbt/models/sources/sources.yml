@@ -483,6 +483,10 @@ sources:
       - name: workflows_flowstep
       - name: workflows_block
       - name: workflows_classifierblock
+      - name: workflows_blendrtemplate
+      - name: workflows_blendrtemplate_datasources
+      - name: workflows_blendrdatasource
+      - name: workflows_blendrblock
  
   
 
