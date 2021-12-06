@@ -41,3 +41,10 @@ vars:
       #geography:
           #+materialized: table
 
+  intercom:
+    intercom__company_history_pass_through_columns: [custom_company_industry_list, custom_company_organization_type, custom_company_size_list]
+    intercom__contact_history_pass_through_columns: [location_country, custom_utm_campaign, custom_status, custom_utm_term, custom_utm_source, custom_utm_medium, custom_utm_content, custom_referral_url, custom_lead_score, custom_company_size, custom_company_industry, custom_organization_type, custom_type_of_data, custom_use_case_ai_block, custom_use_case_pattern, custom_use_case, custom_ai_type, custom_employee_role, custom_tool_experience, custom_source, custom_sentiment, custom_account_approved]             
+  
+  intercom_source:
+    intercom__company_history_pass_through_columns: [custom_company_industry_list, custom_company_organization_type, custom_company_size_list]
+    intercom__contact_history_pass_through_columns: [location_country, custom_utm_campaign, custom_status, custom_utm_term, custom_utm_source, custom_utm_medium, custom_utm_content, custom_referral_url, custom_lead_score, custom_company_size, custom_company_industry, custom_organization_type, custom_type_of_data, custom_use_case_ai_block, custom_use_case_pattern, custom_use_case, custom_ai_type, custom_employee_role, custom_tool_experience, custom_source, custom_sentiment, custom_account_approved]
