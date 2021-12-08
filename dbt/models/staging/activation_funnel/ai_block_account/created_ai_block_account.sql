@@ -1,6 +1,6 @@
 WITH datasets_dataset AS (
 
-    SELECT * FROM {{ref('datasets_dataset_deleted')}}
+    SELECT * FROM {{ref('datasets_dataset')}}
 
 )
 
@@ -10,6 +10,6 @@ SELECT
 FROM
 	datasets_dataset
 WHERE
-	aiblock_description IS NULL
+	is_template="no"
 GROUP BY
 	account_id

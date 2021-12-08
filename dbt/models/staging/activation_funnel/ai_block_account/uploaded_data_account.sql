@@ -4,9 +4,9 @@ WITH datasets_dataset AS (
        account_id,
        aiblock_id
     FROM 
-       {{ref('datasets_dataset_deleted')}}
+       {{ref('datasets_dataset')}}
     WHERE
-       aiblock_description IS NULL
+       is_template="no"
 
 ), datasets_data AS (
 
@@ -15,7 +15,7 @@ WITH datasets_dataset AS (
        aiblock_id,
 	   MIN(date_datapoint_uploaded) AS date_somedata_uploaded
     FROM 
-       {{ref('datasets_data_deleted')}}
+       {{ref('datasets_data')}}
     GROUP BY
        account_id,
        aiblock_id
