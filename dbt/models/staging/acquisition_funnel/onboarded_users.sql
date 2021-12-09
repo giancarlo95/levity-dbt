@@ -22,12 +22,12 @@ WITH auth_user AS (
     WHERE 
         is_locked=FALSE
 
-),  user_created AS (
+),  user_invited AS (
 
     SELECT					
         DISTINCT user_id,			
     FROM 
-       {{ref("user_created")}}
+       {{ref("user_invited")}}
 
 ), datasets_dataset AS (
 
@@ -108,7 +108,7 @@ SELECT
     final.date_user_onboarded                                                                                   AS date_user_onboarded,
     final.is_deleted,
     CASE
-        WHEN user_created.user_id IS NULL THEN "Onboarded" 
+        WHEN user_invited.user_id IS NULL THEN "Onboarded" 
         ELSE "Added"  
     END                                                                                                         AS flag,
     MAX(contact_enhanced.custom_status) OVER (PARTITION BY final.logged_account_id)                             AS customer_status,
@@ -123,6 +123,6 @@ FROM
 INNER JOIN 
     contact_enhanced ON contact_enhanced.contact_email=final.user_email_address
 LEFT JOIN 
-    user_created ON user_created.user_id=final.user_id
+    user_invited ON user_invited.user_id=final.user_id
 LEFT JOIN 
     accounts_paymentplan ON accounts_paymentplan.account_id=final.logged_account_id
