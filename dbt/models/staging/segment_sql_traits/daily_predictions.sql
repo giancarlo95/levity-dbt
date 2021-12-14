@@ -34,14 +34,14 @@ WITH prediction_models_classifier AS (
 
     SELECT
         account_id,
-        sample_user
+        sample_user,
+        company_name
     FROM
         {{ref('onboarded_accounts')}}
         
 ), final AS (
 
     SELECT
-        IFNULL(pmp.user_id, pmc.user_id)                      AS user_id,
         pmp.account_id,
         is_template,
         TIMESTAMP_TRUNC(pmp.date_prediction_made, DAY)        AS relevant_day,
@@ -54,15 +54,13 @@ WITH prediction_models_classifier AS (
     GROUP BY 
         1, 
         2, 
-        3, 
-        4
+        3
 
 )
 
 SELECT
-    user_id,
     final.account_id,
-    sample_user,
+    COALESCE(company_name, sample_user) AS workspace,
     is_template,
     total_predictions,
     time_stamp
