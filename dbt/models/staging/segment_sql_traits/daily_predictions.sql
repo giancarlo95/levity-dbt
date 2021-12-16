@@ -1,3 +1,9 @@
+{{
+  config(
+    materialized = 'table',
+    )
+}}
+
 WITH prediction_models_classifier AS (
 
     SELECT 
