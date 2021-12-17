@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'workflows_blendrtemplate') }}
+    SELECT * FROM {{ source('public', 'workflows_blendrtemplate') }}
 
 ),
 
@@ -8,8 +8,8 @@ renamed AS (
 
     SELECT
         id                         AS blendrtemplate_id,		
-        _fivetran_deleted,			
-        _fivetran_synced,			
+        --_fivetran_deleted,			
+        --_fivetran_synced,			
         blendr_template_id,			
         created_at,			
         description                AS blendrtemplate_description,			

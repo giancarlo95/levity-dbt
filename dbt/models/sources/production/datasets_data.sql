@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'datasets_data') }}
+    SELECT * FROM {{ source('public', 'datasets_data') }}
 
 ),
 
@@ -17,11 +17,7 @@ renamed AS (
         remote_url,  
         storage_id,  
         text, 
-        CAST(updated_at AS TIMESTAMP)        AS date_datapoint_updated,
-        --_airbyte_emitted_at,	
-        --_airbyte_production_accounts_paymentplan_hashid
-        _fivetran_deleted,
-        _fivetran_synced
+        CAST(updated_at AS TIMESTAMP)        AS date_datapoint_updated
     FROM source
 
 )

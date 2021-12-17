@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'datasets_datalabel') }}
+    SELECT * FROM {{ source('public', 'datasets_datalabel') }}
 
 ),
 
@@ -18,11 +18,7 @@ renamed AS (
         frontegg_user_id                          AS user_id,
         frontegg_tenant_id                        AS account_id,
         task_action_id,			
-        CAST(updated_at AS TIMESTAMP)             AS date_labelled_datapoint_updated,
-        --_airbyte_emitted_at,	
-        --_airbyte_production_accounts_paymentplan_hashid
-        _fivetran_deleted,
-        _fivetran_synced 			
+        CAST(updated_at AS TIMESTAMP)             AS date_labelled_datapoint_updated		
     FROM source
 
 )

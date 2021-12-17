@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'prediction_models_classifier') }}
+    SELECT * FROM {{ source('public', 'prediction_models_classifier') }}
 
 ), renamed AS (
 
@@ -18,11 +18,7 @@ WITH source AS (
         project_id,	
         status,		
         updated_at,	
-        valohai_deployment_id,
-        --_airbyte_emitted_at,	
-        --_airbyte_production_accounts_paymentplan_hashid
-        _fivetran_deleted,
-        _fivetran_synced 
+        valohai_deployment_id 
     FROM 
         source
 

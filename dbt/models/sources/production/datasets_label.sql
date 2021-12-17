@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'datasets_label') }}
+    SELECT * FROM {{ source('public', 'datasets_label') }}
 
 ),
 
@@ -19,11 +19,7 @@ renamed AS (
         instruction,		
         template_id,			
         frontegg_user_id                          AS user_id,			
-        frontegg_tenant_id                        AS account_id,			
-       --_airbyte_emitted_at,	
-        --_airbyte_production_accounts_paymentplan_hashid
-        _fivetran_deleted,
-        _fivetran_synced						
+        frontegg_tenant_id                        AS account_id					
     FROM source
 
 )

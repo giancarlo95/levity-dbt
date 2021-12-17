@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'workflows_blendrdatasource') }}
+    SELECT * FROM {{ source('public', 'workflows_blendrdatasource') }}
 
 ),
 
@@ -17,7 +17,7 @@ renamed AS (
         owner_id,			
         updated_at,			
         frontegg_tenant_id	                 AS account_id,		
-        frontegg_user_id	                 AS user_id			
+        frontegg_user_id	                 AS user_id		
     FROM 
         source
     

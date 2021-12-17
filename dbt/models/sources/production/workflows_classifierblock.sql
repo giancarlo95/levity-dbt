@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_postgresql_public', 'workflows_classifierblock') }}
+    SELECT * FROM {{ source('public', 'workflows_classifierblock') }}
 
 ),
 
@@ -17,12 +17,7 @@ renamed AS (
         frontegg_tenant_id                  AS account_id,	
         status,		
         type,		
-        CAST(updated_at AS TIMESTAMP)       AS date_classifierblock_updated,
-        --_airbyte_emitted_at,	
-        --_airbyte_production_accounts_paymentplan_hashid
-        _fivetran_deleted,
-        _fivetran_synced 		
-    
+        CAST(updated_at AS TIMESTAMP)       AS date_classifierblock_updated
     FROM 
         source
 
