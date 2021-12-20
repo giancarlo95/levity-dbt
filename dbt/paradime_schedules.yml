@@ -7,5 +7,5 @@ schedules:
          - dbt run
     owner_email: giancarlo@levity.ai 
     slack_notify:
-         - "#production-environment-paradime-errors"
+         - "#analytics"
          - "owner"
