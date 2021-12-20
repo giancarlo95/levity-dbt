@@ -7,9 +7,7 @@ WITH source AS (
 renamed AS (
 
     SELECT
-        id                                   AS blendrdatasource_id, 			
-        _fivetran_deleted,			
-        _fivetran_synced,			
+        id                                   AS blendrdatasource_id, 					
         blendr_datasource_id,			
         created_at,			
         logo_url,			

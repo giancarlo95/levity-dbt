@@ -7,9 +7,7 @@ WITH source AS (
 renamed AS (
 
     SELECT
-        id,			
-        _fivetran_deleted,	
-        _fivetran_synced,			
+        id,					
         blendr_blend_id,			
         block_id,			
         created_at,			
