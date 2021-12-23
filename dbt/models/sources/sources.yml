@@ -491,7 +491,12 @@ sources:
       - name: workflows_blendrtemplate_datasources
       - name: workflows_blendrdatasource
       - name: workflows_blendrblock
- 
+  - name: google_cloud_function_google_analytics_report
+    tables: 
+      - name: report_table_week
+  - name: google_cloud_function_google_analytics_report_monthly
+    tables:
+      - name: report_table_month
   
 
 
