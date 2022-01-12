@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_function_frontegg_complete','user_table') }}
+    SELECT * FROM {{ source('google_cloud_function_frontegg','user_table') }}
 
 ),
 
@@ -8,12 +8,12 @@ renamed AS (
 
     SELECT
         frontegg_user_id                     AS user_id,			
-        _fivetran_batch,		
-        _fivetran_deleted,			
-        _fivetran_index,			
+        --_fivetran_batch,		
+        --_fivetran_deleted,			
+        --_fivetran_index,			
         DATE(_fivetran_synced)               AS date_fivetran_synced,			
-        created_at                           AS date_user_onboarded,			
-        current_frontegg_tenant_id           AS logged_account_id,			
+        created_at                           AS created_at,			
+        current_frontegg_tenant_id           AS logged_workspace_id,			
         LOWER(email)                         AS user_email_address,		
         is_locked,			
         is_mfa_enrolled,		

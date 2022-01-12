@@ -441,7 +441,14 @@ sources:
       - name: ai_block_template_cloned_view
       - name: ai_block_trained_view
   - name: google_cloud_function_frontegg_complete
-    description: Dataset containing all the tables that result from a customized Fivetran Frotegg integration 
+    description: Dataset containing all the tables that result from the old customized Fivetran Frotegg integration 
+    tables:
+      - name: user_table
+      - name: tenant_table
+      - name: user_tenant_table
+      - name: tenant_metadata_table
+  - name: google_cloud_function_frontegg
+    description: Dataset containing all the tables that result from the final customized Fivetran Frotegg integration 
     tables:
       - name: user_table
       - name: tenant_table
