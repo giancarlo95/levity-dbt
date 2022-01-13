@@ -46,7 +46,7 @@ SELECT
     final.user_id,
     company_id,
     aiblock_id,
-    obu.user_email_address AS email_address,
+    obu.user_email_address,
     total_predictions_24h,
     time_stamp
 FROM final
