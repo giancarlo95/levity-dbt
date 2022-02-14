@@ -19,6 +19,9 @@ WITH prediction_models_classifier AS (
         user_id,
         account_id,
         prediction_id,
+        is_hitl,
+        origin,
+        workflow_id,
         date_prediction_made,
         classifier_id
     FROM 
@@ -50,6 +53,9 @@ WITH prediction_models_classifier AS (
     SELECT
         pmp.account_id,
         is_template,
+        is_hitl,
+        origin,
+        workflow_id,
         TIMESTAMP_TRUNC(pmp.date_prediction_made, DAY)        AS relevant_day,
         COUNT(pmp.prediction_id)                              AS total_predictions,
         MAX(date_prediction_made)                             AS time_stamp
@@ -60,7 +66,10 @@ WITH prediction_models_classifier AS (
     GROUP BY 
         1, 
         2, 
-        3
+        3,
+        4,
+        5,
+        6
 
 )
 
@@ -68,6 +77,9 @@ SELECT
     final.account_id,
     COALESCE(company_name, sample_user) AS workspace,
     is_template,
+    is_hitl,
+    origin,
+    workflow_id,
     total_predictions,
     time_stamp
 FROM final
