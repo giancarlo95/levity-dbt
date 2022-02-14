@@ -13,6 +13,9 @@ WITH prediction_models_classifier AS (
         user_id,
         account_id,
         prediction_id,
+        is_hitl,
+        origin,
+        workflow_id,
         date_prediction_made,
         classifier_id
     FROM 
@@ -47,6 +50,9 @@ WITH prediction_models_classifier AS (
         is_template,
         aiblock_name,
         aiblock_description,
+        is_hitl,
+        origin,
+        workflow_id,
         TIMESTAMP_TRUNC(pmp.date_prediction_made, HOUR)       AS relevant_day_hour,
         COUNT(pmp.prediction_id)                              AS total_predictions,
         MAX(date_prediction_made)                             AS time_stamp
@@ -61,7 +67,10 @@ WITH prediction_models_classifier AS (
         4,
         5,
         6,
-        7
+        7,
+        8,
+        9,
+        10
 
 )
 
@@ -73,6 +82,9 @@ SELECT
     is_template,
     aiblock_name,
     aiblock_description,
+    is_hitl,
+    origin,
+    workflow_id,
     total_predictions,
     time_stamp
 FROM final
