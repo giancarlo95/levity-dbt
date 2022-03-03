@@ -66,6 +66,7 @@ sources:
     tables:
       - name: report_table_month
   - name: legacy
+    tables:
       - name: onboarded_users
   
 
