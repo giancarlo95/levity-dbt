@@ -3,7 +3,6 @@ schedules:
     schedule: "15 * * * *" 
     environment: production
     commands:
-         - dbt seed
          - dbt run
     owner_email: giancarlo@levity.ai 
     slack_notify:

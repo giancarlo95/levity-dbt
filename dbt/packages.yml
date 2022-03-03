@@ -1,5 +1,0 @@
-packages:
-  - package: fivetran/intercom
-    version: 0.3.0
-  - package: dbt-labs/segment
-    version: 0.6.0
