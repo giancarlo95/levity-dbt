@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('google_cloud_function_frontegg_complete','user_tenant_table') }}
+    SELECT * FROM {{ source('google_cloud_function_frontegg','user_tenant_table') }}
 
 ),
 
