@@ -37,6 +37,9 @@ sources:
   - name: legacy
     tables:
       - name: onboarded_users
+  - name: paddle_Paddle_paddle
+    tables:
+      - name: users
   
 
 
