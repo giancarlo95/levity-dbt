@@ -11,7 +11,7 @@ WITH prediction_models_classifier AS (
 
     SELECT
         user_id,
-        account_id,
+        workspace_id,
         prediction_id,
         is_hitl,
         origin,
@@ -25,7 +25,7 @@ WITH prediction_models_classifier AS (
 
     SELECT
         user_id,
-        account_id,
+        workspace_id,
         aiblock_id,
         is_template,
         aiblock_name,
@@ -33,19 +33,18 @@ WITH prediction_models_classifier AS (
     FROM 
         {{ref('datasets_dataset')}}
 
-), onboarded_accounts AS (
+), workspaces AS (
 
     SELECT
-        account_id,
-        sample_user
+        workspace_id
     FROM
-        {{ref('onboarded_accounts')}}
+        {{ref('workspaces')}}
         
 ), final AS (
 
     SELECT
         IFNULL(pmp.user_id, pmc.user_id)                      AS user_id,
-        pmp.account_id,
+        pmp.workspace_id,
         pmc.aiblock_id                                        AS aiblock_id,
         is_template,
         aiblock_name,
@@ -76,8 +75,7 @@ WITH prediction_models_classifier AS (
 
 SELECT
     user_id,
-    final.account_id,
-    sample_user,
+    final.workspace_id,
     aiblock_id,
     is_template,
     aiblock_name,
@@ -88,4 +86,4 @@ SELECT
     total_predictions,
     time_stamp
 FROM final
-INNER JOIN onboarded_accounts oa ON final.account_id = oa.account_id
+INNER JOIN workspaces oa ON final.workspace_id = oa.workspace_id

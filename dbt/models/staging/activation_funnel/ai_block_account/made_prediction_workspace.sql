@@ -18,7 +18,7 @@ WITH prediction_models_prediction AS (
     FROM
         {{ref('datasets_dataset')}}
     WHERE 
-        aiblock_description IS NULL
+        is_template="no"
 
 ), prediction_models_classifier_filtered AS (
 
@@ -31,10 +31,10 @@ WITH prediction_models_prediction AS (
 )
 
 SELECT 
-    user_id,
+    workspace_id,
     MIN(date_prediction_made) AS date_first_prediction_made
 FROM prediction_models_prediction
 INNER JOIN prediction_models_classifier_filtered ON
     prediction_models_classifier_filtered.classifier_id=prediction_models_prediction.classifier_id
 GROUP BY
-    user_id
+    workspace_id

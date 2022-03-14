@@ -20,7 +20,7 @@ renamed AS (
         name                                 AS aiblock_name,	
         CAST(owner_id AS STRING)             AS old_user_id,
         frontegg_user_id                     AS user_id,
-        frontegg_tenant_id                   AS account_id,	
+        frontegg_tenant_id                   AS workspace_id,	
         project_id,		
         status,		
         template,		

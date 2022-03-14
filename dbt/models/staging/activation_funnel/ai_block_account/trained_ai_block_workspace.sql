@@ -47,13 +47,13 @@ WITH prediction_models_trainingrun AS (
 )
 
 SELECT 
-    account_id,
+    workspace_id,
     MIN(date_training_run) AS date_first_training_run
 FROM prediction_models_trainingrun
 INNER JOIN prediction_models_classifierversion_filtered ON
     prediction_models_classifierversion_filtered.version_id=prediction_models_trainingrun.version_id
 GROUP BY
-    account_id
+    workspace_id
     
 
 

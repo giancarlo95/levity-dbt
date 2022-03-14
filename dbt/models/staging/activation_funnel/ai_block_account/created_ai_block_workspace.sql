@@ -5,11 +5,11 @@ WITH datasets_dataset AS (
 )
 
 SELECT
-	account_id,
+	workspace_id,
 	min(date_aiblock_created) AS date_first_aiblock_created
 FROM
 	datasets_dataset
 WHERE
 	is_template="no"
 GROUP BY
-	account_id
+	workspace_id

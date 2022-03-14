@@ -5,7 +5,7 @@ WITH datasets_data AS (
         aiblock_id,
         datapoint_id,
         date_datapoint_uploaded,
-        account_id
+        workspace_id
     FROM 
         {{ref('datasets_data')}}
 
@@ -13,20 +13,19 @@ WITH datasets_data AS (
 
     SELECT
         user_id,
-        account_id,
+        workspace_id,
         aiblock_id,
         is_template,
         aiblock_name,
         aiblock_description
     FROM {{ref('datasets_dataset')}}
 
-), onboarded_accounts AS (
+), workspaces AS (
 
     SELECT
-        account_id,
-        sample_user
+        workspace_id
     FROM
-        {{ref('onboarded_accounts')}}
+        {{ref('workspaces')}}
         
 ), final AS (
     
@@ -36,7 +35,7 @@ WITH datasets_data AS (
             WHEN dsd.user_id IS NULL THEN "yes"
             ELSE "no"
         END                                                      AS is_human_in_the_loop,
-        dsd.account_id,
+        dsd.workspace_id,
         is_template,
         TIMESTAMP_TRUNC(date_datapoint_uploaded, DAY)            AS relevant_day,
         COUNT(dsd.datapoint_id)                                  AS net_data_points, 
@@ -56,12 +55,11 @@ WITH datasets_data AS (
 SELECT 
     final.user_id,
     is_human_in_the_loop,
-    final.account_id,
-    sample_user,
+    final.workspace_id,
     is_template,
     net_data_points,
     time_stamp
 FROM final
-INNER JOIN onboarded_accounts ob ON final.account_id = ob.account_id
+INNER JOIN workspaces ob ON final.workspace_id = ob.workspace_id
 
 

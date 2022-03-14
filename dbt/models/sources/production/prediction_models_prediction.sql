@@ -13,7 +13,7 @@ WITH source1 AS (
         CAST(created_at AS TIMESTAMP)                 AS date_prediction_made,		
         CAST(owner_id AS STRING)                      AS old_user_id,
         frontegg_user_id                              AS user_id,
-        frontegg_tenant_id                            AS account_id,		
+        frontegg_tenant_id                            AS workspace_id,		
         CAST(updated_at AS TIMESTAMP)                 AS date_prediction_updated,	
     FROM 
         source1

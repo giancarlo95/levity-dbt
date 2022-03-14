@@ -11,7 +11,7 @@ WITH source AS (
 ), renamed AS (
 
     SELECT
-        frontegg_tenant_id             AS account_id,
+        frontegg_tenant_id             AS workspace_id,
         image_count                    AS predictions_count,
         created_at                     AS date_prediction_made 	
     FROM 

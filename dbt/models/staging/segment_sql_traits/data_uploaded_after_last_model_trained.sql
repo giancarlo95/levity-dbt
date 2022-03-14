@@ -5,7 +5,7 @@ WITH datasets_data AS (
         aiblock_id,
         datapoint_id,
         date_datapoint_uploaded,
-        account_id
+        workspace_id
     FROM 
         {{ref('datasets_data')}}
 

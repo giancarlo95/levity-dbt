@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('paddle_users', 'users')}}
+    SELECT * FROM {{ source('paddle', 'users')}}
 
 ), renamed AS (
 

@@ -15,12 +15,12 @@ WITH datasets_data_large AS (
         aiblock_id
     FROM {{ref('datasets_dataset')}}
     WHERE 
-        aiblock_description IS NULL
+        is_template="no"
 
 ), datasets_data AS (
 
     SELECT 
-       user_id,
+       workspace_id,
        aiblock_id,
 	   date_datapoint_uploaded
     FROM 
@@ -29,7 +29,7 @@ WITH datasets_data_large AS (
 ), final AS (
 
     SELECT 
-        user_id,
+        workspace_id,
         datasets_data.aiblock_id,
         date_datapoint_uploaded
     FROM datasets_data
@@ -41,21 +41,21 @@ WITH datasets_data_large AS (
 ), final_ordered AS (
 
     SELECT 
-        user_id,
+        workspace_id,
         aiblock_id,
         date_datapoint_uploaded,
-        ROW_NUMBER() OVER (PARTITION BY user_id, aiblock_id ORDER BY date_datapoint_uploaded) AS RowNumber
+        ROW_NUMBER() OVER (PARTITION BY workspace_id, aiblock_id ORDER BY date_datapoint_uploaded) AS RowNumber
     FROM 
         final
 
 )
 
 SELECT 
-    user_id,
+    workspace_id,
     MIN(date_datapoint_uploaded)     AS date_first_40datapoints_uploaded
 FROM 
     final_ordered
 WHERE 
     RowNumber=40
 GROUP BY
-    user_id
+    workspace_id

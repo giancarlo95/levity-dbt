@@ -5,11 +5,11 @@ WITH vetevo AS (
 )
 
 SELECT 
-    account_id,
+    workspace_id,
     EXTRACT(DATE FROM date_prediction_made)            AS date,
     SUM(predictions_count)                             AS predictions_count
 FROM 
     vetevo
 GROUP BY
-    account_id,
+    workspace_id,
     EXTRACT(DATE FROM date_prediction_made)

@@ -4,20 +4,20 @@
     )
 }}
 
-WITH funnel_chart_recent AS (
+WITH funnel_chart_updated AS (
 
     SELECT 
         Number_of_customers,
         Funnel_step
-    FROM {{ref('funnel_chart_recent_account')}}
+    FROM {{ref('funnel_chart_updated_workspace')}}
 
 ), first_step AS (
 
 SELECT
     Funnel_step,
-    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_recent WHERE Funnel_step='A.Onboarded accounts') AS Relative_number,
+    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_updated WHERE Funnel_step='A.Onboarded workspaces') AS Relative_number,
 FROM 
-    funnel_chart_recent
+    funnel_chart_updated
 WHERE 
     Funnel_step='B.Created at least 1 AI Block'
 ORDER BY
@@ -27,9 +27,9 @@ ORDER BY
 
 SELECT
     Funnel_step,
-    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_recent WHERE Funnel_step='B.Created at least 1 AI Block') AS Relative_number,
+    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_updated WHERE Funnel_step='B.Created at least 1 AI Block') AS Relative_number,
 FROM 
-    funnel_chart_recent
+    funnel_chart_updated
 WHERE 
     Funnel_step='C.Uploaded at least 1 Data point to at least 1 AI Block'
 ORDER BY
@@ -39,9 +39,9 @@ ORDER BY
 
 SELECT
     Funnel_step,
-    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_recent WHERE Funnel_step='C.Uploaded at least 1 Data point to at least 1 AI Block') AS Relative_number,
+    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_updated WHERE Funnel_step='C.Uploaded at least 1 Data point to at least 1 AI Block') AS Relative_number,
 FROM 
-    funnel_chart_recent
+    funnel_chart_updated
 WHERE 
     Funnel_step='D.Uploaded at least 40 Data points to at least 1 AI Block'
 ORDER BY
@@ -51,9 +51,9 @@ ORDER BY
 
 SELECT
     Funnel_step,
-    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_recent WHERE Funnel_step='D.Uploaded at least 40 Data points to at least 1 AI Block') AS Relative_number,
+    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_updated WHERE Funnel_step='D.Uploaded at least 40 Data points to at least 1 AI Block') AS Relative_number,
 FROM 
-    funnel_chart_recent
+    funnel_chart_updated
 WHERE 
     Funnel_step='E.Trained at least 1 AI Block'
 ORDER BY
@@ -63,9 +63,9 @@ ORDER BY
 
 SELECT
     Funnel_step,
-    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_recent WHERE Funnel_step='E.Trained at least 1 AI Block') AS Relative_number,
+    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_updated WHERE Funnel_step='E.Trained at least 1 AI Block') AS Relative_number,
 FROM 
-    funnel_chart_recent
+    funnel_chart_updated
 WHERE 
     Funnel_step='F.Made at least 1 Prediction through at least 1 AI Block'
 ORDER BY
@@ -75,9 +75,9 @@ ORDER BY
 
 SELECT
     Funnel_step,
-    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_recent WHERE Funnel_step='F.Made at least 1 Prediction through at least 1 AI Block') AS Relative_number,
+    Number_of_customers/(SELECT Number_of_customers FROM funnel_chart_updated WHERE Funnel_step='F.Made at least 1 Prediction through at least 1 AI Block') AS Relative_number,
 FROM 
-    funnel_chart_recent
+    funnel_chart_updated
 WHERE 
     Funnel_step='G.Made at least 50 Predictions through at least 1 AI Block'
 ORDER BY

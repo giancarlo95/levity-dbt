@@ -12,7 +12,7 @@ WITH prediction_models_prediction_large AS (
 ), prediction_models_prediction AS (
 
     SELECT 
-        user_id,
+        workspace_id,
         classifier_id,
         date_prediction_made
     FROM 
@@ -34,7 +34,7 @@ WITH prediction_models_prediction_large AS (
     FROM
         {{ref('datasets_dataset')}}
     WHERE 
-        aiblock_description IS NULL
+        is_template="no"
 
 ), prediction_models_classifier_filtered AS (
 
@@ -47,7 +47,7 @@ WITH prediction_models_prediction_large AS (
 ), final AS (
 
     SELECT 
-        user_id,
+        workspace_id,
         prediction_models_prediction_large.classifier_id,
         date_prediction_made
     FROM prediction_models_prediction
@@ -59,24 +59,24 @@ WITH prediction_models_prediction_large AS (
 ), final_ordered AS (
 
     SELECT 
-        user_id,
+        workspace_id,
         classifier_id,
         date_prediction_made,
-        ROW_NUMBER() OVER (PARTITION BY user_id, classifier_id ORDER BY date_prediction_made) AS RowNumber
+        ROW_NUMBER() OVER (PARTITION BY workspace_id, classifier_id ORDER BY date_prediction_made) AS RowNumber
     FROM 
         final
 
 )
 
 SELECT 
-    user_id,
+    workspace_id,
     MIN(date_prediction_made)     AS date_first_50predictions_made
 FROM 
     final_ordered
 WHERE 
     RowNumber=50
 GROUP BY
-    user_id
+    workspace_id
 
 
 
