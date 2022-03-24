@@ -53,7 +53,7 @@ WITH datasets_data AS (
         MAX(dsd.date_datapoint_uploaded)                         AS time_stamp,
     FROM datasets_data dsd
     INNER JOIN datasets_dataset dst ON dsd.aiblock_id = dst.aiblock_id
-    WHERE TIMESTAMP_TRUNC(date_datapoint_uploaded, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 3 HOUR), HOUR)
+    WHERE TIMESTAMP_TRUNC(date_datapoint_uploaded, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 2 HOUR), HOUR)
     GROUP BY 
         1, 
         2, 
