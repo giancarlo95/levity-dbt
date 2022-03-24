@@ -27,6 +27,14 @@ WITH datasets_data AS (
     FROM
         {{ref('workspaces')}}
         
+), users AS (
+
+    SELECT 
+        user_id,
+        user_email_address
+    FROM
+        {{ref('users')}}
+    
 ), final AS (
     
     SELECT 
@@ -45,7 +53,7 @@ WITH datasets_data AS (
         MAX(dsd.date_datapoint_uploaded)                         AS time_stamp,
     FROM datasets_data dsd
     INNER JOIN datasets_dataset dst ON dsd.aiblock_id = dst.aiblock_id
-    WHERE TIMESTAMP_TRUNC(date_datapoint_uploaded, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 2 HOUR), HOUR)
+    WHERE TIMESTAMP_TRUNC(date_datapoint_uploaded, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 3 HOUR), HOUR)
     GROUP BY 
         1, 
         2, 
@@ -60,6 +68,7 @@ WITH datasets_data AS (
 
 SELECT 
     final.user_id,
+    u.user_email_address,
     is_human_in_the_loop,
     final.workspace_id,
     aiblock_id,
@@ -70,5 +79,5 @@ SELECT
     time_stamp
 FROM final
 INNER JOIN workspaces ob ON final.workspace_id = ob.workspace_id
-
+INNER JOIN users u ON u.user_id=final.user_id
 

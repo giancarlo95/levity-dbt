@@ -18,5 +18,5 @@ WITH legacy_workspaces AS (
 
 )
 
-SELECT * FROM legacy_workspaces UNION
+SELECT * FROM legacy_workspaces UNION DISTINCT
 SELECT * FROM django_production_workspaces

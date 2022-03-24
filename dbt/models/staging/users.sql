@@ -19,5 +19,5 @@ WITH legacy_users AS (
         NOT(email LIKE "%levity.ai")
 )
 
-SELECT * FROM legacy_users UNION
+SELECT * FROM legacy_users UNION DISTINCT
 SELECT * FROM django_production_users
