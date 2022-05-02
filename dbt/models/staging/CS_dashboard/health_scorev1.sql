@@ -89,30 +89,172 @@ FROM final
 INNER JOIN workspaces oa ON final.workspace_id = oa.workspace_id #}
 
 
+-- filter for specific lead status / lifecycle stage?
+
 WITH engagement AS (
 
     SELECT 
         id,
-        DATEDIFF(DAY, GETDATE(), properties_hs_last_sales_activity_timestamp_value) AS days_since_last_engagement,
-        DATEDIFF(DAY, GETDATE(), properties_hs_email_last_reply_date_value) AS days_since_last_heard_from
-        -- there's also the property 'last marketing email reply date' -> which one to use? or max of both?
+        properties_company_value,
+        properties_firstname_value,
+        properties_lastname_value,
+        CASE
+            -- DATEDIFF() is what paradime expects, whereas BQ expects DATE_DIFF(later, earlier, DAY)
+            WHEN DATEDIFF(DAY, GETDATE(), properties_hs_last_sales_activity_timestamp_value) <= 30 THEN 'green'
+            WHEN DATEDIFF(DAY, GETDATE(), properties_hs_last_sales_activity_timestamp_value) BETWEEN 30 and 60 THEN 'yellow'
+            WHEN DATEDIFF(DAY, GETDATE(), properties_hs_last_sales_activity_timestamp_value) > 60 THEN 'red'  
+        ELSE NULL END AS days_since_last_engagement,
+        CASE 
+            -- DATEDIFF() is what paradime expects, whereas BQ expects DATE_DIFF(later, earlier, DAY)
+            WHEN DATEDIFF(DAY, GETDATE(), properties_hs_email_last_reply_date_value) <= 30 THEN 'green'
+            WHEN DATEDIFF(DAY, GETDATE(), properties_hs_email_last_reply_date_value) BETWEEN 30 and 60 THEN 'yellow'
+            WHEN DATEDIFF(DAY, GETDATE(), properties_hs_email_last_reply_date_value) > 60 THEN 'red'  
+        ELSE NULL END AS days_since_last_heard_from
+        -- there's also the property 'last marketing email reply date' -> how to combine them?
     FROM 
         {{ref('hubspot_crm')}}
+    
+    -- where lead_status (or lifecycle_stage) is 'something'
 
 ),
 
-usage AS (
+login_last7 AS (
 
--- num actions
 -- # user logged in last 7
--- # people in account (~)
+
+    SELECT 
+        user_id,
+        CASE
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 7 THEN 'green'
+            ELSE 'red' 
+        END AS user_logged_in_last7
+
+    FROM {{ref('django_production_user_signed_in')}}
+
 
 ),
 
-adoption AS (
+actions_last30 AS (
 
--- ai model trained
--- template used
+    -- num actions
+
+    SELECT
+        user_id,
+        CASE
+            WHEN COUNT(id) >= 50 THEN 'green'
+            ELSE 'red' 
+        END AS at_least_50_actions_last30
+
+    FROM {{ref'django_production_actions'}}
+
+    WHERE 
+        -- DATEDIFF() is what paradime expects, whereas BQ expects DATE_DIFF(later, earlier, DAY)
+        DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 0 AND 30 
+
+    GROUP BY user_id
+
 
 ),
 
+actions_last7 AS (
+
+    -- num actions
+
+    SELECT
+        user_id,
+        CASE
+            WHEN COUNT(id) >= 50 THEN 'green'
+            ELSE 'red' 
+        END AS at_least_50_actions_last7
+
+    FROM {{ref'django_production_actions'}}
+
+    WHERE 
+        -- DATEDIFF() is what paradime expects, whereas BQ expects DATE_DIFF(later, earlier, DAY)
+        DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 0 AND 7 
+
+    GROUP BY user_id
+
+
+),
+
+
+
+ai_block_trained_last30 AS (
+
+    SELECT
+        user_id,
+        {# COUNT(id) #}
+        CASE 
+            WHEN COUNT(id) >= 1 THEN 'green'
+            ELSE 'red' 
+        END AS count_ai_blocks_trained_last30
+        
+    FROM {{ref('django_production_ai_block_trained')}}
+    
+    WHERE
+        -- DATEDIFF() is what paradime expects, whereas BQ expects DATE_DIFF(later, earlier, DAY)
+        DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 0 AND 30
+    GROUP BY user_id 
+
+
+), 
+
+ai_template_used_last30 AS (
+
+    SELECT
+        user_id,
+        {# COUNT(id) #}
+        CASE 
+            WHEN COUNT(id) >= 1 THEN 'green'
+            ELSE 'red' 
+        END AS count_ai_templates_used_last30
+
+    FROM {{ref('django_production_ai_block_template')}}
+
+    WHERE
+        -- DATEDIFF() is what paradime expects, whereas BQ expects DATE_DIFF(later, earlier, DAY)
+        DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 0 AND 30
+    GROUP BY user_id
+
+),
+
+
+days_since_onboarding AS (
+
+-- days since onboarding
+    SELECT
+        user_id,
+        CASE
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) > 180 THEN 'green'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 90 AND 180 THEN 'yellow'
+            {# WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 90 'green' #}
+        ELSE 'red' END AS days_since_onboarded
+
+    FROM {{ref('django_production_user_onboarded')}}
+
+    WHERE email NOT LIKE '%@levity.ai'
+
+
+),
+
+days_in_onboarding AS (
+
+    -- not 100% sure where to get this from based on notion page
+
+
+)
+
+
+SELECT
+
+    e.days_since_last_engagement,
+    e.days_since_last_heard_from
+
+FROM engagement e
+
+JOIN -- how to join? I guess there have to be some tables in-between but not sure which (i.e., how to roll-up from HS contact to django_prod data)
+
+
+WHERE
+    email NOT LIKE '%@levity.ai'
