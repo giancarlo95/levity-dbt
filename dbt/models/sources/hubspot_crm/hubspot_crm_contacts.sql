@@ -40,7 +40,9 @@ WITH source AS (
         TIMESTAMP_MILLIS(CAST(properties_sign_up_date_value AS INT64)) AS properties_sign_up_date_value,
         TIMESTAMP_MILLIS(CAST(properties_hs_email_last_reply_date_value AS INT64)) AS properties_hs_email_last_reply_date_value,
         TIMESTAMP_MILLIS(CAST(properties_hs_last_sales_activity_timestamp_value AS INT64)) AS properties_hs_last_sales_activity_timestamp_value,
-        TIMESTAMP_MILLIS(CAST(properties_hs_sales_email_last_replied_value AS INT64)) AS properties_hs_sales_email_last_replied_value	
+        TIMESTAMP_MILLIS(CAST(properties_hs_sales_email_last_replied_value AS INT64)) AS properties_hs_sales_email_last_replied_value,
+        properties_frontegg_email_confirmed_value,
+        properties_retargeting_trial_status_value	
     FROM 
         source
 
