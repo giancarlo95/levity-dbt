@@ -228,7 +228,7 @@ days_since_onboarding AS (
         CASE
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) > 180 THEN 'green'
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 90 AND 180 THEN 'yellow'
-            {# WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 90 'green' #}
+            {# WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 90 'red' #}
         ELSE 'red' END AS days_since_onboarded
 
     FROM {{ref('django_production_user_onboarded')}}
