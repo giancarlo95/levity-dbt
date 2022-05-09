@@ -106,9 +106,9 @@ WITH engagement AS (
         ELSE NULL END AS days_since_last_engagement,
         CASE 
             -- DATEDIFF() is what paradime expects, whereas BQ expects DATE_DIFF(later, earlier, DAY)
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_email_last_reply_date_value), DAY) <= 30 THEN 'green'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_email_last_reply_date_value), DAY) BETWEEN 30 and 60 THEN 'yellow'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_email_last_reply_date_value), DAY) > 60 THEN 'red'  
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) <= 30 THEN 'green'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) BETWEEN 30 and 60 THEN 'yellow'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) > 60 THEN 'red'  
         ELSE NULL END AS days_since_last_heard_from
         -- there's also the property 'last marketing email reply date' -> how to combine them?
     FROM 
