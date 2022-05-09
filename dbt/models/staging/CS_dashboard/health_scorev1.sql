@@ -125,13 +125,25 @@ login_last7 AS (
     SELECT 
         user_id,
         CASE
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 7 THEN 'green'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) < 7 THEN 'green'
             ELSE 'red' 
         END AS user_logged_in_last7
     FROM {{ref('django_production_user_signed_in')}}
+    GROUP BY user_id
 
 
 ),
+
+num_people_in_account AS (
+
+    SELECT
+        user_id,
+        COUNT(DISTINCT user_id)
+    FROM {{ref('django_production_user_invited')}}
+    GROUP BY user_id
+
+),
+
 
 actions_last30 AS (
 
@@ -218,7 +230,7 @@ days_since_onboarding AS (
         CASE
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) > 180 THEN 'green'
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 90 AND 180 THEN 'yellow'
-            {# WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 90 'green' #}
+            {# WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 90 'red' #}
         ELSE 'red' END AS days_since_onboarded
     FROM 
         {{ref('django_production_user_onboarded')}}
@@ -259,5 +271,8 @@ LEFT JOIN actions_last7 a7 ON a7.user_id=u.user_id
 LEFT JOIN ai_block_trained_last30 tr ON tr.user_id=u.user_id
 LEFT JOIN ai_template_used_last30 te ON te.user_id=u.user_id
 LEFT JOIN days_since_onboarding o ON o.user_id=u.user_id
+
+LEFT JOIN num_people_in_account n ON n.user_id=u.user_id
+
 WHERE
     e.email NOT LIKE '%@levity.ai'
