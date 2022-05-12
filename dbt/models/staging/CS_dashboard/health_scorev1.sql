@@ -279,6 +279,8 @@ score AS (
     ELSE NULL END) * 0.5
     ) * 0.15
 
+    FROM joined_tables
+
 
 )
 
