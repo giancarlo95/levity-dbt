@@ -8,6 +8,11 @@ WITH engagement AS (
 
     SELECT 
         email,
+        properties_app_signup_value AS app_signup,
+        properties_lifecyclestage_value AS lifecyclestage,
+        DATE(properties_sign_up_date_value) AS signup_date,
+        DATE(properties_hs_lifecyclestage_lead_date_value) AS became_lead_date,
+        DATE(properties_hs_lifecyclestage_marketingqualifiedlead_date_value) AS became_mql_date,
         DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) AS days_since_last_contacted,
         DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) AS days_since_last_heard_from,
         CASE
@@ -38,12 +43,6 @@ login_last7 AS (
         END AS user_logged_in_last7
     FROM 
         {{ref('django_production_user_signed_in')}} s
-
-    RIGHT JOIN {{ref('django_production_user_onboarded')}} o USING(user_id)
-
-    WHERE s.original_timestamp > o.original_timestamp  
-        AND o.original_timestamp IS NOT NULL
-
     GROUP BY 
         user_id
 
@@ -168,6 +167,11 @@ joined_tables AS (
 
     SELECT
     e.email,
+    e.lifecyclestage,
+    e.app_signup,
+    e.signup_date,
+    e.became_lead_date,
+    e.became_mql_date,
     e.days_since_last_contacted,
     e.days_since_last_contacted_discrete,
     e.days_since_last_heard_from,

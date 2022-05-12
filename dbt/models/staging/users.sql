@@ -2,8 +2,7 @@ WITH legacy_users AS (
 
     SELECT
        user_id,
-       user_email_address,
-       date_user_onboarded    AS user_created_at
+       user_email_address
     FROM 
        {{ref('legacy_users')}}
 
@@ -11,8 +10,7 @@ WITH legacy_users AS (
 
     SELECT 
         id                    AS user_id,
-        email                 AS user_email_address,
-        received_at           AS user_created_at  
+        email                 AS user_email_address 
     FROM
         {{ref('django_production_users')}}
     WHERE 
