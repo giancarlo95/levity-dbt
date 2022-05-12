@@ -52,40 +52,38 @@ login_last7 AS (
 actions_last30 AS (
 
     SELECT
-        user_id,
-        COUNT(id) AS actions_count_last30,
+        a.user_id,
+        COUNT(a.id) AS actions_count_last30,
         CASE
-            WHEN COUNT(id) >= 50 THEN 'green'
+            WHEN COUNT(a.id) >= 50 THEN 'green'
             ELSE 'red' 
         END AS at_least_50_actions_last30
     FROM 
-        {{ref('django_production_actions')}}
+        {{ref('django_production_actions')}} a
     WHERE
-        DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 0 AND 30 
+        NOT(a.event IN ("label_created", "label_deleted", "user_signed_up", "email_confirmed", "typeform_filled"))
+        AND DATE_DIFF(CURRENT_DATE(), DATE(a.original_timestamp), DAY) BETWEEN 0 AND 30 
     GROUP BY 
-        user_id
+        a.user_id
 
 ),
 
 actions_last7 AS (
 
     SELECT
-        user_id,
-        COUNT(l.dataset_id) AS actions_count_last7,
+        a.user_id,
+        COUNT(a.id) AS actions_count_last7,
         CASE
-            WHEN COUNT(l.dataset_id) >= 50 THEN 'green'
+            WHEN COUNT(a.id) >= 50 THEN 'green'
             ELSE 'red' 
         END AS at_least_50_actions_last7
     FROM 
         {{ref('django_production_actions')}} a
-
-    JOIN {{ref('datasets_label')}} l ON a.id = l.id
-    
-    WHERE
-        DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 0 AND 7
-    
+    WHERE 
+        NOT(a.event IN ("label_created", "label_deleted", "user_signed_up", "email_confirmed", "typeform_filled"))
+        AND DATE_DIFF(CURRENT_DATE(), DATE(a.original_timestamp), DAY) BETWEEN 0 AND 7
     GROUP BY 
-        user_id
+        a.user_id
 
 ),
 
@@ -203,21 +201,21 @@ joined_tables AS (
 
 score AS (
 
-    SELECT email
+    SELECT email,
 
     ((CASE 
-        WHEN days_since_last_contacted = 'green' THEN 1
-        WHEN days_since_last_contacted = 'yellow' THEN 0
-        WHEN days_since_last_contacted = 'red' THEN -1
-    ELSE NULL END) * 0.75
+        WHEN days_since_last_contacted_discrete = 'green' THEN 1
+        WHEN days_since_last_contacted_discrete = 'yellow' THEN 0
+        WHEN days_since_last_contacted_discrete = 'red' THEN -1
+    ELSE 0 END) * 0.75
 
     + 
 
     (CASE 
-        WHEN days_since_last_heard_from = 'green' THEN 1
-        WHEN days_since_last_heard_from = 'yellow' THEN 0
-        WHEN days_since_last_heard_from = 'red' THEN -1
-    ELSE NULL END) * 0.25
+        WHEN days_since_last_heard_from_discrete = 'green' THEN 1
+        WHEN days_since_last_heard_from_discrete = 'yellow' THEN 0
+        WHEN days_since_last_heard_from_discrete = 'red' THEN -1
+    ELSE 0 END) * 0.25
     ) * 0.2
 
     +
@@ -226,7 +224,7 @@ score AS (
         WHEN user_logged_in_last7 = 'green' THEN 1
         WHEN user_logged_in_last7 = 'yellow' THEN 0
         WHEN user_logged_in_last7 = 'red' THEN -1
-    ELSE NULL END) * 0.25
+    ELSE 0 END) * 0.25
 
     + 
 
@@ -234,7 +232,7 @@ score AS (
         WHEN at_least_50_actions_last30 = 'green' THEN 1
         WHEN at_least_50_actions_last30 = 'yellow' THEN 0
         WHEN at_least_50_actions_last30 = 'red' THEN -1
-    ELSE NULL END) * 0.5
+    ELSE 0 END) * 0.5
 
     +
 
@@ -242,7 +240,7 @@ score AS (
         WHEN at_least_50_actions_last7 = 'green' THEN 1
         WHEN at_least_50_actions_last7 = 'yellow' THEN 0
         WHEN at_least_50_actions_last7 = 'red' THEN -1
-    ELSE NULL END) * 0.25
+    ELSE 0 END) * 0.25
     ) * 0.35
 
     + 
@@ -251,7 +249,7 @@ score AS (
         WHEN at_least_1_ai_template_used_last30 = 'green' THEN 1
         WHEN at_least_1_ai_template_used_last30 = 'yellow' THEN 0
         WHEN at_least_1_ai_template_used_last30 = 'red' THEN -1
-    ELSE NULL END) * 0.7
+    ELSE 0 END) * 0.7
 
     +
 
@@ -259,16 +257,16 @@ score AS (
         WHEN at_least_1_ai_block_trained_last30 = 'green' THEN 1
         WHEN at_least_1_ai_block_trained_last30 = 'yellow' THEN 0
         WHEN at_least_1_ai_block_trained_last30 = 'red' THEN -1
-    ELSE NULL END) * 0.3
+    ELSE 0 END) * 0.3
     ) * 0.30
 
     +
 
     ((CASE 
-        WHEN days_since_onboarded = 'green' THEN 1
-        WHEN days_since_onboarded = 'yellow' THEN 0
-        WHEN days_since_onboarded = 'red' THEN -1
-    ELSE NULL END) * 0.5
+        WHEN days_since_onboarded_discrete = 'green' THEN 1
+        WHEN days_since_onboarded_discrete = 'yellow' THEN 0
+        WHEN days_since_onboarded_discrete = 'red' THEN -1
+    ELSE 0 END) * 0.5
 
     +
 
@@ -276,8 +274,8 @@ score AS (
         WHEN milestone_1_ai_block_trained = 'green' THEN 1
         WHEN milestone_1_ai_block_trained = 'yellow' THEN 0
         WHEN milestone_1_ai_block_trained = 'red' THEN -1
-    ELSE NULL END) * 0.5
-    ) * 0.15
+    ELSE 0 END) * 0.5
+    ) * 0.15 AS score_value
 
     FROM joined_tables
 
