@@ -7,28 +7,19 @@
 WITH engagement AS (
 
     SELECT 
-        email,
-        properties_app_signup_value AS app_signup,
-        properties_lifecyclestage_value AS lifecyclestage,
-        DATE(properties_sign_up_date_value) AS signup_date,
-        DATE(properties_hs_lifecyclestage_lead_date_value) AS became_lead_date,
-        DATE(properties_hs_lifecyclestage_marketingqualifiedlead_date_value) AS became_mql_date,
-        DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) AS days_since_last_contacted,
-        DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) AS days_since_last_heard_from,
+        LOWER(email) AS email,
+        DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) AS days_since_last_engagement,
+        DATE_DIFF(CURRENT_DATE(), DATE(GREATEST(COALESCE(properties_hs_sales_email_last_replied_value, properties_hs_email_last_reply_date_value), COALESCE(properties_hs_email_last_reply_date_value, properties_hs_sales_email_last_replied_value))), DAY) AS days_since_last_heard_from,
         CASE
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) <= 30 THEN 'green'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) BETWEEN 30 and 60 THEN 'yellow' 
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) > 60 THEN 'red'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) <= 30 THEN 'green'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) BETWEEN 30 and 60 THEN 'yellow' 
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) > 60 THEN 'red'
             ELSE NULL 
-        END AS days_since_last_contacted_discrete,
-        CASE 
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) <= 30 THEN 'green'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) BETWEEN 30 and 60 THEN 'yellow'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) > 60 THEN 'red'
-            ELSE NULL
-        END AS days_since_last_heard_from_discrete
+        END AS days_since_last_engagement_discrete
     FROM 
         {{ref('hubspot_crm_contacts')}}
+    WHERE   
+        properties_is_onboarded_value = "yes"
 
 ),
 
@@ -108,15 +99,9 @@ milestone_ai_block_trained AS (
 
     SELECT
         user_id,
-        COUNT(id) AS count_ai_blocks_trained,
-        CASE 
-            WHEN COUNT(id) >= 1 THEN 'green'
-            ELSE 'red' 
-        END AS milestone_1_ai_block_trained 
+        "green" AS milestone_1_ai_block_trained
     FROM 
-        {{ref('django_production_ai_block_trained')}}
-    GROUP BY 
-        user_id 
+       {{ref('trained_ai_block_user')}}
 
 ),
 
@@ -142,15 +127,24 @@ days_since_onboarding AS (
 
     SELECT
         user_id,
+<<<<<<< HEAD
         DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) AS days_since_onboarded,
         CASE
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) > 180 THEN 'green'
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) BETWEEN 90 AND 180 THEN 'yellow'
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) < 90 THEN 'red'
+=======
+        DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) AS days_since_onboarded,
+        CASE
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) > 180 THEN 'green'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) BETWEEN 90 AND 180 THEN 'yellow'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) < 90 THEN 'red'
+>>>>>>> 34d54c16508f064491c70aa066c3ec2993fde923
             ELSE NULL
         END AS days_since_onboarded_discrete
     FROM 
         {{ref('django_production_user_onboarded')}}
+<<<<<<< HEAD
     GROUP BY user_id
 
 ),
@@ -172,13 +166,18 @@ days_in_onboarding AS (
     JOIN {{ref('django_production_user_signed_up')}} s USING(user_id)
 
     GROUP BY user_id
+=======
+    GROUP BY
+        user_id
+>>>>>>> 34d54c16508f064491c70aa066c3ec2993fde923
 
 ),
 
 users AS (
 
     SELECT 
-        *
+        LOWER(user_email_address) AS email,
+        user_id
     FROM
         {{ref('users')}}
 
@@ -187,52 +186,35 @@ users AS (
 joined_tables AS (
 
     SELECT
-    e.email,
-    e.lifecyclestage,
-    e.app_signup,
-    e.signup_date,
-    e.became_lead_date,
-    e.became_mql_date,
-    e.days_since_last_contacted,
-    e.days_since_last_contacted_discrete,
-    e.days_since_last_heard_from,
-    e.days_since_last_heard_from_discrete,
-    l.days_since_last_login,
-    l.user_logged_in_last7,
-    a30.actions_count_last30,
-    a30.at_least_50_actions_last30,
-    a7.actions_count_last7,
-    a7.at_least_50_actions_last7,
-    tr.ai_blocks_trained_count_last30,
-    tr.at_least_1_ai_block_trained_last30,
-    te.ai_templates_used_count_last30,
-    te.at_least_1_ai_template_used_last30,
-    o.days_since_onboarded,
-    o.days_since_onboarded_discrete,
-    mtr.milestone_1_ai_block_trained
-    FROM engagement e
-    LEFT JOIN users u ON u.user_email_address=e.email
-    LEFT JOIN login_last7 l ON l.user_id=u.user_id
-    LEFT JOIN actions_last30 a30 ON a30.user_id=u.user_id
-    LEFT JOIN actions_last7 a7 ON a7.user_id=u.user_id
-    LEFT JOIN ai_block_trained_last30 tr ON tr.user_id=u.user_id
-    LEFT JOIN milestone_ai_block_trained mtr ON mtr.user_id=u.user_id
-    LEFT JOIN ai_template_used_last30 te ON te.user_id=u.user_id
-    LEFT JOIN days_since_onboarding o ON o.user_id=u.user_id
+    * EXCEPT(milestone_1_ai_block_trained),
+    COALESCE(milestone_1_ai_block_trained, "red") AS milestone_1_ai_block_trained,
+    CASE 
+        WHEN days_since_last_heard_from <= 30 THEN 'green'
+        WHEN days_since_last_heard_from BETWEEN 30 and 60 THEN 'yellow'
+        WHEN days_since_last_heard_from > 60 THEN 'red'
+        ELSE NULL
+    END AS days_since_last_heard_from_discrete
+    FROM engagement
+    LEFT JOIN users USING(email)
+    LEFT JOIN login_last7 USING(user_id)
+    LEFT JOIN actions_last30 USING(user_id)
+    LEFT JOIN actions_last7 USING(user_id)
+    LEFT JOIN ai_block_trained_last30 USING(user_id)
+    LEFT JOIN milestone_ai_block_trained USING(user_id)
+    LEFT JOIN ai_template_used_last30 USING(user_id)
+    LEFT JOIN days_since_onboarding USING(user_id)
     WHERE
-        e.email NOT LIKE '%@levity.ai'
+        email NOT LIKE '%@levity.ai'
 
-),
-
-score AS (
+), engagement_score AS (
 
     SELECT email,
 
-    ((CASE 
-        WHEN days_since_last_contacted_discrete = 'green' THEN 1
-        WHEN days_since_last_contacted_discrete = 'yellow' THEN 0
-        WHEN days_since_last_contacted_discrete = 'red' THEN -1
-    ELSE 0 END) * 0.75
+    (CASE 
+        WHEN days_since_last_engagement_discrete = 'green' THEN 1
+        WHEN days_since_last_engagement_discrete = 'yellow' THEN 0
+        WHEN days_since_last_engagement_discrete = 'red' THEN -1
+    ELSE -1 END) * 0.75
 
     + 
 
@@ -240,16 +222,20 @@ score AS (
         WHEN days_since_last_heard_from_discrete = 'green' THEN 1
         WHEN days_since_last_heard_from_discrete = 'yellow' THEN 0
         WHEN days_since_last_heard_from_discrete = 'red' THEN -1
-    ELSE 0 END) * 0.25
-    ) * 0.2
+    ELSE -1 END) * 0.25 AS engagement_score_value
 
-    +
+    FROM joined_tables
 
-    ((CASE 
+
+), usage_score AS (
+
+    SELECT email,
+
+    (CASE 
         WHEN user_logged_in_last7 = 'green' THEN 1
         WHEN user_logged_in_last7 = 'yellow' THEN 0
         WHEN user_logged_in_last7 = 'red' THEN -1
-    ELSE 0 END) * 0.25
+    ELSE -1 END) * 0.25
 
     + 
 
@@ -257,7 +243,7 @@ score AS (
         WHEN at_least_50_actions_last30 = 'green' THEN 1
         WHEN at_least_50_actions_last30 = 'yellow' THEN 0
         WHEN at_least_50_actions_last30 = 'red' THEN -1
-    ELSE 0 END) * 0.5
+    ELSE -1 END) * 0.5
 
     +
 
@@ -265,16 +251,20 @@ score AS (
         WHEN at_least_50_actions_last7 = 'green' THEN 1
         WHEN at_least_50_actions_last7 = 'yellow' THEN 0
         WHEN at_least_50_actions_last7 = 'red' THEN -1
-    ELSE 0 END) * 0.25
-    ) * 0.35
+    ELSE -1 END) * 0.25 AS usage_score_value
 
-    + 
+    FROM joined_tables
 
-    ((CASE 
+
+), adoption_score AS (
+
+    SELECT email,
+
+    (CASE 
         WHEN at_least_1_ai_template_used_last30 = 'green' THEN 1
         WHEN at_least_1_ai_template_used_last30 = 'yellow' THEN 0
         WHEN at_least_1_ai_template_used_last30 = 'red' THEN -1
-    ELSE 0 END) * 0.7
+    ELSE -1 END) * 0.7
 
     +
 
@@ -282,12 +272,16 @@ score AS (
         WHEN at_least_1_ai_block_trained_last30 = 'green' THEN 1
         WHEN at_least_1_ai_block_trained_last30 = 'yellow' THEN 0
         WHEN at_least_1_ai_block_trained_last30 = 'red' THEN -1
-    ELSE 0 END) * 0.3
-    ) * 0.30
+    ELSE -1 END) * 0.3 AS adoption_score_value
 
-    +
+    FROM joined_tables
 
-    ((CASE 
+
+), journey_score AS (
+
+    SELECT email,
+
+    (CASE 
         WHEN days_since_onboarded_discrete = 'green' THEN 1
         WHEN days_since_onboarded_discrete = 'yellow' THEN 0
         WHEN days_since_onboarded_discrete = 'red' THEN -1
@@ -299,16 +293,20 @@ score AS (
         WHEN milestone_1_ai_block_trained = 'green' THEN 1
         WHEN milestone_1_ai_block_trained = 'yellow' THEN 0
         WHEN milestone_1_ai_block_trained = 'red' THEN -1
-    ELSE 0 END) * 0.5
-    ) * 0.15 AS score_value
+    ELSE 0 END) * 0.5 AS journey_score_value
 
     FROM joined_tables
 
 
 )
 
-SELECT *
-FROM joined_tables
-JOIN score USING(email)
+SELECT 
+    *
+FROM 
+    joined_tables
+JOIN engagement_score USING(email)
+JOIN usage_score USING(email)
+JOIN adoption_score USING(email)
+JOIN journey_score USING(email)
 
 
