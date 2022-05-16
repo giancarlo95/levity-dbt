@@ -148,7 +148,8 @@ days_since_onboarding AS (
 users AS (
 
     SELECT 
-        *
+        user_email_address AS email,
+        user_id
     FROM
         {{ref('users')}}
 
@@ -157,52 +158,34 @@ users AS (
 joined_tables AS (
 
     SELECT
-    e.email,
-    e.days_since_last_engagement,
-    e.days_since_last_engagement_discrete,
-    e.days_since_last_heard_from,
+    *,
     CASE 
         WHEN e.days_since_last_heard_from <= 30 THEN 'green'
         WHEN e.days_since_last_heard_from BETWEEN 30 and 60 THEN 'yellow'
         WHEN e.days_since_last_heard_from > 60 THEN 'red'
         ELSE NULL
     END AS days_since_last_heard_from_discrete,
-    l.days_since_last_login,
-    l.user_logged_in_last7,
-    a30.actions_count_last30,
-    a30.at_least_50_actions_last30,
-    a7.actions_count_last7,
-    a7.at_least_50_actions_last7,
-    tr.ai_blocks_trained_count_last30,
-    tr.at_least_1_ai_block_trained_last30,
-    te.ai_templates_used_count_last30,
-    te.at_least_1_ai_template_used_last30,
-    o.days_since_onboarded,
-    o.days_since_onboarded_discrete,
-    mtr.milestone_1_ai_block_trained
     FROM engagement e
-    LEFT JOIN users u ON u.user_email_address=e.email
-    LEFT JOIN login_last7 l ON l.user_id=u.user_id
-    LEFT JOIN actions_last30 a30 ON a30.user_id=u.user_id
-    LEFT JOIN actions_last7 a7 ON a7.user_id=u.user_id
-    LEFT JOIN ai_block_trained_last30 tr ON tr.user_id=u.user_id
-    LEFT JOIN milestone_ai_block_trained mtr ON mtr.user_id=u.user_id
-    LEFT JOIN ai_template_used_last30 te ON te.user_id=u.user_id
-    LEFT JOIN days_since_onboarding o ON o.user_id=u.user_id
+    LEFT JOIN users u USING(email)
+    LEFT JOIN login_last7 USING(user_id)
+    LEFT JOIN actions_last30 USING(user_id)
+    LEFT JOIN actions_last7 USING(user_id)
+    LEFT JOIN ai_block_trained_last30 USING(user_id)
+    LEFT JOIN milestone_ai_block_trained USING(user_id)
+    LEFT JOIN ai_template_used_last30 USING(user_id)
+    LEFT JOIN days_since_onboarding USING(user_id)
     WHERE
         e.email NOT LIKE '%@levity.ai'
 
-),
-
-score AS (
+), engagement_score AS (
 
     SELECT email,
 
-    ((CASE 
+    (CASE 
         WHEN days_since_last_engagement_discrete = 'green' THEN 1
         WHEN days_since_last_engagement_discrete = 'yellow' THEN 0
         WHEN days_since_last_engagement_discrete = 'red' THEN -1
-    ELSE 0 END) * 0.75
+    ELSE -1 END) * 0.75
 
     + 
 
@@ -210,16 +193,20 @@ score AS (
         WHEN days_since_last_heard_from_discrete = 'green' THEN 1
         WHEN days_since_last_heard_from_discrete = 'yellow' THEN 0
         WHEN days_since_last_heard_from_discrete = 'red' THEN -1
-    ELSE 0 END) * 0.25
-    ) * 0.2
+    ELSE -1 END) * 0.25 AS engagement_score_value
 
-    +
+    FROM joined_tables
 
-    ((CASE 
+
+), usage_score AS (
+
+    SELECT email,
+
+    (CASE 
         WHEN user_logged_in_last7 = 'green' THEN 1
         WHEN user_logged_in_last7 = 'yellow' THEN 0
         WHEN user_logged_in_last7 = 'red' THEN -1
-    ELSE 0 END) * 0.25
+    ELSE -1 END) * 0.25
 
     + 
 
@@ -227,7 +214,7 @@ score AS (
         WHEN at_least_50_actions_last30 = 'green' THEN 1
         WHEN at_least_50_actions_last30 = 'yellow' THEN 0
         WHEN at_least_50_actions_last30 = 'red' THEN -1
-    ELSE 0 END) * 0.5
+    ELSE -1 END) * 0.5
 
     +
 
@@ -235,16 +222,20 @@ score AS (
         WHEN at_least_50_actions_last7 = 'green' THEN 1
         WHEN at_least_50_actions_last7 = 'yellow' THEN 0
         WHEN at_least_50_actions_last7 = 'red' THEN -1
-    ELSE 0 END) * 0.25
-    ) * 0.35
+    ELSE -1 END) * 0.25 AS usage_score_value
 
-    + 
+    FROM joined_tables
 
-    ((CASE 
+
+), adoption_score AS (
+
+    SELECT email,
+
+    (CASE 
         WHEN at_least_1_ai_template_used_last30 = 'green' THEN 1
         WHEN at_least_1_ai_template_used_last30 = 'yellow' THEN 0
         WHEN at_least_1_ai_template_used_last30 = 'red' THEN -1
-    ELSE 0 END) * 0.7
+    ELSE -1 END) * 0.7
 
     +
 
@@ -252,12 +243,16 @@ score AS (
         WHEN at_least_1_ai_block_trained_last30 = 'green' THEN 1
         WHEN at_least_1_ai_block_trained_last30 = 'yellow' THEN 0
         WHEN at_least_1_ai_block_trained_last30 = 'red' THEN -1
-    ELSE 0 END) * 0.3
-    ) * 0.30
+    ELSE -1 END) * 0.3 AS adoption_score_value
 
-    +
+    FROM joined_tables
 
-    ((CASE 
+
+), journey_score AS (
+
+    SELECT email,
+
+    (CASE 
         WHEN days_since_onboarded_discrete = 'green' THEN 1
         WHEN days_since_onboarded_discrete = 'yellow' THEN 0
         WHEN days_since_onboarded_discrete = 'red' THEN -1
@@ -269,16 +264,20 @@ score AS (
         WHEN milestone_1_ai_block_trained = 'green' THEN 1
         WHEN milestone_1_ai_block_trained = 'yellow' THEN 0
         WHEN milestone_1_ai_block_trained = 'red' THEN -1
-    ELSE 0 END) * 0.5
-    ) * 0.15 AS score_value
+    ELSE 0 END) * 0.5 AS journey_score_value
 
     FROM joined_tables
 
 
 )
 
-SELECT *
-FROM joined_tables
-JOIN score USING(email)
+SELECT 
+    *
+FROM 
+    joined_tables
+JOIN engagement_score USING(email)
+JOIN usage_score USING(email)
+JOIN adoption_score USING(email)
+JOIN journey_score USING(email)
 
 
