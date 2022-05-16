@@ -142,15 +142,36 @@ days_since_onboarding AS (
 
     SELECT
         user_id,
-        DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) AS days_since_onboarded,
+        DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) AS days_since_onboarded,
         CASE
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) > 180 THEN 'green'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 90 AND 180 THEN 'yellow'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 90 THEN 'red'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) > 180 THEN 'green'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) BETWEEN 90 AND 180 THEN 'yellow'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) < 90 THEN 'red'
             ELSE NULL
         END AS days_since_onboarded_discrete
     FROM 
         {{ref('django_production_user_onboarded')}}
+    GROUP BY user_id
+
+),
+
+days_in_onboarding AS (
+
+    SELECT
+    
+        user_id,
+        DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) AS days_in_onboarded,
+        CASE
+            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) > 60 THEN 'red'
+            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) BETWEEN 30 AND 60 THEN 'yellow'
+            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) < 30 THEN 'green'
+            ELSE NULL
+        END AS days_in_onboarding_discrete
+
+    FROM {{ref('django_production_user_onboarded')}} o
+    JOIN {{ref('django_production_user_signed_up')}} s USING(user_id)
+
+    GROUP BY user_id
 
 ),
 
