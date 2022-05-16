@@ -7,7 +7,7 @@
 WITH engagement AS (
 
     SELECT 
-        email,
+        LOWER(email) AS email,
         DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) AS days_since_last_engagement,
         DATE_DIFF(CURRENT_DATE(), DATE(GREATEST(COALESCE(properties_hs_sales_email_last_replied_value, properties_hs_email_last_reply_date_value), COALESCE(properties_hs_email_last_reply_date_value, properties_hs_sales_email_last_replied_value))), DAY) AS days_since_last_heard_from,
         CASE
@@ -99,15 +99,9 @@ milestone_ai_block_trained AS (
 
     SELECT
         user_id,
-        COUNT(id) AS count_ai_blocks_trained,
-        CASE 
-            WHEN COUNT(id) >= 1 THEN 'green'
-            ELSE 'red' 
-        END AS milestone_1_ai_block_trained 
+        "green" AS milestone_1_ai_block_trained
     FROM 
-        {{ref('django_production_ai_block_trained')}}
-    GROUP BY 
-        user_id 
+       {{ref('trained_ai_block_user')}}
 
 ),
 
@@ -133,22 +127,24 @@ days_since_onboarding AS (
 
     SELECT
         user_id,
-        DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) AS days_since_onboarded,
+        DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) AS days_since_onboarded,
         CASE
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) > 180 THEN 'green'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) BETWEEN 90 AND 180 THEN 'yellow'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(original_timestamp), DAY) < 90 THEN 'red'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) > 180 THEN 'green'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) BETWEEN 90 AND 180 THEN 'yellow'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) < 90 THEN 'red'
             ELSE NULL
         END AS days_since_onboarded_discrete
     FROM 
         {{ref('django_production_user_onboarded')}}
+    GROUP BY
+        user_id
 
 ),
 
 users AS (
 
     SELECT 
-        user_email_address AS email,
+        LOWER(user_email_address) AS email,
         user_id
     FROM
         {{ref('users')}}
@@ -158,15 +154,16 @@ users AS (
 joined_tables AS (
 
     SELECT
-    *,
+    * EXCEPT(milestone_1_ai_block_trained),
+    COALESCE(milestone_1_ai_block_trained, "red") AS milestone_1_ai_block_trained,
     CASE 
-        WHEN e.days_since_last_heard_from <= 30 THEN 'green'
-        WHEN e.days_since_last_heard_from BETWEEN 30 and 60 THEN 'yellow'
-        WHEN e.days_since_last_heard_from > 60 THEN 'red'
+        WHEN days_since_last_heard_from <= 30 THEN 'green'
+        WHEN days_since_last_heard_from BETWEEN 30 and 60 THEN 'yellow'
+        WHEN days_since_last_heard_from > 60 THEN 'red'
         ELSE NULL
-    END AS days_since_last_heard_from_discrete,
-    FROM engagement e
-    LEFT JOIN users u USING(email)
+    END AS days_since_last_heard_from_discrete
+    FROM engagement
+    LEFT JOIN users USING(email)
     LEFT JOIN login_last7 USING(user_id)
     LEFT JOIN actions_last30 USING(user_id)
     LEFT JOIN actions_last7 USING(user_id)
@@ -175,7 +172,7 @@ joined_tables AS (
     LEFT JOIN ai_template_used_last30 USING(user_id)
     LEFT JOIN days_since_onboarding USING(user_id)
     WHERE
-        e.email NOT LIKE '%@levity.ai'
+        email NOT LIKE '%@levity.ai'
 
 ), engagement_score AS (
 
