@@ -8,27 +8,18 @@ WITH engagement AS (
 
     SELECT 
         email,
-        properties_app_signup_value AS app_signup,
-        properties_lifecyclestage_value AS lifecyclestage,
-        DATE(properties_sign_up_date_value) AS signup_date,
-        DATE(properties_hs_lifecyclestage_lead_date_value) AS became_lead_date,
-        DATE(properties_hs_lifecyclestage_marketingqualifiedlead_date_value) AS became_mql_date,
-        DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) AS days_since_last_contacted,
-        DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) AS days_since_last_heard_from,
+        DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) AS days_since_last_engagement,
+        DATE_DIFF(CURRENT_DATE(), DATE(GREATEST(COALESCE(properties_hs_sales_email_last_replied_value, properties_hs_email_last_reply_date_value), COALESCE(properties_hs_email_last_reply_date_value, properties_hs_sales_email_last_replied_value))), DAY) AS days_since_last_heard_from,
         CASE
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) <= 30 THEN 'green'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) BETWEEN 30 and 60 THEN 'yellow' 
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_notes_last_contacted_value), DAY) > 60 THEN 'red'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) <= 30 THEN 'green'
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) BETWEEN 30 and 60 THEN 'yellow' 
+            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) > 60 THEN 'red'
             ELSE NULL 
-        END AS days_since_last_contacted_discrete,
-        CASE 
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) <= 30 THEN 'green'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) BETWEEN 30 and 60 THEN 'yellow'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_sales_email_last_replied_value), DAY) > 60 THEN 'red'
-            ELSE NULL
-        END AS days_since_last_heard_from_discrete
+        END AS days_since_last_engagement_discrete
     FROM 
         {{ref('hubspot_crm_contacts')}}
+    WHERE   
+        properties_is_onboarded_value = "yes"
 
 ),
 
@@ -167,15 +158,15 @@ joined_tables AS (
 
     SELECT
     e.email,
-    e.lifecyclestage,
-    e.app_signup,
-    e.signup_date,
-    e.became_lead_date,
-    e.became_mql_date,
-    e.days_since_last_contacted,
-    e.days_since_last_contacted_discrete,
+    e.days_since_last_engagement,
+    e.days_since_last_engagement_discrete,
     e.days_since_last_heard_from,
-    e.days_since_last_heard_from_discrete,
+    CASE 
+        WHEN e.days_since_last_heard_from <= 30 THEN 'green'
+        WHEN e.days_since_last_heard_from BETWEEN 30 and 60 THEN 'yellow'
+        WHEN e.days_since_last_heard_from > 60 THEN 'red'
+        ELSE NULL
+    END AS days_since_last_heard_from_discrete,
     l.days_since_last_login,
     l.user_logged_in_last7,
     a30.actions_count_last30,
@@ -208,9 +199,9 @@ score AS (
     SELECT email,
 
     ((CASE 
-        WHEN days_since_last_contacted_discrete = 'green' THEN 1
-        WHEN days_since_last_contacted_discrete = 'yellow' THEN 0
-        WHEN days_since_last_contacted_discrete = 'red' THEN -1
+        WHEN days_since_last_engagement_discrete = 'green' THEN 1
+        WHEN days_since_last_engagement_discrete = 'yellow' THEN 0
+        WHEN days_since_last_engagement_discrete = 'red' THEN -1
     ELSE 0 END) * 0.75
 
     + 
