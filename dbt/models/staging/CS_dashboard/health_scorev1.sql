@@ -26,16 +26,21 @@ WITH engagement AS (
 login_last7 AS (
 
     SELECT 
-        user_id,
+        s.user_id,
         DATE_DIFF(CURRENT_DATE(), DATE(MAX(s.original_timestamp)), DAY) AS days_since_last_login,
         CASE
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(s.original_timestamp)), DAY) < 7 THEN 'green'
             ELSE 'red' 
         END AS user_logged_in_last7
     FROM 
-        {{ref('django_production_user_signed_in')}} s
+        {{ref('django_production_actions')}} s
+    LEFT JOIN 
+        {{ref('django_production_datapoints_added_view')}} d USING(id)
+    WHERE 
+        NOT(s.event IN ("predictions_done", "user_signed_up", "email_confirmed", "typeform_filled", "user_onboarded"))
+        AND NOT(s.event = "datapoints_added" AND d.is_human_in_the_loop = "yes")
     GROUP BY 
-        user_id
+        s.user_id
 
 ),
 
@@ -50,8 +55,9 @@ actions_last30 AS (
         END AS at_least_50_actions_last30
     FROM 
         {{ref('django_production_actions')}} a
+    
     WHERE
-        NOT(a.event IN ("label_created", "label_deleted", "user_signed_up", "email_confirmed", "typeform_filled"))
+        NOT(a.event IN ("label_created", "label_deleted", "user_signed_up", "email_confirmed", "typeform_filled", "user_onboarded"))
         AND DATE_DIFF(CURRENT_DATE(), DATE(a.original_timestamp), DAY) BETWEEN 0 AND 30 
     GROUP BY 
         a.user_id
@@ -127,25 +133,17 @@ days_since_onboarding AS (
 
     SELECT
         user_id,
-<<<<<<< HEAD
-        DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) AS days_since_onboarded,
-        CASE
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) > 180 THEN 'green'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) BETWEEN 90 AND 180 THEN 'yellow'
-            WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(original_timestamp)), DAY) < 90 THEN 'red'
-=======
         DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) AS days_since_onboarded,
         CASE
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) > 180 THEN 'green'
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) BETWEEN 90 AND 180 THEN 'yellow'
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(MIN(original_timestamp)), DAY) < 90 THEN 'red'
->>>>>>> 34d54c16508f064491c70aa066c3ec2993fde923
             ELSE NULL
         END AS days_since_onboarded_discrete
     FROM 
         {{ref('django_production_user_onboarded')}}
-<<<<<<< HEAD
-    GROUP BY user_id
+    GROUP BY 
+        user_id
 
 ),
 
@@ -154,22 +152,18 @@ days_in_onboarding AS (
     SELECT
     
         user_id,
-        DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) AS days_in_onboarded,
+        DATE_DIFF(DATE(MIN(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) AS days_in_onboarded,
         CASE
             WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) > 60 THEN 'red'
             WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) BETWEEN 30 AND 60 THEN 'yellow'
             WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) < 30 THEN 'green'
             ELSE NULL
         END AS days_in_onboarding_discrete
-
-    FROM {{ref('django_production_user_onboarded')}} o
+    FROM 
+        {{ref('django_production_user_onboarded')}} o
     JOIN {{ref('django_production_user_signed_up')}} s USING(user_id)
-
-    GROUP BY user_id
-=======
-    GROUP BY
+    GROUP BY 
         user_id
->>>>>>> 34d54c16508f064491c70aa066c3ec2993fde923
 
 ),
 
@@ -203,6 +197,7 @@ joined_tables AS (
     LEFT JOIN milestone_ai_block_trained USING(user_id)
     LEFT JOIN ai_template_used_last30 USING(user_id)
     LEFT JOIN days_since_onboarding USING(user_id)
+    LEFT JOIN days_in_onboarding USING(user_id)
     WHERE
         email NOT LIKE '%@levity.ai'
 
@@ -285,7 +280,15 @@ joined_tables AS (
         WHEN days_since_onboarded_discrete = 'green' THEN 1
         WHEN days_since_onboarded_discrete = 'yellow' THEN 0
         WHEN days_since_onboarded_discrete = 'red' THEN -1
-    ELSE 0 END) * 0.5
+    ELSE 0 END) * 0.25
+
+    +
+
+    (CASE 
+        WHEN days_in_onboarding_discrete = 'green' THEN 1
+        WHEN days_in_onboarding_discrete = 'yellow' THEN 0
+        WHEN days_in_onboarding_discrete = 'red' THEN -1
+    ELSE 0 END) * 0.25
 
     +
 
