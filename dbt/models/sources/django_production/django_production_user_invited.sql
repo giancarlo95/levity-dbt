@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT * FROM {{ source('django_production', 'users_view')}}
+    SELECT * FROM {{ source('django_production', 'user_invited_view')}}
 
 ), renamed AS (
 
