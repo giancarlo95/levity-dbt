@@ -142,7 +142,27 @@ days_since_onboarding AS (
         END AS days_since_onboarded_discrete
     FROM 
         {{ref('django_production_user_onboarded')}}
-    GROUP BY
+    GROUP BY 
+        user_id
+
+),
+
+days_in_onboarding AS (
+
+    SELECT
+    
+        user_id,
+        DATE_DIFF(DATE(MIN(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) AS days_in_onboarded,
+        CASE
+            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) > 60 THEN 'red'
+            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) BETWEEN 30 AND 60 THEN 'yellow'
+            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) < 30 THEN 'green'
+            ELSE NULL
+        END AS days_in_onboarding_discrete
+    FROM 
+        {{ref('django_production_user_onboarded')}} o
+    JOIN {{ref('django_production_user_signed_up')}} s USING(user_id)
+    GROUP BY 
         user_id
 
 ),
@@ -177,6 +197,7 @@ joined_tables AS (
     LEFT JOIN milestone_ai_block_trained USING(user_id)
     LEFT JOIN ai_template_used_last30 USING(user_id)
     LEFT JOIN days_since_onboarding USING(user_id)
+    LEFT JOIN days_in_onboarding USING(user_id)
     WHERE
         email NOT LIKE '%@levity.ai'
 
@@ -259,7 +280,15 @@ joined_tables AS (
         WHEN days_since_onboarded_discrete = 'green' THEN 1
         WHEN days_since_onboarded_discrete = 'yellow' THEN 0
         WHEN days_since_onboarded_discrete = 'red' THEN -1
-    ELSE 0 END) * 0.5
+    ELSE 0 END) * 0.25
+
+    +
+
+    (CASE 
+        WHEN days_in_onboarding_discrete = 'green' THEN 1
+        WHEN days_in_onboarding_discrete = 'yellow' THEN 0
+        WHEN days_in_onboarding_discrete = 'red' THEN -1
+    ELSE 0 END) * 0.25
 
     +
 
