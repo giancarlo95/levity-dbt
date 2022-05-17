@@ -26,16 +26,21 @@ WITH engagement AS (
 login_last7 AS (
 
     SELECT 
-        user_id,
+        s.user_id,
         DATE_DIFF(CURRENT_DATE(), DATE(MAX(s.original_timestamp)), DAY) AS days_since_last_login,
         CASE
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(MAX(s.original_timestamp)), DAY) < 7 THEN 'green'
             ELSE 'red' 
         END AS user_logged_in_last7
     FROM 
-        {{ref('django_production_user_signed_in')}} s
+        {{ref('django_production_actions')}} s
+    LEFT JOIN 
+        {{ref('django_production_datapoints_added_view')}} d USING(id)
+    WHERE 
+        NOT(s.event IN ("predictions_done", "user_signed_up", "email_confirmed", "typeform_filled", "user_onboarded"))
+        AND NOT(s.event = "datapoints_added" AND d.is_human_in_the_loop = "yes")
     GROUP BY 
-        user_id
+        s.user_id
 
 ),
 
@@ -50,8 +55,9 @@ actions_last30 AS (
         END AS at_least_50_actions_last30
     FROM 
         {{ref('django_production_actions')}} a
+    
     WHERE
-        NOT(a.event IN ("label_created", "label_deleted", "user_signed_up", "email_confirmed", "typeform_filled"))
+        NOT(a.event IN ("label_created", "label_deleted", "user_signed_up", "email_confirmed", "typeform_filled", "user_onboarded"))
         AND DATE_DIFF(CURRENT_DATE(), DATE(a.original_timestamp), DAY) BETWEEN 0 AND 30 
     GROUP BY 
         a.user_id
