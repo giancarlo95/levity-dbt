@@ -154,9 +154,9 @@ days_in_onboarding AS (
         user_id,
         DATE_DIFF(DATE(MIN(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) AS days_in_onboarded,
         CASE
-            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) > 60 THEN 'red'
-            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) BETWEEN 30 AND 60 THEN 'yellow'
-            WHEN DATE_DIFF(DATE(MAX(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) < 30 THEN 'green'
+            WHEN DATE_DIFF(DATE(MIN(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) > 60 THEN 'red'
+            WHEN DATE_DIFF(DATE(MIN(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) BETWEEN 30 AND 60 THEN 'yellow'
+            WHEN DATE_DIFF(DATE(MIN(o.original_timestamp)), DATE(MIN(s.original_timestamp)), DAY) < 30 THEN 'green'
             ELSE NULL
         END AS days_in_onboarding_discrete
     FROM 
@@ -189,7 +189,7 @@ joined_tables AS (
         ELSE NULL
     END AS days_since_last_heard_from_discrete
     FROM engagement
-    LEFT JOIN users USING(email)
+    INNER JOIN users USING(email)
     LEFT JOIN login_last7 USING(user_id)
     LEFT JOIN actions_last30 USING(user_id)
     LEFT JOIN actions_last7 USING(user_id)
@@ -207,17 +207,17 @@ joined_tables AS (
 
     (CASE 
         WHEN days_since_last_engagement_discrete = 'green' THEN 1
-        WHEN days_since_last_engagement_discrete = 'yellow' THEN 0
-        WHEN days_since_last_engagement_discrete = 'red' THEN -1
-    ELSE -1 END) * 0.75
+        WHEN days_since_last_engagement_discrete = 'yellow' THEN 0.5
+        WHEN days_since_last_engagement_discrete = 'red' THEN 0
+    ELSE 0 END) * 0.75
 
     + 
 
     (CASE 
         WHEN days_since_last_heard_from_discrete = 'green' THEN 1
-        WHEN days_since_last_heard_from_discrete = 'yellow' THEN 0
-        WHEN days_since_last_heard_from_discrete = 'red' THEN -1
-    ELSE -1 END) * 0.25 AS engagement_score_value
+        WHEN days_since_last_heard_from_discrete = 'yellow' THEN 0.5
+        WHEN days_since_last_heard_from_discrete = 'red' THEN 0
+    ELSE 0 END) * 0.25 AS engagement_score_value
 
     FROM joined_tables
 
@@ -228,25 +228,22 @@ joined_tables AS (
 
     (CASE 
         WHEN user_logged_in_last7 = 'green' THEN 1
-        WHEN user_logged_in_last7 = 'yellow' THEN 0
-        WHEN user_logged_in_last7 = 'red' THEN -1
-    ELSE -1 END) * 0.25
+        WHEN user_logged_in_last7 = 'red' THEN 0
+    ELSE 0 END) * 0.25
 
     + 
 
     (CASE 
         WHEN at_least_50_actions_last30 = 'green' THEN 1
-        WHEN at_least_50_actions_last30 = 'yellow' THEN 0
-        WHEN at_least_50_actions_last30 = 'red' THEN -1
-    ELSE -1 END) * 0.5
+        WHEN at_least_50_actions_last30 = 'red' THEN 0
+    ELSE 0 END) * 0.5
 
     +
 
     (CASE 
         WHEN at_least_50_actions_last7 = 'green' THEN 1
-        WHEN at_least_50_actions_last7 = 'yellow' THEN 0
-        WHEN at_least_50_actions_last7 = 'red' THEN -1
-    ELSE -1 END) * 0.25 AS usage_score_value
+        WHEN at_least_50_actions_last7 = 'red' THEN 0
+    ELSE 0 END) * 0.25 AS usage_score_value
 
     FROM joined_tables
 
@@ -257,17 +254,15 @@ joined_tables AS (
 
     (CASE 
         WHEN at_least_1_ai_template_used_last30 = 'green' THEN 1
-        WHEN at_least_1_ai_template_used_last30 = 'yellow' THEN 0
-        WHEN at_least_1_ai_template_used_last30 = 'red' THEN -1
-    ELSE -1 END) * 0.7
+        WHEN at_least_1_ai_template_used_last30 = 'red' THEN 0
+    ELSE 0 END) * 0.7
 
     +
 
     (CASE 
         WHEN at_least_1_ai_block_trained_last30 = 'green' THEN 1
-        WHEN at_least_1_ai_block_trained_last30 = 'yellow' THEN 0
-        WHEN at_least_1_ai_block_trained_last30 = 'red' THEN -1
-    ELSE -1 END) * 0.3 AS adoption_score_value
+        WHEN at_least_1_ai_block_trained_last30 = 'red' THEN 0
+    ELSE 0 END) * 0.3 AS adoption_score_value
 
     FROM joined_tables
 
@@ -278,24 +273,23 @@ joined_tables AS (
 
     (CASE 
         WHEN days_since_onboarded_discrete = 'green' THEN 1
-        WHEN days_since_onboarded_discrete = 'yellow' THEN 0
-        WHEN days_since_onboarded_discrete = 'red' THEN -1
+        WHEN days_since_onboarded_discrete = 'yellow' THEN 0.5
+        WHEN days_since_onboarded_discrete = 'red' THEN 0
     ELSE 0 END) * 0.25
 
     +
 
     (CASE 
         WHEN days_in_onboarding_discrete = 'green' THEN 1
-        WHEN days_in_onboarding_discrete = 'yellow' THEN 0
-        WHEN days_in_onboarding_discrete = 'red' THEN -1
+        WHEN days_in_onboarding_discrete = 'yellow' THEN 0.5
+        WHEN days_in_onboarding_discrete = 'red' THEN 0
     ELSE 0 END) * 0.25
 
     +
 
     (CASE 
         WHEN milestone_1_ai_block_trained = 'green' THEN 1
-        WHEN milestone_1_ai_block_trained = 'yellow' THEN 0
-        WHEN milestone_1_ai_block_trained = 'red' THEN -1
+        WHEN milestone_1_ai_block_trained = 'red' THEN 0
     ELSE 0 END) * 0.5 AS journey_score_value
 
     FROM joined_tables
