@@ -36,7 +36,7 @@ WITH signup_funnel AS (
         1,
         2
 
-), legacy_signup_funnel AS (
+), legacy_signup_funnel_2022 AS (
 
     SELECT 
         EXTRACT(YEAR FROM f.submit_date) AS year,
@@ -68,12 +68,44 @@ WITH signup_funnel AS (
         1,
         2
 
-), unioned AS (
+), legacy_signup_funnel_2021 AS (
 
-    SELECT * FROM signup_funnel UNION ALL
-    SELECT * FROM legacy_signup_funnel
+    SELECT 
+        EXTRACT(YEAR FROM f.submit_date) AS year,
+        EXTRACT(WEEK(MONDAY) FROM f.submit_date) AS week,
+        "no" AS is_app_signup,
+        COUNT(CASE WHEN f.is_company_email = "yes" THEN 1 END) AS signups_count,
+        0 AS email_confirmed_count,
+        COUNT(CASE WHEN f.is_company_email = "yes" AND is_qualified = "yes" THEN 1 END) AS mqls_count,
+        0 AS high_score_mqls_count,
+        0 AS organic_signups_count,
+        0 AS organic_email_confirmed_count,
+        0 AS organic_mqls_count,
+        0 AS organic_high_score_mqls_count,
+        0 AS paid_search_signups_count,
+        0 AS paid_search_email_confirmed_count,
+        0 AS paid_search_mqls_count,
+        0 AS paid_search_high_score_mqls_count,
+        0 AS paid_social_signups_count,
+        0 AS paid_social_email_confirmed_count,
+        0 AS paid_social_mqls_count,
+        0 AS paid_social_high_score_mqls_count
+    FROM
+        {{ref("first_typeform_2021")}} f
+    LEFT JOIN {{ref("second_typeform_2021")}} s USING (email)
+    WHERE 
+        NOT(email LIKE "%levity.ai")
+    GROUP BY
+        1,
+        2
 
-), new_website_visitors AS (
+), unioned_su AS (
+
+    SELECT * FROM legacy_signup_funnel_2021 UNION ALL
+    SELECT * FROM legacy_signup_funnel_2022 UNION ALL
+    SELECT * FROM signup_funnel
+
+), new_website_visitors_ga AS (
 
     SELECT 
         CASE WHEN year_week = 202201 THEN 2022 ELSE EXTRACT(YEAR FROM PARSE_DATE("%Y%W", CAST(year_week-1 AS STRING))) END AS year,
@@ -81,14 +113,33 @@ WITH signup_funnel AS (
         users AS new_website_visitors_count
     FROM 
         {{ref("report_table_week")}}
+    WHERE
+        PARSE_DATE("%Y%W", CAST(year_week-1 AS STRING))<"2022-03-07"
 
-) 
+), new_website_visitors_hs AS (
+
+    SELECT
+        EXTRACT(YEAR FROM tw.date) AS year,
+        EXTRACT(WEEK(MONDAY) FROM tw.date) AS week,
+        visitors AS new_website_visitors_count
+    FROM 
+        {{ref("hubspot_analytics_total_weekly")}} tw
+    WHERE
+        tw.date>="2022-03-07"
+
+), unioned_traffic AS (
+
+    SELECT * FROM new_website_visitors_ga UNION ALL
+    SELECT * FROM new_website_visitors_hs
+
+)
 
 SELECT
+    PARSE_DATE("%Y%W", CAST(CONCAT(CAST(year AS STRING), CAST(week AS STRING)) AS STRING)) AS week_monday,
     *
 FROM
-    new_website_visitors 
-JOIN unioned USING (year, week)
+    unioned_traffic 
+JOIN unioned_su USING (year, week)
 ORDER BY
     year,
     week
