@@ -18,10 +18,10 @@ WITH signup_funnel AS (
         COUNT(CASE WHEN properties_frontegg_email_confirmed_value="true" AND properties_hs_analytics_source_value = "ORGANIC_SEARCH" THEN 1 END) AS organic_email_confirmed_count,
         COUNT(CASE WHEN properties_hs_lifecyclestage_marketingqualifiedlead_date_value IS NOT NULL AND properties_hs_analytics_source_value = "ORGANIC_SEARCH" THEN 1 END) AS organic_mqls_count,
         COUNT(CASE WHEN properties_lead_score_value = '60' AND properties_hs_analytics_source_value = "ORGANIC_SEARCH" THEN 1 END) AS organic_high_score_mqls_count,
-        COUNT(CASE WHEN properties_hs_analytics_source_value = "PAID_SEARCH" THEN 1 END) AS paid_search_signups_count,
-        COUNT(CASE WHEN properties_frontegg_email_confirmed_value="true" AND properties_hs_analytics_source_value = "PAID_SEARCH" THEN 1 END) AS paid_search_email_confirmed_count,
-        COUNT(CASE WHEN properties_hs_lifecyclestage_marketingqualifiedlead_date_value IS NOT NULL AND properties_hs_analytics_source_value = "PAID_SEARCH" THEN 1 END) AS paid_search_mqls_count,
-        COUNT(CASE WHEN properties_lead_score_value = '60' AND properties_hs_analytics_source_value = "PAID_SEARCH" THEN 1 END) AS paid_search_high_score_mqls_count,
+        COUNT(CASE WHEN properties_hs_analytics_source_value = "PAID_SEARCH" THEN 1 END) AS paid_signups_count,
+        COUNT(CASE WHEN properties_frontegg_email_confirmed_value="true" AND properties_hs_analytics_source_value = "PAID_SEARCH" THEN 1 END) AS paid_email_confirmed_count,
+        COUNT(CASE WHEN properties_hs_lifecyclestage_marketingqualifiedlead_date_value IS NOT NULL AND properties_hs_analytics_source_value = "PAID_SEARCH" THEN 1 END) AS paid_mqls_count,
+        COUNT(CASE WHEN properties_lead_score_value = '60' AND properties_hs_analytics_source_value = "PAID_SEARCH" THEN 1 END) AS paid_high_score_mqls_count,
         COUNT(CASE WHEN properties_hs_analytics_source_value = "PAID_SOCIAL" THEN 1 END) AS paid_social_signups_count,
         COUNT(CASE WHEN properties_frontegg_email_confirmed_value="true" AND properties_hs_analytics_source_value = "PAID_SOCIAL" THEN 1 END) AS paid_social_email_confirmed_count,
         COUNT(CASE WHEN properties_hs_lifecyclestage_marketingqualifiedlead_date_value IS NOT NULL AND properties_hs_analytics_source_value = "PAID_SOCIAL" THEN 1 END) AS paid_social_mqls_count,
@@ -50,10 +50,10 @@ WITH signup_funnel AS (
         0 AS organic_email_confirmed_count,
         0 AS organic_mqls_count,
         0 AS organic_high_score_mqls_count,
-        0 AS paid_search_signups_count,
-        0 AS paid_search_email_confirmed_count,
-        0 AS paid_search_mqls_count,
-        0 AS paid_search_high_score_mqls_count,
+        0 AS paid_signups_count,
+        0 AS paid_email_confirmed_count,
+        0 AS paid_mqls_count,
+        0 AS paid_high_score_mqls_count,
         0 AS paid_social_signups_count,
         0 AS paid_social_email_confirmed_count,
         0 AS paid_social_mqls_count,
@@ -82,10 +82,10 @@ WITH signup_funnel AS (
         0 AS organic_email_confirmed_count,
         0 AS organic_mqls_count,
         0 AS organic_high_score_mqls_count,
-        0 AS paid_search_signups_count,
-        0 AS paid_search_email_confirmed_count,
-        0 AS paid_search_mqls_count,
-        0 AS paid_search_high_score_mqls_count,
+        0 AS paid_signups_count,
+        0 AS paid_email_confirmed_count,
+        0 AS paid_mqls_count,
+        0 AS paid_high_score_mqls_count,
         0 AS paid_social_signups_count,
         0 AS paid_social_email_confirmed_count,
         0 AS paid_social_mqls_count,
@@ -132,6 +132,37 @@ WITH signup_funnel AS (
     SELECT * FROM new_website_visitors_ga UNION ALL
     SELECT * FROM new_website_visitors_hs
 
+), new_website_visitors_by_source_hs AS (
+
+    SELECT
+        EXTRACT(YEAR FROM sw.date) AS year,
+        EXTRACT(WEEK(MONDAY) FROM sw.date) AS week,
+        * EXCEPT(date)
+    FROM 
+        {{ref("hubspot_analytics_by_source_weekly")}} sw
+    WHERE
+        sw.date>="2022-03-07"
+
+), new_website_visitors_by_source_ga AS (
+
+    SELECT 
+        CASE WHEN year_week = 202201 THEN 2022 ELSE EXTRACT(YEAR FROM PARSE_DATE("%Y%W", CAST(year_week-1 AS STRING))) END AS year,
+        CASE WHEN year_week = 202201 THEN 0 ELSE EXTRACT(WEEK(MONDAY) FROM PARSE_DATE("%Y%W", CAST(year_week-1 AS STRING))) END AS week,
+        * EXCEPT(year_week),
+        0 AS paid_new_website_visitors_count,
+        0 AS paid_social_new_website_visitors_count,
+        0 AS direct_new_website_visitors_count,
+        0 AS other_new_website_visitors_count
+    FROM 
+        {{ref("report_table_medium_week")}}
+    WHERE
+        PARSE_DATE("%Y%W", CAST(year_week-1 AS STRING))<"2022-03-07"
+
+), unioned_traffic_by_source AS (
+
+    SELECT * FROM new_website_visitors_by_source_ga UNION ALL
+    SELECT * FROM new_website_visitors_by_source_hs
+
 )
 
 SELECT
@@ -139,6 +170,7 @@ SELECT
     *
 FROM
     unioned_traffic 
+JOIN unioned_traffic_by_source USING (year, week)
 JOIN unioned_su USING (year, week)
 ORDER BY
     year,
