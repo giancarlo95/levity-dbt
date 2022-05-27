@@ -50,38 +50,37 @@ WITH prediction_models_classifier AS (
     FROM
         {{ref('workspaces')}}
         
+), users AS (
+    
+    SELECT 
+        *
+    FROM
+        {{ref('users')}}
+ 
 ), final AS (
 
     SELECT
         pmp.workspace_id,
-        is_template,
-        is_hitl,
         origin,
-        workflow_id,
         TIMESTAMP_TRUNC(pmp.date_prediction_made, DAY)        AS relevant_day,
         COUNT(pmp.prediction_id)                              AS total_predictions,
         MAX(date_prediction_made)                             AS time_stamp
     FROM prediction_models_prediction pmp
     INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
     INNER JOIN datasets_dataset dd ON dd.aiblock_id=pmc.aiblock_id
+    INNER JOIN users u ON u.user_id=dd.user_id
     WHERE TIMESTAMP_TRUNC(pmp.date_prediction_made, DAY) =  TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY), DAY)
     GROUP BY 
         1, 
         2, 
-        3,
-        4,
-        5,
-        6
+        3
 
 )
 
 SELECT
     final.workspace_id,
     workspace_name AS workspace,
-    is_template,
-    is_hitl,
     origin,
-    workflow_id,
     total_predictions,
     time_stamp
 FROM final
