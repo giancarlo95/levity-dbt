@@ -20,7 +20,10 @@ WITH prediction_models_classifier AS (
         workspace_id,
         prediction_id,
         is_hitl,
-        origin,
+        CASE 
+            WHEN NOT(origin LIKE "flows%" OR origin LIKE "Integromat%" OR origin LIKE "Zapier%" OR origin = "test_tab" OR origin LIKE "Bubble%") THEN "API"
+            ELSE origin
+        END AS origin,
         workflow_id,
         date_prediction_made,
         classifier_id
