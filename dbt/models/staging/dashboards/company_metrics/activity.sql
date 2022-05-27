@@ -42,14 +42,6 @@ WITH prediction_models_classifier AS (
     FROM 
         {{ref('datasets_dataset')}}
 
-), workspaces AS (
-
-    SELECT
-        workspace_id,
-        workspace_name
-    FROM
-        {{ref('workspaces')}}
-        
 ), users AS (
     
     SELECT 
