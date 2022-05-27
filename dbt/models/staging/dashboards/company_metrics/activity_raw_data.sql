@@ -57,13 +57,14 @@ WITH prediction_models_classifier AS (
     FROM
         {{ref('users')}}
  
-), final_prod_all_sources AS (
+), final AS (
 
     SELECT
+        pmp.workspace_id,
+        origin,
         EXTRACT(MONTH FROM pmp.date_prediction_made)          AS month,
         EXTRACT(YEAR FROM pmp.date_prediction_made)           AS year,
-        pmp.workspace_id,
-        COUNT(pmp.prediction_id)                              AS predictions_count
+        COUNT(pmp.prediction_id)                              AS total_predictions
     FROM prediction_models_prediction pmp
     INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
     INNER JOIN datasets_dataset dd ON dd.aiblock_id=pmc.aiblock_id
@@ -74,42 +75,19 @@ WITH prediction_models_classifier AS (
     GROUP BY 
         1, 
         2, 
-        3
-
-), final_prod_flows AS (
-
-    SELECT
-        EXTRACT(MONTH FROM pmp.date_prediction_made)          AS month,
-        EXTRACT(YEAR FROM pmp.date_prediction_made)           AS year,
-        pmp.workspace_id,
-        COUNT(pmp.prediction_id)                              AS flow_predictions_count
-    FROM prediction_models_prediction pmp
-    INNER JOIN prediction_models_classifier pmc ON pmp.classifier_id = pmc.classifier_id
-    INNER JOIN datasets_dataset dd ON dd.aiblock_id=pmc.aiblock_id
-    INNER JOIN users u ON u.user_id=dd.user_id
-    WHERE 
-        origin LIKE "flows%"
-        AND pmp.date_prediction_made >= "2022-01-01"
-    GROUP BY 
-        1, 
-        2, 
-        3
+        3,
+        4
 
 )
 
-SELECT 
+SELECT
     CONCAT(CAST(year AS STRING), CAST(month AS STRING)) AS year_month,
     year,
     month,
-    COALESCE(COUNT(DISTINCT a.workspace_id), 0) AS at_least_1_prod_pred_count,
-    COALESCE(COUNT(CASE WHEN a.predictions_count>=50 THEN 1 END), 0) AS at_least_50_prod_pred_count,
-    COALESCE(COUNT(CASE WHEN f.flow_predictions_count>=50 THEN 1 END), 0) AS at_least_50_flow_pred_count,
-FROM
-    final_prod_all_sources a
-LEFT JOIN final_prod_flows f USING (year, month)
-GROUP BY
-    1,
-    2,
-    3
+    origin,
+    workspace_name AS workspace,
+    total_predictions
+FROM final
+INNER JOIN workspaces oa ON final.workspace_id = oa.workspace_id
 ORDER BY
-    1 ASC
+    year_month ASC
