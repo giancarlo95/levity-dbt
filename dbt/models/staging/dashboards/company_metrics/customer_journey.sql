@@ -45,7 +45,7 @@ WITH signup_funnel AS (
         COUNT(CASE WHEN f.is_company_email = "yes" THEN 1 END) AS signups_count,
         0 AS email_confirmed_count,
         COUNT(CASE WHEN f.is_company_email = "yes" AND is_qualified = "yes" THEN 1 END) AS mqls_count,
-        0 AS high_score_mqls_count,
+        COUNT(CASE WHEN f.is_company_email = "yes" AND is_high_score = 1 THEN 1 END) AS high_score_mqls_count,
         0 AS organic_signups_count,
         0 AS organic_email_confirmed_count,
         0 AS organic_mqls_count,
@@ -61,8 +61,9 @@ WITH signup_funnel AS (
     FROM
         {{ref("first_typeform")}} f
     LEFT JOIN {{ref("second_typeform")}} s USING (email)
+    LEFT JOIN {{ref("second_typeform_answers_all_time")}} sa ON sa.id=s.id
     WHERE 
-        NOT(email LIKE "%levity.ai")
+        NOT(f.email LIKE "%levity.ai")
         AND f.submit_date<"2022-03-07"
     GROUP BY
         1,
@@ -77,7 +78,7 @@ WITH signup_funnel AS (
         COUNT(CASE WHEN f.is_company_email = "yes" THEN 1 END) AS signups_count,
         0 AS email_confirmed_count,
         COUNT(CASE WHEN f.is_company_email = "yes" AND is_qualified = "yes" THEN 1 END) AS mqls_count,
-        0 AS high_score_mqls_count,
+        COUNT(CASE WHEN f.is_company_email = "yes" AND is_high_score = 1 THEN 1 END) AS high_score_mqls_count,
         0 AS organic_signups_count,
         0 AS organic_email_confirmed_count,
         0 AS organic_mqls_count,
@@ -93,8 +94,9 @@ WITH signup_funnel AS (
     FROM
         {{ref("first_typeform_2021")}} f
     LEFT JOIN {{ref("second_typeform_2021")}} s USING (email)
+    LEFT JOIN {{ref("second_typeform_answers_all_time")}} sa ON sa.id=s.id
     WHERE 
-        NOT(email LIKE "%levity.ai")
+        NOT(f.email LIKE "%levity.ai")
     GROUP BY
         1,
         2
