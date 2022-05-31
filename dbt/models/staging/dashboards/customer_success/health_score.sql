@@ -4,22 +4,35 @@
     )
 }}
 
-WITH engagement AS (
+WITH engagement_first AS (
 
     SELECT 
         LOWER(email) AS email,
         DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) AS engagement_days_since_last_engagement,
-        DATE_DIFF(CURRENT_DATE(), DATE(GREATEST(COALESCE(properties_hs_sales_email_last_replied_value, properties_hs_email_last_reply_date_value), COALESCE(properties_hs_email_last_reply_date_value, properties_hs_sales_email_last_replied_value))), DAY) AS engagement_days_since_last_heard_from,
         CASE
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) <= 30 THEN 1
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) BETWEEN 30 and 60 THEN 0.5 
             WHEN DATE_DIFF(CURRENT_DATE(), DATE(properties_hs_last_sales_activity_timestamp_value), DAY) > 60 THEN 0
             ELSE NULL 
-        END AS engagement_days_since_last_engagement_score
+        END AS engagement_days_since_last_engagement_score,
+        DATE_DIFF(CURRENT_DATE(), DATE(GREATEST(COALESCE(properties_hs_sales_email_last_replied_value, properties_hs_email_last_reply_date_value), COALESCE(properties_hs_email_last_reply_date_value, properties_hs_sales_email_last_replied_value))), DAY) AS engagement_days_since_last_heard_from
     FROM 
         {{ref('hubspot_crm_contacts')}}
     WHERE   
         properties_is_onboarded_value = "yes"
+
+), engagement_second AS (
+
+    SELECT 
+        *,
+        CASE 
+            WHEN engagement_days_since_last_heard_from <= 30 THEN 1
+            WHEN engagement_days_since_last_heard_from BETWEEN 30 and 60 THEN 0.5
+            WHEN engagement_days_since_last_heard_from > 60 THEN 0
+            ELSE NULL
+        END AS engagement_days_since_last_heard_from_score
+    FROM
+        engagement_first
 
 ),
 
@@ -199,14 +212,8 @@ users AS (
 joined_tables AS (
 
     SELECT
-    *,
-    CASE 
-        WHEN engagement_days_since_last_heard_from <= 30 THEN 1
-        WHEN engagement_days_since_last_heard_from BETWEEN 30 and 60 THEN 0.5
-        WHEN engagement_days_since_last_heard_from > 60 THEN 0
-        ELSE NULL
-    END AS engagement_days_since_last_heard_from_score
-    FROM engagement
+    *
+    FROM engagement_second
     INNER JOIN users USING(email)
     LEFT JOIN login_last7 USING(user_id)
     LEFT JOIN actions_last30 USING(user_id)
@@ -220,80 +227,36 @@ joined_tables AS (
     WHERE
         email NOT LIKE '%@levity.ai'
 
-), engagement_score AS (
-
-    SELECT email,
-
-    COALESCE(engagement_days_since_last_engagement_score, 0) * 0.75
-
-    + 
-
-    COALESCE(engagement_days_since_last_heard_from_score, 0) * 0.25 AS engagement_score
-
-    FROM joined_tables
-
-
-), usage_score AS (
-
-    SELECT email,
-
-    COALESCE(usage_days_since_last_login_score, 0) * 0.25
-
-    + 
-
-    COALESCE(usage_actions_last30_score, 0) * 0.5
-
-    +
-
-    COALESCE(usage_actions_last7_score, 0) * 0.25 AS usage_score
-
-    FROM joined_tables
-
-
-), adoption_score AS (
-
-    SELECT email,
-
-    COALESCE(adoption_ai_template_used_last30_score, 0) * 0.7
-
-    +
-
-    COALESCE(adoption_ai_block_trained_last30_score, 0) * 0.3 AS adoption_score
-
-    FROM joined_tables
-
-
-), journey_score AS (
-
-    SELECT email,
-
-    COALESCE(journey_days_since_onboarding_score, 0) * 0.25
-
-    +
-
-    COALESCE(journey_days_in_onboarding_score, 0) * 0.25
-
-    +
-
-    COALESCE(journey_milestone_ai_block_trained_score, 0) * 0.25
-    
-    +
-
-    COALESCE(journey_milestone_ai_block_connected_score, 0) * 0.25 AS journey_score
-
-    FROM joined_tables
-
-
-)
+), add_four_scores AS (
 
     SELECT 
-        *
+    *,
+    COALESCE(engagement_days_since_last_engagement_score, 0) * 0.75 + COALESCE(engagement_days_since_last_heard_from_score, 0) * 0.25 AS engagement_score,
+    COALESCE(usage_days_since_last_login_score, 0) * 0.25 + COALESCE(usage_actions_last30_score, 0) * 0.5 + COALESCE(usage_actions_last7_score, 0) * 0.25 AS usage_score,
+    COALESCE(adoption_ai_template_used_last30_score, 0) * 0.7 + COALESCE(adoption_ai_block_trained_last30_score, 0) * 0.3 AS adoption_score,
+    COALESCE(journey_days_since_onboarding_score, 0) * 0.25 + COALESCE(journey_days_in_onboarding_score, 0) * 0.25 + COALESCE(journey_milestone_ai_block_trained_score, 0) * 0.25 + COALESCE(journey_milestone_ai_block_connected_score, 0) * 0.25 AS journey_score
+    FROM joined_tables
+
+
+), add_final_score AS (
+
+    SELECT 
+        *,
+        engagement_score + usage_score + adoption_score + journey_score AS overall_score,
+        PERCENTILE_CONT(engagement_score + usage_score + adoption_score + journey_score, 0.9) OVER() AS overall_score_90th_perc
     FROM 
-        joined_tables
-    JOIN engagement_score USING(email)
-    JOIN usage_score USING(email)
-    JOIN adoption_score USING(email)
-    JOIN journey_score USING(email)
+        add_four_scores
 
+) 
 
-
+SELECT 
+    *,
+    CASE    
+        WHEN overall_score >= overall_score_90th_perc THEN "green"
+        WHEN overall_score < overall_score_90th_perc AND overall_score > 0 THEN "yellow"
+        ELSE "red"
+    END AS overall_score_range
+FROM 
+    add_final_score
+ORDER BY
+    overall_score DESC
