@@ -13,7 +13,7 @@ WITH source AS (
     SELECT
         frontegg_tenant_id             AS workspace_id,
         image_count                    AS predictions_count,
-        created_at                     AS date_prediction_made 	
+        CAST(created_at AS DATE)       AS date_prediction_made 	
     FROM 
         source
 

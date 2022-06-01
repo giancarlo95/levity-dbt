@@ -21,8 +21,9 @@ WITH prediction_models_classifier AS (
         prediction_id,
         is_hitl,
         CASE 
-            WHEN NOT(origin LIKE "flows%" OR origin LIKE "Integromat%" OR origin LIKE "Zapier%" OR origin = "test_tab" OR origin LIKE "Bubble%") THEN "API"
-            ELSE origin
+            WHEN NOT(origin LIKE "flows%" OR origin LIKE "Integromat%" OR origin LIKE "Zapier%" OR origin = "test_tab" OR origin LIKE "Bubble%") AND origin IS NOT NULL THEN "API"
+            WHEN origin IS NULL THEN "unknown"
+            ELSE origin 
         END AS origin,
         workflow_id,
         date_prediction_made,
@@ -71,7 +72,7 @@ WITH prediction_models_classifier AS (
     INNER JOIN users u ON u.user_id=dd.user_id
     WHERE 
         NOT(origin = "test_tab")
-        AND pmp.date_prediction_made >= "2022-01-01"
+        AND pmp.date_prediction_made >= "2021-01-01"
     GROUP BY 
         1, 
         2, 
@@ -90,4 +91,5 @@ SELECT
 FROM final
 INNER JOIN workspaces oa ON final.workspace_id = oa.workspace_id
 ORDER BY
-    year_month ASC
+    year ASC,
+    month ASC
