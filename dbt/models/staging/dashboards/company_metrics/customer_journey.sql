@@ -183,15 +183,27 @@ WITH signup_funnel AS (
     GROUP BY
         user_id
 
+), predictions_done AS (
+
+    SELECT 
+        user_id,
+        MIN(DATE(uo.timestamp)) AS first_predictions_done_at
+    FROM
+        {{ref("django_production_predictions_done")}} uo
+    GROUP BY
+        user_id
+
 ), onboardings AS (
 
     SELECT 
         EXTRACT(YEAR FROM user_onboarded_at) AS year,
         EXTRACT(WEEK(MONDAY) FROM user_onboarded_at) AS week,
-        COUNT(*) AS onboardings_count
+        COUNT(*) AS onboardings_count,
+        COUNT(CASE WHEN first_predictions_done_at IS NOT NULL THEN 1 END) AS activations_count
     FROM
         user_onboarded uo
     LEFT JOIN users u USING(user_id)
+    LEFT JOIN predictions_done USING(user_id)
     WHERE 
         NOT(u.email LIKE "%@levity.ai")
     GROUP BY
@@ -202,8 +214,9 @@ WITH signup_funnel AS (
 
 SELECT
     PARSE_DATE("%Y%W", CAST(CONCAT(CAST(year AS STRING), CAST(week AS STRING)) AS STRING)) AS week_monday,
-    * EXCEPT(onboardings_count),
-    COALESCE(onboardings_count, 0) AS onboardings_count
+    * EXCEPT(onboardings_count, activations_count),
+    COALESCE(onboardings_count, 0) AS onboardings_count,
+    COALESCE(activations_count, 0) AS activations_count
 FROM
     unioned_traffic 
 JOIN unioned_traffic_by_source USING (year, week)
