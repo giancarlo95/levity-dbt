@@ -18,7 +18,7 @@ user_onboarded AS (
 
     SELECT 
         user_id,
-        MIN(DATE(uo.timestamp)) AS user_onboarded_at
+        MIN(uo.timestamp) AS user_onboarded_at
     FROM
         {{ref("django_production_user_onboarded")}} uo
     GROUP BY
@@ -30,7 +30,7 @@ ai_block_created AS (
 
     SELECT 
         user_id,
-        MIN(DATE(abc.timestamp)) AS first_ai_block_created_at
+        MIN(abc.timestamp) AS first_ai_block_created_at
     FROM
         {{ref("django_production_ai_block_created")}} abc
     GROUP BY
@@ -42,7 +42,7 @@ datapoints_added AS (
 
     SELECT 
         user_id,
-        MIN(DATE(da.timestamp)) AS first_datapoints_added_at
+        MIN(da.timestamp) AS first_datapoints_added_at
     FROM
         {{ref("django_production_datapoints_added")}} da
     WHERE
@@ -57,7 +57,7 @@ ai_block_trained AS (
 
     SELECT 
         user_id,
-        MIN(DATE(abt.timestamp)) AS first_ai_block_trained_at
+        MIN(abt.timestamp) AS first_ai_block_trained_at
     FROM
         {{ref("django_production_ai_block_trained")}} abt
     WHERE
@@ -71,7 +71,7 @@ predictions_done AS (
 
     SELECT 
         user_id,
-        MIN(DATE(pd.timestamp)) AS first_predictions_done_at
+        MIN(pd.timestamp) AS first_predictions_done_at
     FROM
         {{ref("django_production_predictions_done")}} pd
     WHERE
@@ -85,8 +85,15 @@ predictions_done AS (
 joined AS (
 
     SELECT
+        EXTRACT(YEAR FROM user_onboarded_at) AS year,
+        EXTRACT(MONTH FROM user_onboarded_at) AS month,
+        FORMAT_TIMESTAMP("%b %Y", user_onboarded_at) AS year_month,
         * EXCEPT(user_email_address),
-        user_email_address AS email
+        user_email_address AS email,
+        TIMESTAMP_DIFF(first_ai_block_created_at, user_onboarded_at, MINUTE) AS reached_ai_block_created_minutes,
+        TIMESTAMP_DIFF(first_datapoints_added_at, user_onboarded_at, MINUTE) AS reached_datapoints_added_minutes,
+        TIMESTAMP_DIFF(first_ai_block_trained_at, user_onboarded_at, MINUTE) AS reached_ai_block_trained_minutes,
+        TIMESTAMP_DIFF(first_predictions_done_at, user_onboarded_at, MINUTE) AS reached_predictions_done_minutes
     FROM
         user_onboarded
     LEFT JOIN ai_block_created USING(user_id)
@@ -97,30 +104,64 @@ joined AS (
     WHERE
         NOT(user_email_address LIKE "%@levity.ai")
 
-), final AS (
+), 
 
-    SELECT 
-        EXTRACT(YEAR FROM user_onboarded_at) AS year,
-        EXTRACT(MONTH FROM user_onboarded_at) AS month,
-        COUNT(*) AS onboarded_count,
-        COUNT(CASE WHEN first_ai_block_created_at IS NOT NULL THEN 1 END) AS reached_ai_block_created_count,
-        COUNT(CASE WHEN first_datapoints_added_at IS NOT NULL THEN 1 END) AS reached_datapoints_added_count,
-        COUNT(CASE WHEN first_ai_block_trained_at IS NOT NULL THEN 1 END) AS reached_ai_block_trained_count,
-        COUNT(CASE WHEN first_predictions_done_at IS NOT NULL THEN 1 END) AS reached_predictions_done_count,
-    FROM    
-        joined
+median_workaround AS (
+
+    SELECT
+        year_month,
+        year,
+        month, 
+        ANY_VALUE(reached_ai_block_created_minutes_mdn) AS reached_ai_block_created_minutes_mdn,
+        ANY_VALUE(reached_datapoints_added_minutes_mdn) AS reached_datapoints_added_minutes_mdn,
+        ANY_VALUE(reached_ai_block_trained_minutes_mdn) AS reached_ai_block_trained_minutes_mdn,
+        ANY_VALUE(reached_predictions_done_minutes_mdn) AS reached_predictions_done_minutes_mdn
+    FROM
+    (SELECT
+        year,
+        month,
+        year_month,
+        PERCENTILE_CONT(reached_ai_block_created_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_ai_block_created_minutes_mdn,
+        PERCENTILE_CONT(reached_datapoints_added_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_datapoints_added_minutes_mdn,
+        PERCENTILE_CONT(reached_ai_block_trained_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_ai_block_trained_minutes_mdn,
+        PERCENTILE_CONT(reached_predictions_done_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_predictions_done_minutes_mdn
+    FROM
+        joined) AS partitioned
     GROUP BY
         1,
-        2
+        2,
+        3
 
 )
 
-SELECT
-    FORMAT_DATE("%b %Y", PARSE_DATE("%Y%m", CONCAT(CAST(year AS STRING), CAST(month AS STRING)))) AS year_month,
-    *
-FROM
-    final
+SELECT 
+    year_month,
+    year,
+    month,
+    COUNT(*) AS onboarded_count,
+    COUNT(CASE WHEN first_ai_block_created_at IS NOT NULL THEN 1 END) AS reached_ai_block_created_count,
+    AVG(reached_ai_block_created_minutes) AS reached_ai_block_created_minutes_avg,
+    ANY_VALUE(reached_ai_block_created_minutes_mdn) AS reached_ai_block_created_minutes_mdn,
+    COUNT(CASE WHEN first_datapoints_added_at IS NOT NULL THEN 1 END) AS reached_datapoints_added_count,
+    AVG(reached_datapoints_added_minutes) AS reached_datapoints_added_minutes_avg,
+    ANY_VALUE(reached_datapoints_added_minutes_mdn) AS reached_datapoints_added_minutes_mdn,
+    COUNT(CASE WHEN first_ai_block_trained_at IS NOT NULL THEN 1 END) AS reached_ai_block_trained_count,
+    AVG(reached_ai_block_trained_minutes) AS reached_ai_block_trained_minutes_avg,
+    ANY_VALUE(reached_ai_block_trained_minutes_mdn) AS reached_ai_block_trained_minutes_mdn,
+    COUNT(CASE WHEN first_predictions_done_at IS NOT NULL THEN 1 END) AS reached_predictions_done_count,
+    AVG(reached_predictions_done_minutes) AS reached_predictions_done_minutes_avg,
+    ANY_VALUE(reached_predictions_done_minutes_mdn) AS reached_predictions_done_minutes_mdn
+FROM    
+    joined
+LEFT JOIN median_workaround USING (year_month, year, month)
+GROUP BY
+    1,
+    2,
+    3
 ORDER BY
     1 ASC
+
+
+
 
 

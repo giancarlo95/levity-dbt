@@ -165,15 +165,50 @@ WITH signup_funnel AS (
     SELECT * FROM new_website_visitors_by_source_ga UNION ALL
     SELECT * FROM new_website_visitors_by_source_hs
 
+), users AS (
+
+    SELECT 
+        user_id,
+        user_email_address AS email
+    FROM
+        {{ref("users")}} u
+
+), user_onboarded AS (
+
+    SELECT 
+        user_id,
+        MIN(DATE(uo.timestamp)) AS user_onboarded_at
+    FROM
+        {{ref("django_production_user_onboarded")}} uo
+    GROUP BY
+        user_id
+
+), onboardings AS (
+
+    SELECT 
+        EXTRACT(YEAR FROM user_onboarded_at) AS year,
+        EXTRACT(WEEK(MONDAY) FROM user_onboarded_at) AS week,
+        COUNT(*) AS onboardings_count
+    FROM
+        user_onboarded uo
+    LEFT JOIN users u USING(user_id)
+    WHERE 
+        NOT(u.email LIKE "%@levity.ai")
+    GROUP BY
+        1,
+        2
+
 )
 
 SELECT
     PARSE_DATE("%Y%W", CAST(CONCAT(CAST(year AS STRING), CAST(week AS STRING)) AS STRING)) AS week_monday,
-    *
+    * EXCEPT(onboardings_count),
+    COALESCE(onboardings_count, 0) AS onboardings_count
 FROM
     unioned_traffic 
 JOIN unioned_traffic_by_source USING (year, week)
 JOIN unioned_su USING (year, week)
+LEFT JOIN onboardings USING (year, week)
 ORDER BY
     year,
     week
