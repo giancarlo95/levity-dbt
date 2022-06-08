@@ -48,7 +48,7 @@ login_last7 AS (
     FROM 
         {{ref('django_production_actions')}} s
     LEFT JOIN 
-        {{ref('django_production_datapoints_added_view')}} d USING(id)
+        {{ref('django_production_datapoints_added')}} d USING(id)
     WHERE 
         NOT(s.event IN ("predictions_done", "user_signed_up", "email_confirmed", "typeform_filled", "user_onboarded"))
         AND NOT(s.event = "datapoints_added" AND d.is_human_in_the_loop = "yes")
