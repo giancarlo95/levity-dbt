@@ -90,5 +90,15 @@ sources:
       - name: hubspot_analytics_total_weekly
         description: table containing new website visitors data, weekly aggregate
       - name: hubspot_analytics_by_source_weekly
-        description: table containing new website visitors data, split by source, weekly aggregate     
+        description: table containing new website visitors data, split by source, weekly aggregate
+  - name: pipelinica
+    description: Dataset containing all tables resulting from Pipelininca marketing integrations
+    tables: 
+      - name: facebook_ads
+        description: table containing impressions, clicks and spend at the campaign - adset - ad level, daily aggregate 
+      - name: facebook_leads
+        description: table containing contact all leads with information about campaign - adset - ad and plaftform
+      - name: linkedin_ads
+        description: table containing impressions and clicks at the campaign level, daily aggregate
+
  
