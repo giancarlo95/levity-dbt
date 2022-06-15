@@ -66,4 +66,14 @@ sources:
     tables:
       - name: contacts_view
         description: table containing all contacts       
- 
+  - name: google_search_console
+    tables:
+      - name: clicks_impressions_by_page
+  - name: pipelinica
+    tables:
+      - name: facebook_ads
+      - name: facebook_leads
+      - name: linkedin_ads
+  - name: transfer
+    tables:
+      - name: p_AccountBasicStats_7097664393
