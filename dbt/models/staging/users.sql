@@ -14,7 +14,7 @@ WITH legacy_users AS (
     FROM
         {{ref('django_production_users')}}
     WHERE 
-        NOT(email LIKE "%levity.ai")
+        email="thilo+selfmade-energy@levity.ai" OR NOT(email LIKE "%levity.ai")
 )
 
 SELECT * FROM legacy_users UNION DISTINCT
