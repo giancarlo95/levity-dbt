@@ -100,5 +100,10 @@ sources:
         description: table containing contact all leads with information about campaign - adset - ad and plaftform
       - name: linkedin_ads
         description: table containing impressions and clicks at the campaign level, daily aggregate
+  - name: google_search_console
+    description: Dataset containing all tables resulting from Fivetran Cloud Function conne
+    tables: 
+      - name: clicks_impressions_by_page
+        description: table containing impressions, clicks, ctr and position at the page level, daily aggregate
 
  
