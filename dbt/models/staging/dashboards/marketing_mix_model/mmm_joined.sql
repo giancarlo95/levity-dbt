@@ -44,48 +44,24 @@ signups_daily AS (
 )
 
 SELECT 
-    relevant_date,
-    COALESCE(sud.signups_count, 0) AS signups_count,
+    * EXCEPT(signups_count, is_app_signup, g_impressions, g_interactions, g_dummy),
+    COALESCE(signups_count, 0) AS signups_count,
     CASE 
-        WHEN relevant_date>="2022-03-07" THEN COALESCE(sud.is_app_signup, 1)
-        ELSE COALESCE(sud.is_app_signup, 0)
+        WHEN relevant_date>="2022-03-07" THEN COALESCE(is_app_signup, 1)
+        ELSE COALESCE(is_app_signup, 0)
     END AS is_app_signup,
-    gtp.no_code_ai_map_clicks_count,
-    gtp.no_code_ai_map_impressions_count,
-    gtp.homepage_clicks_count,
-    gtp.homepage_impressions_count,
-    gtp.difference_ml_dl_clicks_count,
-    gtp.difference_ml_dl_impressions_count,
-
-    fam.ebook_campaign_impressions,
-    fam.ebook_campaign_clicks,
-    fam.ebook_campaign_spend,
-
-    fam.retargeting_campaign_impressions,
-    fam.retargeting_campaign_clicks,
-    fam.retargeting_campaign_spend,
-
-    fam.lookalike_campaign_impressions,
-    fam.lookalike_campaign_clicks,
-    fam.lookalike_campaign_spend,
-
-    fam.use_case_campaign_impressions,
-    fam.use_case_campaign_clicks,
-    fam.use_case_campaign_spend,
-
-    fam.main_conversion_campaign_impressions,
-    fam.main_conversion_campaign_clicks,
-    fam.main_conversion_campaign_spend
-
-    gam.g_impressions,
-    gam.g_interactions
-
+    COALESCE(g_impressions, 0) AS g_impressions,
+    COALESCE(g_interactions, 0) AS g_interactions,
+    COALESCE(g_dummy, 0) AS g_dummy
 FROM
     gsc_top_pages gtp
 
-LEFT JOIN signups_daily USING(relevant_date) sud
-RIGHT JOIN facebook_ads_model USING(relevant_date) fam
-RIGHT JOIN google_ads_model USING(relevant_date) gam
+LEFT JOIN signups_daily USING(relevant_date)
+LEFT JOIN facebook_ads_model USING(relevant_date)
+LEFT JOIN google_ads_model USING(relevant_date)
+
+WHERE
+    relevant_date>="2021-06-15"
 
 ORDER BY
     relevant_date DESC

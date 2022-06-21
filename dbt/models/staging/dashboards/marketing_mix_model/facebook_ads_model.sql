@@ -8,7 +8,7 @@ WITH facebook_ads_data AS (
 
     SELECT 
         DATE(fba.date) AS relevant_date,
-        campaign_name
+        campaign_name,
         impressions,
         clicks,
         spend
@@ -20,25 +20,25 @@ WITH facebook_ads_data AS (
 SELECT 
     relevant_date,
 
-    MAX ( IF ( CONTAINS (campaign_name, 'Ebook'), impressions, 0 ) ) AS ebook_campaign_impressions,
-    MAX ( IF ( CONTAINS (campaign_name, 'Ebook'), clicks, 0 ) ) AS ebook_campaign_clicks,
-    MAX ( IF ( CONTAINS (campaign_name, 'Ebook'), spend, 0 ) ) AS ebook_campaign_spend,
+    SUM ( IF (campaign_name LIKE 'Ebook%', impressions, 0 ) ) AS ebook_campaign_impressions,
+    SUM ( IF (campaign_name LIKE 'Ebook%', clicks, 0 ) ) AS ebook_campaign_clicks,
+    SUM ( IF (campaign_name LIKE 'Ebook%', spend, 0 ) ) AS ebook_campaign_spend,
 
-    MAX ( IF ( CONTAINS (campaign_name, 'Retargeting'), impressions, 0 ) ) AS retargeting_campaign_impressions,
-    MAX ( IF ( CONTAINS (campaign_name, 'Retargeting'), clicks, 0 ) ) AS retargeting_campaign_clicks,
-    MAX ( IF ( CONTAINS (campaign_name, 'Retargeting'), spend, 0 ) ) AS retargeting_campaign_spend,
+    SUM ( IF (campaign_name LIKE 'Re-Targeting%', impressions, 0 ) ) AS retargeting_campaign_impressions,
+    SUM ( IF (campaign_name LIKE 'Re-Targeting%', clicks, 0 ) ) AS retargeting_campaign_clicks,
+    SUM ( IF (campaign_name LIKE 'Re-Targeting%', spend, 0 ) ) AS retargeting_campaign_spend,
 
-    MAX ( IF ( CONTAINS (campaign_name, 'Use'), impressions, 0 ) ) AS use_case_campaign_impressions,
-    MAX ( IF ( CONTAINS (campaign_name, 'Use'), clicks, 0 ) ) AS use_case_campaign_clicks,
-    MAX ( IF ( CONTAINS (campaign_name, 'Use'), spend, 0 ) ) AS use_case_campaign_spend,
+    SUM ( IF (campaign_name LIKE 'Use%', impressions, 0 ) ) AS use_case_campaign_impressions,
+    SUM ( IF (campaign_name LIKE 'Use%', clicks, 0 ) ) AS use_case_campaign_clicks,
+    SUM ( IF (campaign_name LIKE 'Use%', spend, 0 ) ) AS use_case_campaign_spend,
 
-    MAX ( IF ( CONTAINS (campaign_name, 'Lookalike'), impressions, 0 ) ) AS lookalike_campaign_impressions,
-    MAX ( IF ( CONTAINS (campaign_name, 'Lookalike'), clicks, 0 ) ) AS lookalike_campaign_clicks,
-    MAX ( IF ( CONTAINS (campaign_name, 'Lookalike'), spend, 0 ) ) AS lookalike_campaign_spend,
+    SUM ( IF (campaign_name LIKE "Lookalike%", impressions, 0 ) ) AS lookalike_campaign_impressions,
+    SUM ( IF (campaign_name LIKE "Lookalike%", clicks, 0 ) ) AS lookalike_campaign_clicks,
+    SUM ( IF (campaign_name LIKE "Lookalike%", spend, 0 ) ) AS lookalike_campaign_spend,
 
-    MAX ( IF ( (CONTAINS (campaign_name, 'Main Conversion')) OR (CONTAINS (campaign_name, 'General Conversion')), impressions, 0 ) ) AS main_conversion_campaign_impressions,
-    MAX ( IF ( (CONTAINS (campaign_name, 'Main Conversion')) OR (CONTAINS (campaign_name, 'General Conversion')), clicks, 0 ) ) AS main_conversion_campaign_clicks,
-    MAX ( IF ( (CONTAINS (campaign_name, 'Main Conversion')) OR (CONTAINS (campaign_name, 'General Conversion')), spend, 0 ) ) AS main_conversion_campaign_spend,
+    SUM ( IF (campaign_name LIKE 'Main Conversion%' OR campaign_name LIKE 'General Conversion%', impressions, 0 ) ) AS main_conversion_campaign_impressions,
+    SUM ( IF (campaign_name LIKE 'Main Conversion%' OR campaign_name LIKE 'General Conversion%', clicks, 0 ) ) AS main_conversion_campaign_clicks,
+    SUM ( IF (campaign_name LIKE 'Main Conversion%' OR campaign_name LIKE 'General Conversion%', spend, 0 ) ) AS main_conversion_campaign_spend
 
 
 FROM 
