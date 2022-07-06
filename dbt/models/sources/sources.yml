@@ -106,5 +106,8 @@ sources:
     tables: 
       - name: clicks_impressions_by_page
         description: table containing impressions, clicks, ctr and position at the page level, daily aggregate
-
+  - name: core_analytics_prod
+    description: Production DB insert, update and delete statements
+    tables:
+      - name: changeEvents
  
