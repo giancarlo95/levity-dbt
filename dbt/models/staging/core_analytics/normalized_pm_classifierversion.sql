@@ -1,9 +1,3 @@
-{{
-  config(
-    materialized = 'table',
-    )
-}}
-
 WITH ce_pm_classifierversion AS (
 
     SELECT
@@ -17,7 +11,7 @@ WITH ce_pm_classifierversion AS (
 
 SELECT 
     table_name,
-    created_at
+    created_at,
     event_id,
     op,
     JSON_VALUE(content, '$.old.status') AS old_status,
