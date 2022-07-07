@@ -86,6 +86,9 @@ SELECT
     COALESCE(dd.new_id, ldd.aiblock_id) AS dataset_id,
     COALESCE(new_type, ldd.aiblock_data_type) AS data_type,
     CASE WHEN new_description IS NOT NULL THEN "yes" ELSE "no" END AS is_template_retraining,
+    EXTRACT(YEAR FROM start_time) AS start_year,
+    EXTRACT(WEEK FROM start_time) AS start_week,
+    CAST(start_time AS DATE) AS start_day,
     start_time,
     end_time,
     TIMESTAMP_DIFF(end_time, start_time, SECOND) AS duration,
@@ -98,3 +101,5 @@ LEFT JOIN pm_classifier pmc ON pmc.new_id = ts.new_classifier_id
 LEFT JOIN d_dataset dd ON dd.new_id = pmc.new_dataset_id
 LEFT JOIN legacy_pm_classifier lpmc ON lpmc.classifier_id = ts.new_classifier_id
 LEFT JOIN legacy_d_dataset ldd ON ldd.aiblock_id = lpmc.aiblock_id
+ORDER BY
+    start_time DESC
