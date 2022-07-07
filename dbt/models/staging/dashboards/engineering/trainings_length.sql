@@ -91,7 +91,7 @@ SELECT
     CAST(start_time AS DATE) AS start_day,
     start_time,
     end_time,
-    TIMESTAMP_DIFF(end_time, start_time, SECOND) AS duration,
+    TIMESTAMP_DIFF(end_time, start_time, SECOND) AS duration_seconds,
     new_user_id AS user_id,
     new_workspace_id AS workspace_id
 FROM
