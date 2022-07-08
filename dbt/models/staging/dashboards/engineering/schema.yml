@@ -35,3 +35,7 @@ models:
         description: 'Unique ID of the workspace: frontegg_user_id'
     meta:
       consumer: engineering
+  - name: p_t_hourly
+    description: 'This table shows for every hour of the day the number of predictions
+      made and the number of trainings started. The day is an average day representative
+      of the last 7 days. '
