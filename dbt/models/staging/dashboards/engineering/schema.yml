@@ -7,3 +7,29 @@ models:
       status = "ready" and training_progress = 100. Training ends when the model is
       made available to the user. Training duration is NULL when the model was never
       made available to the user. '
+    columns:
+      - name: classifierversion_id
+        description: Unique ID of the training
+      - name: dataset_id
+        description: Unique ID of the AI Block
+      - name: data_type
+        description: 'Type of data: text, image, pdf'
+      - name: is_template_retraining
+        description: '"yes" if the training is a retrain of an AI Block Template Clone,
+          "no" otherwise'
+      - name: start_year
+        description: Year in which the training was started
+      - name: start_week
+        description: Week in which the training was started
+      - name: start_day
+        description: Day in which the training was started
+      - name: start_time
+        description: Time at which the training was started
+      - name: end_time
+        description: Time at which the training ended
+      - name: duration_seconds
+        description: Duration in seconds of the training
+      - name: user_id
+        description: 'Unique ID of the user: frontegg_user_id'
+      - name: workspace_id
+        description: 'Unique ID of the workspace: frontegg_user_id'
