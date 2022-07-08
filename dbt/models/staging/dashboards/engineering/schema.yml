@@ -33,3 +33,5 @@ models:
         description: 'Unique ID of the user: frontegg_user_id'
       - name: workspace_id
         description: 'Unique ID of the workspace: frontegg_user_id'
+    meta:
+      consumer: engineering
