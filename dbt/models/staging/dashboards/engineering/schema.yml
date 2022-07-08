@@ -41,3 +41,10 @@ models:
       of the last 7 days. '
     meta:
       consumer: engineering
+    columns:
+      - name: hour
+        description: Hour of the day
+      - name: pred_count
+        description: Number of predictions made
+      - name: train_count
+        description: Number of trainings started
