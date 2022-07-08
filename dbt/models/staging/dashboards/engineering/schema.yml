@@ -39,3 +39,5 @@ models:
     description: 'This table shows for every hour of the day the number of predictions
       made and the number of trainings started. The day is an average day representative
       of the last 7 days. '
+    meta:
+      consumer: engineering
