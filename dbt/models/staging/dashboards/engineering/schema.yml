@@ -1,0 +1,9 @@
+version: 2
+models:
+  - name: trainings_length
+    description: 'This table shows the duration of each training. Training duration
+      encompasses both training and deployment. Training starts with the INSERT operation
+      in the pm_classifieversion table and ends with the first UPDATE operation where
+      status = "ready" and training_progress = 100. Training ends when the model is
+      made available to the user. Training duration is NULL when the model was never
+      made available to the user. '
