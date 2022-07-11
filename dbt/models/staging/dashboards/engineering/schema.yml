@@ -33,6 +33,8 @@ models:
         description: 'Unique ID of the user: frontegg_user_id'
       - name: workspace_id
         description: 'Unique ID of the workspace: frontegg_user_id'
+      - name: total_data_count
+        description: Number of data points
     meta:
       consumer: engineering
   - name: p_t_hourly
