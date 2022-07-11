@@ -6,6 +6,7 @@ WITH ce_pm_classifier AS (
         {{ref("change_events")}} ce
     WHERE 
         table_name="prediction_models_classifier"
+        AND created_at IS NOT NULL
     
 )
 

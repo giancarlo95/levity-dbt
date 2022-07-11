@@ -6,6 +6,7 @@ WITH ce_d_dataset AS (
         {{ref("change_events")}} ce
     WHERE 
         table_name="datasets_dataset"
+        AND created_at IS NOT NULL
     
 )
 
