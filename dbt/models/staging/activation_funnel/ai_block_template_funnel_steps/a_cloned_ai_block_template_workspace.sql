@@ -35,7 +35,7 @@ FROM
 INNER JOIN workspaces w ON dd.new_workspace_id = w.workspace_id
 WHERE
 	op = "INSERT" 
-    AND new_description IS NULL
+    AND new_description IS NOT NULL
 GROUP BY
 	workspace_id,
     email

@@ -24,7 +24,7 @@ WITH pm_prediction AS (
         {{ref('normalized_d_dataset')}}
     WHERE   
         op = "INSERT"
-        AND new_description IS NULL
+        AND new_description IS NOT NULL
 
 ), pm_classifier AS (
 
