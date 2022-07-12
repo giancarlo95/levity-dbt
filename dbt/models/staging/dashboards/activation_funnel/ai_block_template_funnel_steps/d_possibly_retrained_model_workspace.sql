@@ -64,8 +64,8 @@ WITH d_dataset AS (
 SELECT
     new_workspace_id AS workspace_id,
     email,
-    end_time AS trained_ai_block_at,
-    CAST(end_time AS STRING) AS trained_ai_block_at_string
+    end_time AS retrained_model_at,
+    CAST(end_time AS STRING) AS retrained_model_at_string
 FROM
     training_end te
 INNER JOIN workspaces w ON w.workspace_id = te.new_workspace_id
