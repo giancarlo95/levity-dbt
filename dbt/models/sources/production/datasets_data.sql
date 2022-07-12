@@ -16,7 +16,7 @@ renamed AS (
         frontegg_tenant_id                   AS workspace_id,
         remote_url,  
         storage_id,  
-        text, 
+        text                                 AS datapoint_text, 
         CAST(updated_at AS TIMESTAMP)        AS date_datapoint_updated
     FROM source
 
