@@ -69,7 +69,8 @@ WITH d_dataset AS (
 SELECT
     workspace_id,
     email,
-    MIN(created_at) AS added_40dp_at
+    MIN(created_at) AS added_40dp_at,
+    CAST(MIN(created_at) AS STRING) AS added_40dp_at_string
 FROM
     time_40_dp
 INNER JOIN workspaces USING(workspace_id)

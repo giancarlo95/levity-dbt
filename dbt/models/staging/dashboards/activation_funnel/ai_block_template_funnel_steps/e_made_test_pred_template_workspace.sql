@@ -51,7 +51,8 @@ WITH pm_prediction AS (
 SELECT
     workspace_id,
     email,
-    MIN(pmp.created_at) AS made_test_pred_at
+    MIN(pmp.created_at) AS made_test_pred_at,
+    CAST(MIN(pmp.created_at) AS STRING) AS made_test_pred_at_string
 FROM
     pm_prediction pmp
 INNER JOIN pm_classifier pmc ON pmc.new_id = pmp.new_classifier_id

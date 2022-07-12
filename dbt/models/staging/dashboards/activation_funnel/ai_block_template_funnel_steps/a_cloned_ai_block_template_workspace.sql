@@ -29,7 +29,8 @@ WITH d_dataset AS (
 SELECT
 	workspace_id,
     email,
-	min(created_at) AS ai_block_created_at
+	MIN(created_at) AS ai_block_created_at,
+    CAST(MIN(created_at) AS STRING) AS ai_block_created_at_string
 FROM
 	d_dataset dd
 INNER JOIN workspaces w ON dd.new_workspace_id = w.workspace_id

@@ -40,7 +40,8 @@ WITH d_dataset AS (
 SELECT
 	workspace_id,
     email,
-	min(dd.created_at) AS data_added_at
+	MIN(dd.created_at) AS data_added_at,
+    CAST(MIN(dd.created_at) AS STRING) AS data_added_at_string
 FROM
 	d_data dd
 INNER JOIN d_dataset dds ON dds.new_id = dd.new_dataset_id
