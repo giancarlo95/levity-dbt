@@ -44,3 +44,10 @@ models:
       - name: made_50_prod_pred_at
         description: Time at which a total of 50 predictions through API, flows or
           integrations were made
+  - name: ai_block_template_funnel_granular
+    description: 'This table shows, for each onboarded workspace, the time of the
+      onboarding and the time at which it **possibly** reached the steps of the AI
+      Block template funnel. For some workspaces the fields related to certain steps
+      may remain blank: this means that the user never reached those steps. The analysis
+      is at the workspace level as Levity product can be used collaboratively by the
+      different memebers of the each workspace.'
