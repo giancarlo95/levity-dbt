@@ -36,9 +36,13 @@ models:
       - name: total_data_count
         description: Number of data points
       - name: data_count
-        description: Operational - number of data points - new infrastructure
+        description: Number of data points that the model encompassed at the time
+          of training
       - name: email
         description: 'Unique ID of the user: email address'
+      - name: avg_data_size
+        description: 'Average size of the data point: it is meaningful only for what
+          regards text data, represents the average string length'
     meta:
       consumer: engineering
   - name: p_t_hourly
