@@ -40,6 +40,8 @@ WITH users AS (
 
 SELECT 
     u.user_email_address,
+    pmcv.new_user_id,
+    pmcv.new_workspace_id,
     pmcv.new_id AS classifierversion_id,
     dd.new_id AS dataset_id,
     CASE
