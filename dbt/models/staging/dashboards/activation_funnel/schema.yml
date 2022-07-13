@@ -51,3 +51,6 @@ models:
       may remain blank: this means that the user never reached those steps. The analysis
       is at the workspace level as Levity product can be used collaboratively by the
       different memebers of the each workspace.'
+    columns:
+      - name: year
+        description: Year of the onboarding in format YYYY
