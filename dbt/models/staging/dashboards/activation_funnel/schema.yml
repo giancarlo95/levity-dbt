@@ -71,3 +71,6 @@ models:
         description: 'Time at which a clone of a template was first retrained: this
           step is not necessary, but it is meaningful in case the user adds or removes
           data points from the clone of the template'
+      - name: made_test_pred_at
+        description: Time at which the first prediction through the testing tab was
+          made
