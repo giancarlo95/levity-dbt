@@ -83,3 +83,5 @@ models:
           integrations were made
       - name: made_50_prod_pred_at_string
         description: '****'
+    meta:
+      consumer: customer success
