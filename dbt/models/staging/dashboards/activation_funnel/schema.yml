@@ -33,3 +33,6 @@ models:
       - name: trained_ai_block_at
         description: 'Time at which the model was first successfully trained and made
           available to the user: it encompasses both training and deployment'
+      - name: made_test_pred_at
+        description: Time at which the first prediction through the testing tab was
+          made
