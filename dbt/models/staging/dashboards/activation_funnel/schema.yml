@@ -31,4 +31,5 @@ models:
           **does not ensure** having enough data for training. The latter is a state
           that changes over time, not a step that can be reached.'
       - name: trained_ai_block_at
-        description: Time at which the model was first trained
+        description: Time at which the model was first successfully trained and made
+          available to the user
