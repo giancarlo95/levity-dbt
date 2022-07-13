@@ -83,6 +83,7 @@ LEFT JOIN made_test_pred USING(workspace_id, email)
 LEFT JOIN made_50_prod_pred USING(workspace_id, email)
 WHERE
     NOT(wo.email LIKE "%@levity.ai")
+    AND DATE(onboarded_at) > "2022-07-01"
 
 
 
