@@ -6,7 +6,9 @@ models:
       in the pm_classifieversion table and ends with the first UPDATE operation where
       status = "ready" and training_progress = 100. Training ends when the model is
       made available to the user. Training duration is NULL when the model was never
-      made available to the user. '
+      made available to the user. Training duration is correlated with the number
+      of data points that the model encompassed at the time of training and, in case
+      of text data, with the average size of the data poin in terms of string length.'
     columns:
       - name: classifierversion_id
         description: Unique ID of the training
