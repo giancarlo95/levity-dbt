@@ -9,7 +9,8 @@ WITH workspace_onboarded AS (
     SELECT 
         context_group_id AS workspace_id,
         email,
-        MIN(uo.timestamp) AS workspace_onboarded_at
+        MIN(uo.timestamp) AS onboarded_at,
+        CAST(MIN(uo.timestamp) AS STRING) AS onboarded_at_string,
     FROM
         {{ref("django_production_user_onboarded")}} uo
     GROUP BY
@@ -18,109 +19,70 @@ WITH workspace_onboarded AS (
 
 ), 
 
-ai_block_created AS (
+created_ai_block AS (
 
     SELECT 
-        context_group_id AS workspace_id,
-        MIN(abc.timestamp) AS first_ai_block_created_at
+        *
     FROM
-        {{ref("django_production_ai_block_created")}} abc
-    GROUP BY
-        context_group_id
+        {{ref("a_created_ai_block_workspace")}}
 
 ), 
 
-datapoints_added AS (
+data_added AS (
 
     SELECT 
-        context_group_id AS workspace_id,
-        MIN(da.timestamp) AS first_datapoints_added_at
+        *
     FROM
-        {{ref("django_production_datapoints_added")}} da
-    WHERE
-        is_human_in_the_loop = "no"
-        AND is_template = "no"
-    GROUP BY
-        context_group_id
+        {{ref("b_uploaded_data_workspace")}} 
 
 ), 
 
-ai_block_trained AS (
+trained_ai_block AS (
 
     SELECT 
-        context_group_id AS workspace_id,
-        MIN(abt.timestamp) AS first_ai_block_trained_at
+        *
     FROM
-        {{ref("django_production_ai_block_trained")}} abt
-    WHERE
-        template = False
-    GROUP BY
-        context_group_id
+        {{ref("d_trained_ai_block_workspace")}} 
 
 ), 
 
-predictions_done AS (
+made_test_pred AS (
 
     SELECT 
-        context_group_id AS workspace_id,
-        dppd.timestamp AS predictions_done_at,
-        total_predictions
+        *
     FROM
-        {{ref("django_production_predictions_done")}} dppd
-    WHERE
-        NOT(origin = "test_tab")
-        AND is_template = "no"
+        {{ref("e_made_test_pred_workspace")}} pd
 
 ),
 
-predictions_1_done AS (
+made_50_prod_pred AS (
 
     SELECT 
-        workspace_id,
-        MIN(predictions_done_at) AS first_predictions_done_at
+        *
     FROM
-        predictions_done pd
-    GROUP BY
-        workspace_id
+        {{ref("g_made_50_prod_pred_workspace")}} pd
 
-),
-
-predictions_50_done AS (
-
-    SELECT
-        workspace_id,
-        MAX(predictions_done_at) AS last_predictions_done_at
-    FROM 
-        predictions_done
-    GROUP BY
-        1
-    HAVING
-        SUM(total_predictions)>=50
-
-) 
+)
 
 SELECT
-    *,
-    CASE 
-        WHEN last_predictions_done_at IS NOT NULL THEN "made_50+_predictions"
-        WHEN first_predictions_done_at IS NOT NULL THEN "predictions_50_nudge"
-        WHEN first_ai_block_trained_at IS NOT NULL THEN "predictions_1_nudge"
-        WHEN first_datapoints_added_at IS NOT NULL THEN "ai_block_trained_nudge"
-        WHEN first_ai_block_created_at IS NOT NULL THEN "datapoints_added_nudge"
+    email,
+    CASE
+        WHEN made_50_prod_pred_at IS NOT NULL THEN "made_50+_predictions"
+        WHEN made_test_pred_at IS NOT NULL THEN "predictions_50_nudge"
+        WHEN trained_ai_block_at IS NOT NULL THEN "predictions_1_nudge"
+        WHEN data_added_at IS NOT NULL THEN "ai_block_trained_nudge"
+        WHEN created_ai_block_at IS NOT NULL THEN "datapoints_added_nudge"
         ELSE "ai_block_created_nudge"
     END AS custom_ai_block_funnel_activation_drip_audiences
 FROM
-    workspace_onboarded
-LEFT JOIN ai_block_created USING(workspace_id)
-LEFT JOIN datapoints_added USING(workspace_id)
-LEFT JOIN ai_block_trained USING(workspace_id)
-LEFT JOIN predictions_1_done USING(workspace_id)
-LEFT JOIN predictions_50_done USING(workspace_id)
+    workspace_onboarded wo
+LEFT JOIN created_ai_block USING(workspace_id, email)
+LEFT JOIN data_added USING(workspace_id, email)
+LEFT JOIN trained_ai_block USING(workspace_id, email)
+LEFT JOIN made_test_pred USING(workspace_id, email)
+LEFT JOIN made_50_prod_pred USING(workspace_id, email)
 WHERE
-    NOT(email LIKE "%@levity.ai")
-
-
-
+    NOT(wo.email LIKE "%@levity.ai")
 
 
 
