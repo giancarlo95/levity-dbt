@@ -23,3 +23,5 @@ models:
         description: Time of the onboarding
       - name: created_ai_block_at
         description: Time at which the first custom AI Block was created
+      - name: data_added_at
+        description: Time at which the first data point was added
