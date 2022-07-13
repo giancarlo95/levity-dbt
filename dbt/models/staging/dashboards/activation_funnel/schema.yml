@@ -54,3 +54,5 @@ models:
     columns:
       - name: year
         description: Year of the onboarding in format YYYY
+      - name: month
+        description: Month of the onboarding in format MM
