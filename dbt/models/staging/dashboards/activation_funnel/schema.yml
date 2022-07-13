@@ -5,3 +5,5 @@ models:
       and the time at which he **possibly** reached the steps of the custom AI Block
       funnel. For some users the fields related to certain steps may remain blank:
       this means that the user never reached those steps. '
+    meta:
+      consumer: customer success
