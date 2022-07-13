@@ -68,9 +68,10 @@ models:
       - name: cloned_template_at
         description: Time at which a template was first cloned
       - name: retrained_model_at
-        description: 'Time at which a clone of a template was first retrained: **this
-          step is not necessary**, but it is meaningful in case the user adds or removes
-          data points from the clone of the template'
+        description: 'Time at which a clone of a template was first retrained and
+          made available to the user: **this step is not necessary**, but it is meaningful
+          in case the user adds or removes data points from the clone of the template,
+          it encompasses both training and deployment'
       - name: made_test_pred_at
         description: Time at which the first prediction through the testing tab was
           made
