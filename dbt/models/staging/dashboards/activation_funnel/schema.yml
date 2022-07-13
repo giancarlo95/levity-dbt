@@ -21,3 +21,5 @@ models:
           onboarded'
       - name: onboarded_at
         description: Time of the onboarding
+      - name: created_ai_block_at
+        description: Time at which the first custom AI Block was created
