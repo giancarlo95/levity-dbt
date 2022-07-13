@@ -9,7 +9,8 @@ WITH workspace_onboarded AS (
     SELECT 
         context_group_id AS workspace_id,
         email,
-        MIN(uo.timestamp) AS workspace_onboarded_at
+        MIN(uo.timestamp) AS onboarded_at,
+        MIN(uo.timestamp) AS onboarded_at_string,
     FROM
         {{ref("django_production_user_onboarded")}} uo
     GROUP BY
@@ -27,7 +28,7 @@ created_ai_block AS (
 
 ), 
 
-uploaded_data AS (
+data_added AS (
 
     SELECT 
         *
@@ -36,7 +37,7 @@ uploaded_data AS (
 
 ), 
 
-uploaded_40_datapoints AS (
+added_40dp AS (
 
     SELECT 
         *
@@ -84,22 +85,22 @@ made_50_prod_pred AS (
 joined AS (
 
     SELECT
-        EXTRACT(YEAR FROM workspace_onboarded_at) AS year,
-        EXTRACT(MONTH FROM workspace_onboarded_at) AS month,
-        FORMAT_TIMESTAMP("%b %Y", workspace_onboarded_at) AS year_month,
+        EXTRACT(YEAR FROM onboarded_at) AS year,
+        EXTRACT(MONTH FROM onboarded_at) AS month,
+        FORMAT_TIMESTAMP("%b %Y", onboarded_at) AS year_month,
         *,
-        TIMESTAMP_DIFF(ai_block_created_at, workspace_onboarded_at, MINUTE) AS reached_ai_block_created_minutes,
-        TIMESTAMP_DIFF(data_added_at, workspace_onboarded_at, MINUTE) AS reached_data_added_minutes,
-        TIMESTAMP_DIFF(added_40dp_at, workspace_onboarded_at, MINUTE) AS reached_40dp_added_minutes,
-        TIMESTAMP_DIFF(trained_ai_block_at, workspace_onboarded_at, MINUTE) AS reached_ai_block_trained_minutes,
-        TIMESTAMP_DIFF(made_test_pred_at, workspace_onboarded_at, MINUTE) AS reached_test_pred_made_minutes,
-        TIMESTAMP_DIFF(made_prod_pred_at, workspace_onboarded_at, MINUTE) AS reached_prod_pred_made_minutes,
-        TIMESTAMP_DIFF(made_50_prod_pred_at, workspace_onboarded_at, MINUTE) AS reached_50_prod_pred_made_minutes
+        TIMESTAMP_DIFF(created_ai_block_at, onboarded_at, MINUTE) AS reached_created_ai_block_minutes,
+        TIMESTAMP_DIFF(data_added_at, onboarded_at, MINUTE) AS reached_data_added_minutes,
+        TIMESTAMP_DIFF(added_40dp_at, onboarded_at, MINUTE) AS reached_40dp_added_minutes,
+        TIMESTAMP_DIFF(trained_ai_block_at, onboarded_at, MINUTE) AS reached_trained_ai_block_minutes,
+        TIMESTAMP_DIFF(made_test_pred_at, onboarded_at, MINUTE) AS reached_made_test_pred_minutes,
+        TIMESTAMP_DIFF(made_prod_pred_at, onboarded_at, MINUTE) AS reached_made_prod_pred_minutes,
+        TIMESTAMP_DIFF(made_50_prod_pred_at, onboarded_at, MINUTE) AS reached_made_50_prod_pred_minutes
     FROM
         workspace_onboarded wo
     LEFT JOIN created_ai_block USING(workspace_id, email)
-    LEFT JOIN uploaded_data USING(workspace_id, email)
-    LEFT JOIN uploaded_40_datapoints USING(workspace_id, email)
+    LEFT JOIN data_added USING(workspace_id, email)
+    LEFT JOIN added_40dp USING(workspace_id, email)
     LEFT JOIN trained_ai_block USING(workspace_id, email)
     LEFT JOIN made_test_pred USING(workspace_id, email)
     LEFT JOIN made_prod_pred USING(workspace_id, email)
@@ -115,25 +116,25 @@ median_workaround AS (
         year_month,
         year,
         month, 
-        ANY_VALUE(reached_ai_block_created_minutes_mdn) AS reached_ai_block_created_minutes_mdn,
+        ANY_VALUE(reached_created_ai_block_minutes_mdn) AS reached_created_ai_block_minutes_mdn,
         ANY_VALUE(reached_data_added_minutes_mdn) AS reached_data_added_minutes_mdn,
         ANY_VALUE(reached_40dp_added_minutes_mdn) AS reached_40dp_added_minutes_mdn,
-        ANY_VALUE(reached_ai_block_trained_minutes_mdn) AS reached_ai_block_trained_minutes_mdn,
-        ANY_VALUE(reached_test_pred_made_minutes_mdn) AS reached_test_pred_made_minutes_mdn,
-        ANY_VALUE(reached_prod_pred_made_minutes_mdn) AS reached_prod_pred_made_minutes_mdn,
-        ANY_VALUE(reached_50_prod_pred_made_minutes_mdn) AS reached_50_prod_pred_made_minutes_mdn
+        ANY_VALUE(reached_trained_ai_block_minutes_mdn) AS reached_trained_ai_block_minutes_mdn,
+        ANY_VALUE(reached_made_test_pred_minutes_mdn) AS reached_made_test_pred_minutes_mdn,
+        ANY_VALUE(reached_made_prod_pred_minutes_mdn) AS reached_made_prod_pred_minutes_mdn,
+        ANY_VALUE(reached_made_50_prod_pred_minutes_mdn) AS reached_made_50_prod_pred_minutes_mdn
     FROM
     (SELECT
         year,
         month,
         year_month,
-        PERCENTILE_CONT(reached_ai_block_created_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_ai_block_created_minutes_mdn,
+        PERCENTILE_CONT(reached_created_ai_block_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_created_ai_block_minutes_mdn,
         PERCENTILE_CONT(reached_data_added_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_data_added_minutes_mdn,
         PERCENTILE_CONT(reached_40dp_added_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_40dp_added_minutes_mdn,
-        PERCENTILE_CONT(reached_ai_block_trained_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_ai_block_trained_minutes_mdn,
-        PERCENTILE_CONT(reached_test_pred_made_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_test_pred_made_minutes_mdn,
-        PERCENTILE_CONT(reached_prod_pred_made_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_prod_pred_made_minutes_mdn,
-        PERCENTILE_CONT(reached_50_prod_pred_made_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_50_prod_pred_made_minutes_mdn
+        PERCENTILE_CONT(reached_trained_ai_block_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_trained_ai_block_minutes_mdn,
+        PERCENTILE_CONT(reached_made_test_pred_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_made_test_pred_minutes_mdn,
+        PERCENTILE_CONT(reached_made_prod_pred_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_made_prod_pred_minutes_mdn,
+        PERCENTILE_CONT(reached_made_50_prod_pred_minutes, 0.5) OVER(PARTITION BY year_month) AS reached_made_50_prod_pred_minutes_mdn
     FROM
         joined) AS partitioned
     GROUP BY
@@ -148,27 +149,27 @@ SELECT
     year,
     month,
     COUNT(*) AS onboarded_count,
-    COUNT(CASE WHEN ai_block_created_at IS NOT NULL THEN 1 END) AS reached_ai_block_created_count,
-    AVG(reached_ai_block_created_minutes) AS reached_ai_block_created_minutes_avg,
-    ANY_VALUE(reached_ai_block_created_minutes_mdn) AS reached_ai_block_created_minutes_mdn,
+    COUNT(CASE WHEN created_ai_block_at IS NOT NULL THEN 1 END) AS reached_created_ai_block_count,
+    AVG(reached_created_ai_block_minutes) AS reached_created_ai_block_minutes_avg,
+    ANY_VALUE(reached_created_ai_block_minutes_mdn) AS reached_created_ai_block_minutes_mdn,
     COUNT(CASE WHEN data_added_at IS NOT NULL THEN 1 END) AS reached_data_added_count,
     AVG(reached_data_added_minutes) AS reached_data_added_minutes_avg,
     ANY_VALUE(reached_data_added_minutes_mdn) AS reached_data_added_minutes_mdn,
     COUNT(CASE WHEN added_40dp_at IS NOT NULL THEN 1 END) AS reached_40dp_added_count,
     AVG(reached_40dp_added_minutes) AS reached_40dp_added_minutes_avg,
     ANY_VALUE(reached_40dp_added_minutes_mdn) AS reached_40dp_added_minutes_mdn,
-    COUNT(CASE WHEN trained_ai_block_at IS NOT NULL THEN 1 END) AS reached_ai_block_trained_count,
-    AVG(reached_ai_block_trained_minutes) AS reached_ai_block_trained_minutes_avg,
-    ANY_VALUE(reached_ai_block_trained_minutes_mdn) AS reached_ai_block_trained_minutes_mdn,
-    COUNT(CASE WHEN made_test_pred_at IS NOT NULL THEN 1 END) AS reached_test_pred_made_count,
-    AVG(reached_test_pred_made_minutes) AS reached_test_pred_made_minutes_avg,
-    ANY_VALUE(reached_test_pred_made_minutes_mdn) AS reached_test_pred_made_minutes_mdn,
-    COUNT(CASE WHEN made_prod_pred_at IS NOT NULL THEN 1 END) AS reached_prod_pred_made_count,
-    AVG(reached_prod_pred_made_minutes) AS reached_prod_pred_made_minutes_avg,
-    ANY_VALUE(reached_prod_pred_made_minutes_mdn) AS reached_prod_pred_made_minutes_mdn,
-    COUNT(CASE WHEN made_50_prod_pred_at IS NOT NULL THEN 1 END) AS reached_50_prod_pred_made_count,
-    AVG(reached_50_prod_pred_made_minutes) AS reached_50_prod_pred_made_minutes_avg,
-    ANY_VALUE(reached_50_prod_pred_made_minutes_mdn) AS reached_50_prod_pred_made_minutes_mdn
+    COUNT(CASE WHEN trained_ai_block_at IS NOT NULL THEN 1 END) AS reached_trained_ai_block_count,
+    AVG(reached_trained_ai_block_minutes) AS reached_trained_ai_block_minutes_avg,
+    ANY_VALUE(reached_trained_ai_block_minutes_mdn) AS reached_trained_ai_block_minutes_mdn,
+    COUNT(CASE WHEN made_test_pred_at IS NOT NULL THEN 1 END) AS reached_made_test_pred_count,
+    AVG(reached_made_test_pred_minutes) AS reached_made_test_pred_minutes_avg,
+    ANY_VALUE(reached_made_test_pred_minutes_mdn) AS reached_made_test_pred_minutes_mdn,
+    COUNT(CASE WHEN made_prod_pred_at IS NOT NULL THEN 1 END) AS reached_made_prod_pred_count,
+    AVG(reached_made_prod_pred_minutes) AS reached_made_prod_pred_minutes_avg,
+    ANY_VALUE(reached_made_prod_pred_minutes_mdn) AS reached_made_prod_pred_minutes_mdn,
+    COUNT(CASE WHEN made_50_prod_pred_at IS NOT NULL THEN 1 END) AS reached_made_50_prod_pred_count,
+    AVG(reached_made_50_prod_pred_minutes) AS reached_made_50_prod_pred_minutes_avg,
+    ANY_VALUE(reached_made_50_prod_pred_minutes_mdn) AS reached_made_50_prod_pred_minutes_mdn
 FROM    
     joined
 LEFT JOIN median_workaround USING (year_month, year, month)

@@ -9,7 +9,8 @@ WITH workspace_onboarded AS (
     SELECT 
         context_group_id AS workspace_id,
         email,
-        MIN(uo.timestamp) AS workspace_onboarded_at
+        MIN(uo.timestamp) AS onboarded_at,
+        CAST(MIN(uo.timestamp) AS STRING) AS onboarded_at_string,
     FROM
         {{ref("django_production_user_onboarded")}} uo
     GROUP BY
@@ -27,7 +28,7 @@ created_ai_block AS (
 
 ), 
 
-uploaded_data AS (
+data_added AS (
 
     SELECT 
         *
@@ -36,7 +37,7 @@ uploaded_data AS (
 
 ), 
 
-uploaded_40_datapoints AS (
+added_40dp AS (
 
     SELECT 
         *
@@ -82,15 +83,15 @@ made_50_prod_pred AS (
 )
 
 SELECT
-    EXTRACT(YEAR FROM workspace_onboarded_at) AS year,
-    EXTRACT(MONTH FROM workspace_onboarded_at) AS month,
-    FORMAT_TIMESTAMP("%b %Y", workspace_onboarded_at) AS year_month,
+    EXTRACT(YEAR FROM onboarded_at) AS year,
+    EXTRACT(MONTH FROM onboarded_at) AS month,
+    FORMAT_TIMESTAMP("%b %Y", onboarded_at) AS year_month,
     *
 FROM
     workspace_onboarded wo
 LEFT JOIN created_ai_block USING(workspace_id, email)
-LEFT JOIN uploaded_data USING(workspace_id, email)
-LEFT JOIN uploaded_40_datapoints USING(workspace_id, email)
+LEFT JOIN data_added USING(workspace_id, email)
+LEFT JOIN added_40dp USING(workspace_id, email)
 LEFT JOIN trained_ai_block USING(workspace_id, email)
 LEFT JOIN made_test_pred USING(workspace_id, email)
 LEFT JOIN made_prod_pred USING(workspace_id, email)
@@ -98,5 +99,4 @@ LEFT JOIN made_50_prod_pred USING(workspace_id, email)
 WHERE
     NOT(wo.email LIKE "%@levity.ai")
 ORDER BY
-    1,
-    2 ASC
+    onboarded_at ASC

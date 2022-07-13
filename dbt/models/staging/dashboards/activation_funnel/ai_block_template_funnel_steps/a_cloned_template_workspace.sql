@@ -29,8 +29,8 @@ WITH d_dataset AS (
 SELECT
 	workspace_id,
     email,
-	MIN(created_at) AS template_cloned_at,
-    CAST(MIN(created_at) AS STRING) AS template_cloned_at_string
+	MIN(created_at) AS cloned_template_at,
+    CAST(MIN(created_at) AS STRING) AS cloned_template_at_string
 FROM
 	d_dataset dd
 INNER JOIN workspaces w ON dd.new_workspace_id = w.workspace_id
