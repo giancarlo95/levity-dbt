@@ -63,3 +63,5 @@ models:
       - name: email
         description: 'Unique ID of the workspace: email address of the user that got
           onboarded'
+      - name: onboarded_at
+        description: Time of the onboarding
