@@ -74,3 +74,6 @@ models:
       - name: made_test_pred_at
         description: Time at which the first prediction through the testing tab was
           made
+      - name: made_prod_pred_at
+        description: Time at which the first prediction through API, flows or integrations
+          was made
