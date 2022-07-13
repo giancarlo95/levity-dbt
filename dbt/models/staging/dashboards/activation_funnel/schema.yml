@@ -7,3 +7,8 @@ models:
       this means that the user never reached those steps. '
     meta:
       consumer: customer success
+    columns:
+      - name: year
+        description: Year of the onboarding
+      - name: month
+        description: Month of the onboarding
