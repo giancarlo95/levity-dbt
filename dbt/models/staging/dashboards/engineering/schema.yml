@@ -37,6 +37,8 @@ models:
         description: Number of data points
       - name: data_count
         description: Operational - number of data points - new infrastructure
+      - name: email
+        description: 'Unique ID of the user: email address'
     meta:
       consumer: engineering
   - name: p_t_hourly
