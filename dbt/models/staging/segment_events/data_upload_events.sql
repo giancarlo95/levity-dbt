@@ -36,14 +36,6 @@ WITH datasets_data AS (
     FROM
         {{ref('workspaces')}}
         
-), users AS (
-
-    SELECT 
-        user_id,
-        user_email_address
-    FROM
-        {{ref('users')}}
-    
 ), final AS (
     
     SELECT 
@@ -79,7 +71,6 @@ WITH datasets_data AS (
 
 SELECT 
     final.user_id,
-    u.user_email_address,
     is_human_in_the_loop,
     final.workspace_id,
     aiblock_id,
@@ -91,5 +82,3 @@ SELECT
     time_stamp
 FROM final
 INNER JOIN workspaces ob ON final.workspace_id = ob.workspace_id
-INNER JOIN users u ON u.user_id=final.user_id
-

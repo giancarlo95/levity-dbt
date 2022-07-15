@@ -1,12 +1,4 @@
-WITH users AS (
-
-    SELECT 
-        user_id,
-        user_email_address
-    FROM
-        {{ref('users')}}
-
-), userflow_ai_blocks AS (
+WITH userflow_ai_blocks AS (
 
     SELECT
         *
@@ -47,7 +39,6 @@ WITH users AS (
 )
 
 SELECT 
-    u.user_email_address,
     pmcv.new_user_id,
     pmcv.new_workspace_id,
     pmcv.new_id AS classifierversion_id,
@@ -63,7 +54,6 @@ FROM
     pm_classifierversion pmcv
 INNER JOIN pm_classifier pmc ON pmc.new_id = pmcv.new_classifier_id
 INNER JOIN d_dataset dd ON dd.new_id = pmc.new_dataset_id
-INNER JOIN users u ON u.user_id = pmcv.new_user_id
 WHERE TIMESTAMP_TRUNC(pmcv.created_at, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 2 HOUR), HOUR)
 
 

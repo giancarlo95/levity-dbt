@@ -110,4 +110,7 @@ sources:
     description: Production DB insert, update and delete statements
     tables:
       - name: changeEvents
+  - name: userflow
+    tables: 
+      - name: question_answered_view
  

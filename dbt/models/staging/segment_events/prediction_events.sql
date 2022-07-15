@@ -45,13 +45,6 @@ WITH prediction_models_classifier AS (
         {{ref('datasets_dataset')}} dd
     LEFT JOIN userflow_ai_blocks uab ON dd.aiblock_id = uab.dataset_id
 
-), workspaces AS (
-
-    SELECT
-        workspace_id
-    FROM
-        {{ref('workspaces')}}
-        
 ), final AS (
 
     SELECT
@@ -101,4 +94,3 @@ SELECT
     total_predictions,
     time_stamp
 FROM final
-INNER JOIN workspaces oa ON final.workspace_id = oa.workspace_id
