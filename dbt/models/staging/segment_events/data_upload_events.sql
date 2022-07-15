@@ -9,6 +9,13 @@ WITH datasets_data AS (
     FROM 
         {{ref('datasets_data')}}
 
+), userflow_ai_blocks AS (
+
+    SELECT
+        *
+    FROM
+        {{ref('userflow_ai_blocks')}}
+
 ), datasets_dataset AS (
 
     SELECT
@@ -17,8 +24,10 @@ WITH datasets_data AS (
         aiblock_id,
         is_template,
         aiblock_name,
-        aiblock_description
-    FROM {{ref('datasets_dataset')}}
+        aiblock_description,
+        COALESCE(is_userflow_data, "no") AS is_userflow_data
+    FROM {{ref('datasets_dataset')}} dd
+    LEFT JOIN userflow_ai_blocks uab ON dd.aiblock_id = uab.dataset_id
 
 ), workspaces AS (
 
@@ -46,6 +55,7 @@ WITH datasets_data AS (
         dsd.workspace_id,
         dsd.aiblock_id                                           AS aiblock_id,
         is_template,
+        is_userflow_data,
         aiblock_name,
         aiblock_description,
         TIMESTAMP_TRUNC(date_datapoint_uploaded, HOUR)           AS relevant_day_hour,
@@ -62,7 +72,8 @@ WITH datasets_data AS (
         5,
         6,
         7,
-        8
+        8,
+        9
 
 )
 
@@ -73,6 +84,7 @@ SELECT
     final.workspace_id,
     aiblock_id,
     is_template,
+    is_userflow_data,
     aiblock_name,
     aiblock_description,
     net_data_points,

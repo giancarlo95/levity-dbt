@@ -24,6 +24,13 @@ WITH prediction_models_classifier AS (
     FROM 
         {{ref('prediction_models_prediction')}}
 
+), userflow_ai_blocks AS (
+
+    SELECT
+        *
+    FROM
+        {{ref('userflow_ai_blocks')}}
+
 ), datasets_dataset AS (
 
     SELECT
@@ -32,9 +39,11 @@ WITH prediction_models_classifier AS (
         aiblock_id,
         is_template,
         aiblock_name,
-        aiblock_description
+        aiblock_description,
+        COALESCE(is_userflow_data, "no") AS is_userflow_data
     FROM 
-        {{ref('datasets_dataset')}}
+        {{ref('datasets_dataset')}} dd
+    LEFT JOIN userflow_ai_blocks uab ON dd.aiblock_id = uab.dataset_id
 
 ), workspaces AS (
 
@@ -53,6 +62,7 @@ WITH prediction_models_classifier AS (
         aiblock_name,
         aiblock_description,
         is_hitl,
+        is_userflow_data,
         origin,
         workflow_id,
         TIMESTAMP_TRUNC(pmp.date_prediction_made, HOUR)       AS relevant_day_hour,
@@ -72,7 +82,8 @@ WITH prediction_models_classifier AS (
         7,
         8,
         9,
-        10
+        10,
+        11
 
 )
 
@@ -84,6 +95,7 @@ SELECT
     aiblock_name,
     aiblock_description,
     is_hitl,
+    is_userflow_data,
     origin,
     workflow_id,
     total_predictions,

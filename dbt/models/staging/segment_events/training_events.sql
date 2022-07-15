@@ -6,13 +6,21 @@ WITH users AS (
     FROM
         {{ref('users')}}
 
+), userflow_ai_blocks AS (
+
+    SELECT
+        *
+    FROM
+        {{ref('userflow_ai_blocks')}}
+
 ), d_dataset AS (
 
     SELECT 
-        *
+        * 
     FROM 
-        {{ref('normalized_d_dataset')}}
-    WHERE   
+        {{ref('normalized_d_dataset')}} ndd
+    LEFT JOIN userflow_ai_blocks uab ON ndd.new_id = uab.dataset_id 
+    WHERE 
         op = "INSERT"
 
 ), pm_classifier AS (
@@ -48,6 +56,7 @@ SELECT
         WHEN dd.new_description IS NULL THEN "no"
         ELSE "yes"
     END AS is_template_retraining,
+    COALESCE(is_userflow_data, "no") AS is_userflow_data,
     new_performance_score AS performance_score,
     pmcv.created_at AS time_stamp
 FROM 

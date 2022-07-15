@@ -4,15 +4,24 @@
     )
 }}
 
-WITH d_dataset AS (
+WITH userflow_ai_blocks AS (
+
+    SELECT
+        *
+    FROM
+        {{ref('userflow_ai_blocks')}}
+
+), d_dataset AS (
 
     SELECT 
         * 
     FROM 
-        {{ref('normalized_d_dataset')}}
+        {{ref('normalized_d_dataset')}} ndd
+    LEFT JOIN userflow_ai_blocks uab ON ndd.new_id = uab.dataset_id 
     WHERE 
         op = "INSERT"
         AND new_description IS NULL
+        AND is_userflow_data IS NULL
 
 ), workspaces AS (
 

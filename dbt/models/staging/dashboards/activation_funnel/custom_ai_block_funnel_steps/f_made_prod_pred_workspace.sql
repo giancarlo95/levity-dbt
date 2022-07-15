@@ -14,15 +14,24 @@ WITH pm_prediction AS (
         op = "INSERT"
         AND NOT(new_source = "test_tab")
 
+), userflow_ai_blocks AS (
+
+    SELECT
+        *
+    FROM
+        {{ref('userflow_ai_blocks')}}
+
 ), d_dataset AS (
 
     SELECT 
-        *
+        * 
     FROM 
-        {{ref('normalized_d_dataset')}}
-    WHERE   
+        {{ref('normalized_d_dataset')}} ndd
+    LEFT JOIN userflow_ai_blocks uab ON ndd.new_id = uab.dataset_id 
+    WHERE 
         op = "INSERT"
         AND new_description IS NULL
+        AND is_userflow_data IS NULL
 
 ), pm_classifier AS (
 
