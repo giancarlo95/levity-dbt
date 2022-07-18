@@ -14,8 +14,8 @@ WITH question_answered AS (
 
 SELECT
     user_id,
+    user_email_address AS email,
     text_answer,
-    --user_email_address,
     CASE
         WHEN text_answer = "Timing problem" THEN "Time investment too high"
         WHEN text_answer = "Pricing" THEN "Pricing"
@@ -30,6 +30,6 @@ SELECT
     END AS hs_lead_status  
 FROM 
     question_answered
---INNER JOIN users USING(user_id)
+INNER JOIN users USING(user_id)
 WHERE 
     question_name = "cancellation reason"
