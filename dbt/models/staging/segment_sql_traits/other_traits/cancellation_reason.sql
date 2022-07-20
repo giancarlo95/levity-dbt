@@ -27,6 +27,7 @@ SELECT
         WHEN text_answer = "On Hold for the Product feature" THEN "On Hold for Product Feature"
         WHEN text_answer = "Integration needs" THEN "Integration needs"  
         WHEN text_answer = "Other" THEN "Specific Reason (See Notes)"
+        ELSE "Specific Reason (See Notes)"
     END AS hs_lead_status  
 FROM 
     question_answered
