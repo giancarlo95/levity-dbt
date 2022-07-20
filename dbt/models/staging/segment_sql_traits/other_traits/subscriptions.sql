@@ -56,7 +56,7 @@ SELECT
     END AS lifecyclestage,
     CASE
         WHEN DATE_DIFF(CURRENT_DATE(), trial_end, DAY)>1 THEN "Paid Plan"
-        ELSE "Active in Free Plan"
+        ELSE "Active in free plan"
     END AS hs_lead_status,
     new_plan_id AS subscription_plan_id
 FROM
