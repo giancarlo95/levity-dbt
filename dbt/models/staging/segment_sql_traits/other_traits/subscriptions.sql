@@ -17,7 +17,8 @@ WITH a_paymentplan_created AS (
         FROM
             {{ref("normalized_a_paymentplan")}}
         WHERE
-            op = "INSERT") AS creation
+            op = "INSERT"
+            AND new_plan_id IS NOT NULL) AS creation
     WHERE 
         index = 1
 
