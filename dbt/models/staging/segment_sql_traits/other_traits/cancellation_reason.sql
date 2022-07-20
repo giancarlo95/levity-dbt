@@ -22,7 +22,7 @@ SELECT
         WHEN text_answer = "Testing" THEN "Testing"
         WHEN text_answer = "Privacy/Security" THEN "Privacy/Security"
         WHEN text_answer = "Not the decision maker" THEN "Not the Decision Maker"
-        WHEN text_answer = "No raining data" THEN "No Training Data"
+        WHEN text_answer = "No training data" THEN "No Training Data"
         WHEN text_answer = "Will never work" THEN "Use Case will never work"
         WHEN text_answer = "On Hold for the Product feature" THEN "On Hold for Product Feature"
         WHEN text_answer = "Integration needs" THEN "Integration needs"  
