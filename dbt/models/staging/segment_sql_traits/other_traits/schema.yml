@@ -26,6 +26,8 @@ models:
           For general info: this variable in HubSpot is named "Is Onboarded" and takes
           value "added" for all those users that get invited to the workspace.'
       - name: lifecyclestage
-        description: "Takes the following values:\n\n- salesqualifiedlead - if the\
-          \ workspace is enjoying th free trial\n\n- customer - if the workspace is\
-          \ a paying customer\n\n"
+        description: "Takes the following values:\n\n- `salesqualifiedlead` (HubSpot:\
+          \ Sales Qualified Lead) - if the workspace is enjoying th free trial\n\n\
+          - `customer` (HubSpot: Customer) - if the workspace is a paying customer\n\
+          \nFor general info: this variable in HubSpot is named \"Lifecycle stage\"\
+          . "
