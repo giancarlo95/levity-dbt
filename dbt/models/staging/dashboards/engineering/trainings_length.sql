@@ -135,8 +135,8 @@ WITH d_dataset AS (
 ), users AS (
 
     SELECT 
-        id,
-        email
+        user_id AS id,
+        user_email_address AS email
     FROM
         {{ref('users')}}
 
