@@ -30,3 +30,8 @@ models:
           \ `Sales Qualified Lead`) - if the workspace is enjoying th free trial\n\
           \n- `customer` (HubSpot: `Customer`) - if the workspace is a paying customer\n\
           \nFor general info: this variable in HubSpot is named `Lifecycle stage`"
+      - name: hs_lead_status
+        description: "Takes the following values:\n\n- `Active in free plan` (HubSpot:\
+          \ `Active in Free Plan`) - if the workspace is enjoying th free trial\n\n\
+          - `Paid plan` (HubSpot: `Paid Plan`) - if the workspace is a paying customer\n\
+          \nFor general info: this variable in HubSpot is named `Lead status`"
