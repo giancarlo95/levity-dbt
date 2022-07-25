@@ -54,6 +54,7 @@ SELECT
     apc.new_workspace_id AS workspace_id,
     user_email_address AS email,
     onboarded_at,
+    CAST(onboarded_at AS STRING) AS onboarded_at_string,
     "yes" AS is_onboarded,
     CASE
         WHEN DATE_DIFF(CURRENT_DATE(), trial_end, DAY)>1 THEN "customer"
