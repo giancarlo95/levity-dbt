@@ -15,7 +15,7 @@ models:
           onboarded
 
 
-          Foreign Key to sync information with HubSpot user model. '
+          Foreign Key to enrich the profile of the onboarded user in HubSpot.'
       - name: workspace_id
         description: 'Unique ID of the workspace: frontegg_tenant_id'
       - name: is_onboarded
