@@ -39,3 +39,5 @@ models:
         description: "Unique ID of the **first payment plan**, the one the onboarding\
           \ user chose at the beginning of the activity\n\nRefer to HubSpot property\
           \ `Subscription Plan ID` for additional details"
+      - name: onboarded_at
+        description: Time at which the first subscription was created
