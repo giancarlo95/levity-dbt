@@ -36,5 +36,6 @@ models:
           - `Paid plan` (HubSpot: `Paid Plan`) - if the workspace is a paying customer\n\
           \nFor general info: this variable in HubSpot is named `Lead status`"
       - name: subscription_plan_id
-        description: "Unique ID of the payment plan\n\nRefer to HubSpot property `Subscription\
-          \ Plan ID` for additional details"
+        description: "Unique ID of the **first payment plan**, the one the onboarding\
+          \ user chose at the beginning of the activity\n\nRefer to HubSpot property\
+          \ `Subscription Plan ID` for additional details"
