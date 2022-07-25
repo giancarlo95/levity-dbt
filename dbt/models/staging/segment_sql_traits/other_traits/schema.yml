@@ -20,7 +20,8 @@ models:
         description: 'Unique ID of the workspace: frontegg_tenant_id'
       - name: is_onboarded
         description: 'Whether the workspace is onboarded: always take value "yes"
-          for workspaces that are part of this table. This variable is synced with
-          HubSpot through Segment Personas "Subscription Created to HS Properties"
-          custom trait by using the email address of the onboarded user as key. For
-          general info: this variable in HubSpot '
+          for workspaces that are part of this table.
+
+
+          For general info: this variable in HubSpot takes value "added" for all those
+          users that get invited to the workspace.'
