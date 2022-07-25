@@ -17,7 +17,7 @@ models:
 
           **Foreign Key** to enrich the profile of the onboarded user in **HubSpot**'
       - name: workspace_id
-        description: 'Unique ID of the workspace: frontegg_tenant_id'
+        description: 'Unique ID of the workspace: `frontegg_tenant_id`'
       - name: is_onboarded
         description: 'Whether the workspace is onboarded: always take value `yes`
           for workspaces that are part of this table.
