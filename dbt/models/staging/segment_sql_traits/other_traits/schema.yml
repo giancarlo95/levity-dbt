@@ -28,6 +28,5 @@ models:
       - name: lifecyclestage
         description: "Takes the following values:\n\n- `salesqualifiedlead` (HubSpot:\
           \ *Sales Qualified Lead*) - if the workspace is enjoying th free trial\n\
-          \n- `customer` (HubSpot: Customer) - if the workspace is a paying customer\n\
-          \nFor general info: this variable in HubSpot is named \"Lifecycle stage\"\
-          . "
+          \n- `customer` (HubSpot: *Customer*) - if the workspace is a paying customer\n\
+          \nFor general info: this variable in HubSpot is named *Lifecycle stage*"
