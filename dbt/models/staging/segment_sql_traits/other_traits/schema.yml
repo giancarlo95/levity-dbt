@@ -13,3 +13,5 @@ models:
       - name: email
         description: 'Unique ID of the workspace: email address of the user that got
           onboarded'
+      - name: workspace_id
+        description: 'Unique ID of the workspace: frontegg_tenant_id'
