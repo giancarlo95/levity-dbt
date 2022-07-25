@@ -5,4 +5,4 @@ models:
       consumer: customer success
     description: 'This table shows, for each onboarded workspace, the plan ID of the
       chosen plan and whether the workspace is enjoying the free trial or it has become
-      a paying customer. '
+      a paying customer.'
