@@ -7,15 +7,12 @@
 WITH workspace_onboarded AS (
 
     SELECT 
-        context_group_id AS workspace_id,
+        workspace_id,
         email,
-        MIN(uo.timestamp) AS onboarded_at,
-        CAST(MIN(uo.timestamp) AS STRING) AS onboarded_at_string
+        onboarded_at,
+        CAST(onboarded_at AS STRING) AS onboarded_at_string
     FROM
-        {{ref("django_production_user_onboarded")}} uo
-    GROUP BY
-        context_group_id,
-        email
+        {{ref("subscriptions")}} uo
 
 ), 
 
@@ -78,11 +75,11 @@ joined AS (
         TIMESTAMP_DIFF(made_50_prod_pred_at, onboarded_at, MINUTE) AS reached_made_50_prod_pred_minutes
     FROM
         workspace_onboarded wo
-    LEFT JOIN cloned_template USING(workspace_id, email)
-    LEFT JOIN retrained_model USING(workspace_id, email)
-    LEFT JOIN made_test_pred USING(workspace_id, email)
-    LEFT JOIN made_prod_pred USING(workspace_id, email)
-    LEFT JOIN made_50_prod_pred USING(workspace_id, email)
+    LEFT JOIN cloned_template USING(workspace_id)
+    LEFT JOIN retrained_model USING(workspace_id)
+    LEFT JOIN made_test_pred USING(workspace_id)
+    LEFT JOIN made_prod_pred USING(workspace_id)
+    LEFT JOIN made_50_prod_pred USING(workspace_id)
     WHERE
         NOT(wo.email LIKE "%@levity.ai")
 

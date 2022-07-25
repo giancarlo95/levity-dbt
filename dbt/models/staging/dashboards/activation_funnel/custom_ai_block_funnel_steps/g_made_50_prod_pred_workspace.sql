@@ -75,33 +75,17 @@ WITH pm_prediction AS (
     WHERE 
         workspace_id IN (SELECT workspace_id FROM count_50_pred)
     
-), workspaces AS (
+) 
 
-    SELECT 
-        context_group_id AS workspace_id,
-        email,
-    FROM
-        {{ref("django_production_user_onboarded")}} uo
-    WHERE 
-        NOT(email LIKE "%@levity.ai")
-    GROUP BY
-        context_group_id,
-        email
-
-)
 SELECT
     workspace_id,
-    email,
     MIN(created_at) AS made_50_prod_pred_at,
     CAST(MIN(created_at) AS STRING) AS made_50_prod_pred_at_string
 FROM
     time_50_pred
-INNER JOIN workspaces USING(workspace_id)
 WHERE
     index = 50
 GROUP BY
-    workspace_id,
-    email
-
+    workspace_id
 
 

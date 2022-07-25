@@ -1,0 +1,5 @@
+version: 2
+models:
+  - name: health_score
+    meta:
+      consumer: customer success

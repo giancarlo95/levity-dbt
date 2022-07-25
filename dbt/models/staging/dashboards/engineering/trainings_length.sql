@@ -138,7 +138,7 @@ WITH d_dataset AS (
         id,
         email
     FROM
-        {{ref('django_production_users')}}
+        {{ref('users')}}
 
     
 ), final AS (

@@ -172,16 +172,16 @@ WITH signup_funnel AS (
         user_email_address AS email
     FROM
         {{ref("users")}} u
+    WHERE 
+        user_email_address="thilo+selfmade-energy@levity.ai" OR NOT(user_email_address LIKE "%levity.ai")
 
 ), user_onboarded AS (
 
     SELECT 
         user_id,
-        MIN(DATE(uo.timestamp)) AS user_onboarded_at
+        onboarded_at AS user_onboarded_at
     FROM
-        {{ref("django_production_user_onboarded")}} uo
-    GROUP BY
-        user_id
+        {{ref("subscriptions")}}
 
 ), predictions_done AS (
 

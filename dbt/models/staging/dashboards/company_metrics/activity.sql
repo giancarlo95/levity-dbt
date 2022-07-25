@@ -17,6 +17,8 @@ WITH legacy_activity AS (
         user_id
     FROM
         {{ref("users")}}
+    WHERE 
+        user_email_address="thilo+selfmade-energy@levity.ai" OR NOT(user_email_address LIKE "%levity.ai")
     
 ), app_predictions_done AS (
 

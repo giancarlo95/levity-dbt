@@ -46,26 +46,11 @@ WITH d_dataset AS (
     GROUP BY
         pmcv.new_workspace_id
 
-), workspaces AS (
-
-    SELECT 
-        context_group_id AS workspace_id,
-        email,
-    FROM
-        {{ref("django_production_user_onboarded")}} uo
-    WHERE 
-        NOT(email LIKE "%@levity.ai")
-    GROUP BY
-        context_group_id,
-        email
-
 )
 
 SELECT
     new_workspace_id AS workspace_id,
-    email,
     end_time AS retrained_model_at,
     CAST(end_time AS STRING) AS retrained_model_at_string
 FROM
     training_end te
-INNER JOIN workspaces w ON w.workspace_id = te.new_workspace_id

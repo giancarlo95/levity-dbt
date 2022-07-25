@@ -23,19 +23,6 @@ WITH userflow_ai_blocks AS (
         AND new_description IS NULL
         AND is_userflow_data IS NULL
 
-), workspaces AS (
-
-    SELECT 
-        context_group_id AS workspace_id,
-        email,
-    FROM
-        {{ref("django_production_user_onboarded")}} uo
-    WHERE 
-        NOT(email LIKE "%@levity.ai")
-    GROUP BY
-        context_group_id,
-        email
-
 ), d_data AS (
 
     SELECT
@@ -77,17 +64,13 @@ WITH userflow_ai_blocks AS (
 
 SELECT
     workspace_id,
-    email,
     MIN(created_at) AS added_40dp_at,
     CAST(MIN(created_at) AS STRING) AS added_40dp_at_string
 FROM
     time_40_dp
-INNER JOIN workspaces USING(workspace_id)
 WHERE
     index = 40
 GROUP BY
-    workspace_id,
-    email
-
+    workspace_id
 
 
