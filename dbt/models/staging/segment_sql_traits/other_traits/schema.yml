@@ -23,5 +23,5 @@ models:
           for workspaces that are part of this table.
 
 
-          For general info: this variable in HubSpot takes value "added" for all those
-          users that get invited to the workspace.'
+          For general info: this variable in HubSpot is named "Is Onboarded" and takes
+          value "added" for all those users that get invited to the workspace.'
