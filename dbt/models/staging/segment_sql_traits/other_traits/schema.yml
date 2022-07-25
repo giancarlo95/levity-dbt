@@ -8,7 +8,7 @@ models:
       a paying customer.'
     columns:
       - name: user_id
-        description: 'Unique ID of the workspace: frontegg_user_id of the user that
+        description: 'Unique ID of the workspace: `frontegg_user_id` of the user that
           got onboarded'
       - name: email
         description: 'Unique ID of the workspace: email address of the user that got
