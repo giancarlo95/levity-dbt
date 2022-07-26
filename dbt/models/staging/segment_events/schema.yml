@@ -9,3 +9,5 @@ models:
       \ some factors: the ID of the user, the ID of the AI Block and some additional\
       \ more specific factors. At the end, each record of this table will be sent\
       \ to Segment as a \"Datapoints Added\" event. \n\n"
+    meta:
+      consumer: customer success
