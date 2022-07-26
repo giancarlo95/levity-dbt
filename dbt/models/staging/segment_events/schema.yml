@@ -36,3 +36,5 @@ models:
 
 
           - "no" otherwise'
+      - name: aiblock_id
+        description: 'Unique ID of the AI Block: ID of the datasets_dataset table'
