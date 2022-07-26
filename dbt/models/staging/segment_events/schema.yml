@@ -18,3 +18,6 @@ models:
         description: 'Unique ID of the workspace: frontegg_tenant_id'
       - name: net_data_points
         description: Count of the data points that were uploaded
+      - name: is_userflow_data
+        description: "- \"yes\" if the data points come from one of the dataset that\
+          \ we have the users download during the onboading tour\n\n- \"no\" otherwise"
