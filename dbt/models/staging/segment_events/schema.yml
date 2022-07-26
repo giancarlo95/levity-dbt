@@ -50,3 +50,6 @@ models:
       the ID of the user, the ID of the AI Block and some additional more specific
       factors. At the end, each record of this table will be sent to Segment as a
       "Predictions Done" event.'
+    columns:
+      - name: user_id
+        description: 'Unique ID of the user: frontegg_user_id'
