@@ -74,3 +74,5 @@ models:
       - name: workflow_id
         description: "- if `origin = flows` the variable takes as value the ID of\
           \ the workflow\n\n- NULL otherwise"
+      - name: total_predictions
+        description: total number of predictions that were made
