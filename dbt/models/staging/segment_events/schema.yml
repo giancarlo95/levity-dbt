@@ -15,7 +15,7 @@ models:
       - name: user_id
         description: 'Unique ID of the user: user_frontegg_id'
       - name: workspace_id
-        description: 'Unique ID of the workspace: frontegg_tenant_id'
+        description: 'Unique ID of the AI Block: ID of the datasets_dataset table'
       - name: net_data_points
         description: Count of the data points that were uploaded
       - name: is_userflow_data
