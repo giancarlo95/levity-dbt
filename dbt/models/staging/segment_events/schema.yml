@@ -71,3 +71,6 @@ models:
       - name: origin
         description: "- \"flows\" \"Integromat\" \"Zapier\" \"API\" \"Bubble\" as\
           \ production predictions\n\n- \"test_tab\" as testing prediction"
+      - name: workflow_id
+        description: "- if `origin = flows` the variable takes as value the ID of\
+          \ the workflow\n\n- NULL otherwise"
