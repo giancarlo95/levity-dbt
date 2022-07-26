@@ -26,3 +26,7 @@ models:
           \ a Template is cloned a `Datapoints Added` event with `is_template = \"\
           yes\"` occurs because part of the template training data are copied into\
           \ the clone\n\n- \"no\" otherwise"
+      - name: is_human_in_the_loop
+        description: '- "yes" if the data points were not actively uploaded by the
+          user,  by rather automatically by our backend because flagged as to be reviewed
+          through HITL'
