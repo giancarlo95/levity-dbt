@@ -17,4 +17,4 @@ models:
       - name: workspace_id
         description: 'Unique ID of the workspace: frontegg_tenant_id'
       - name: net_data_points
-        description: count of the data points that were uploaded
+        description: Count of the data points that were uploaded
