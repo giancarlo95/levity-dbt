@@ -75,6 +75,6 @@ models:
         description: "- if `origin = flows` the variable takes as value the ID of\
           \ the workflow\n\n- NULL otherwise"
       - name: total_predictions
-        description: total number of predictions that were made
+        description: Total number of predictions that were made
       - name: time_stamp
         description: Time at which the last prediction occurred (within the 60' window)
