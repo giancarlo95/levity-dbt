@@ -68,3 +68,6 @@ models:
         description: "- \"yes\" if the prediction is powered by an AI Block trained\
           \ on data that we had the user download during the Onboarding Tour\n\n-\
           \ \"no\" otherwise"
+      - name: origin
+        description: "- \"flows\" \"Integromat\" \"Zapier\" \"API\" \"Bubble\" as\
+          \ production predictions\n\n- \"test_tab\" as testing prediction"
