@@ -64,3 +64,7 @@ models:
       - name: is_hitl
         description: "- \"yes\" if the prediction is very uncertain and therefore\
           \ triggered HITL\n\n- \"no\" otherwise"
+      - name: is_userflow_data
+        description: "- \"yes\" if the prediction is powered by an AI Block trained\
+          \ on data that we had the user download during the Onboarding Tour\n\n-\
+          \ \"no\" otherwise"
