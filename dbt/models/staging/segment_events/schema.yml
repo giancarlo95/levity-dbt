@@ -76,3 +76,5 @@ models:
           \ the workflow\n\n- NULL otherwise"
       - name: total_predictions
         description: total number of predictions that were made
+      - name: time_stamp
+        description: Time at which the last prediction occurred (within the 60' window)
