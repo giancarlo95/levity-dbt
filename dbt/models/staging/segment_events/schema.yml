@@ -61,3 +61,6 @@ models:
       - name: is_template
         description: "- \"yes\" if the AI Block is an AI Block Template clone\n\n\
           - \"no\" otherwise"
+      - name: is_hitl
+        description: "- \"yes\" if the prediction is very uncertain and therefore\
+          \ triggered HITL\n\n- \"no\" otherwise"
