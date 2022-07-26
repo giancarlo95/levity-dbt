@@ -58,3 +58,6 @@ models:
       - name: aiblock_id
         description: 'Unique ID of the AI Block: ID of the datasets_dataset backend
           table'
+      - name: is_template
+        description: "- \"yes\" if the AI Block is an AI Block Template clone\n\n\
+          - \"no\" otherwise"
