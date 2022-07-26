@@ -52,7 +52,12 @@ models:
       "Predictions Done" event.'
     columns:
       - name: user_id
-        description: 'Unique ID of the user: frontegg_user_id'
+        description: 'Unique ID of the user that created the AI Block that is powering
+          the predictions: frontegg_user_id
+
+
+          As a reminder, generally production predictions are not made by any specific
+          user.'
       - name: workspace_id
         description: 'Unique ID of the wokspace: frontegg_tenant_id'
       - name: aiblock_id
