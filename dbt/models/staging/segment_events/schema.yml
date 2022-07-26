@@ -22,5 +22,7 @@ models:
         description: "- \"yes\" if the data points come from one of the datasets that\
           \ we have the users download during the onboading tour\n\n- \"no\" otherwise"
       - name: is_template
-        description: "\"yes\" if the AI Block is an AI Block Template clone\n\n\"\
-          no\" otherwise"
+        description: "- \"yes\" if the AI Block is an AI Block Template clone - whenver\
+          \ a Template is cloned a `Datapoints Added` event with `is_template = \"\
+          yes\"` occurs because part of the template training data are copied into\
+          \ the clone\n\n- \"no\" otherwise"
