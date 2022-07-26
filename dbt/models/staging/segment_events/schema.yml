@@ -53,3 +53,5 @@ models:
     columns:
       - name: user_id
         description: 'Unique ID of the user: frontegg_user_id'
+      - name: workspace_id
+        description: 'Unique ID of the wokspace: frontegg_tenant_id'
