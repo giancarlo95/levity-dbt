@@ -75,7 +75,9 @@ models:
           \ \"no\" otherwise"
       - name: origin
         description: "- \"flows\" \"Integromat\" \"Zapier\" \"API\" \"Bubble\" as\
-          \ production predictions\n\n- \"test_tab\" as testing prediction"
+          \ production predictions\n\n- \"test_tab\" as testing prediction\n\n\"API\"\
+          \ is the residual category, so all origins that are not \"flows\" \"Integromat\"\
+          \ \"Zapier\" \"test_tab\" \"Bubble\" go under \"API\""
       - name: workflow_id
         description: "- if `origin = flows` the variable takes as value the ID of\
           \ the workflow\n\n- NULL otherwise"
