@@ -61,8 +61,8 @@ models:
       - name: workspace_id
         description: 'Unique ID of the wokspace: frontegg_tenant_id'
       - name: aiblock_id
-        description: 'Unique ID of the AI Block: ID of the datasets_dataset backend
-          table'
+        description: 'Unique ID of the AI Block that powers the predictions: ID of
+          the datasets_dataset backend table'
       - name: is_template
         description: "- \"yes\" if the AI Block is an AI Block Template clone\n\n\
           - \"no\" otherwise"
