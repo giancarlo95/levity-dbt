@@ -21,3 +21,6 @@ models:
       - name: is_userflow_data
         description: "- \"yes\" if the data points come from one of the datasets that\
           \ we have the users download during the onboading tour\n\n- \"no\" otherwise"
+      - name: is_template
+        description: "\"yes\" if the AI Block is an AI Block Template clone\n\n\"\
+          no\" otherwise"
