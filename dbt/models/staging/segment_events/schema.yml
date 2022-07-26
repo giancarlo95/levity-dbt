@@ -55,3 +55,6 @@ models:
         description: 'Unique ID of the user: frontegg_user_id'
       - name: workspace_id
         description: 'Unique ID of the wokspace: frontegg_tenant_id'
+      - name: aiblock_id
+        description: 'Unique ID of the AI Block: ID of the datasets_dataset backend
+          table'
