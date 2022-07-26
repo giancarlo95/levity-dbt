@@ -29,4 +29,10 @@ models:
       - name: is_human_in_the_loop
         description: '- "yes" if the data points were not actively uploaded by the
           user,  by rather automatically by our backend because flagged as to be reviewed
-          through HITL'
+          through HITL. As a reminder, when HITL is active, the data points associated
+          with very uncertain predictions are classified manually by the user via
+          Slack and are automatically added to the training data in the unlabelled
+          bucket
+
+
+          - "no" otherwise'
