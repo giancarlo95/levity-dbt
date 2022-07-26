@@ -11,3 +11,6 @@ models:
       \ to Segment as a \"Datapoints Added\" event. \n\n"
     meta:
       consumer: customer success
+    columns:
+      - name: user_id
+        description: 'Unique ID of the user: user_frontegg_id'
