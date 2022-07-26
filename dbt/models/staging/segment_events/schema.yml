@@ -19,5 +19,5 @@ models:
       - name: net_data_points
         description: Count of the data points that were uploaded
       - name: is_userflow_data
-        description: "- \"yes\" if the data points come from one of the dataset that\
+        description: "- \"yes\" if the data points come from one of the datasets that\
           \ we have the users download during the onboading tour\n\n- \"no\" otherwise"
