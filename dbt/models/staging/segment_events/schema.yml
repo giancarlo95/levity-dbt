@@ -1,0 +1,11 @@
+version: 2
+models:
+  - name: data_upload_events
+    description: "This table is instrumental to the sending of Segment \"Datapoints\
+      \ Added\" events. Since a user may add at the same time hundreds of data points,\
+      \ it makes no sense to translate each of them in an event. Therefore, every\
+      \ hour we count how many data points were added and we send to Segment just\
+      \ one event with the detail of the count. The aggregation is conditional on\
+      \ some factors: the ID of the user, the ID of the AI Block and some additional\
+      \ more specific factors. At the end, each record of this table will be sent\
+      \ to Segment as a \"Datapoints Added\" event. \n\n"
