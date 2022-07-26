@@ -38,3 +38,6 @@ models:
           - "no" otherwise'
       - name: aiblock_id
         description: 'Unique ID of the AI Block: ID of the datasets_dataset table'
+      - name: time_stamp
+        description: Time at which the last data uploaded operation occurred (within
+          the 60' window)
