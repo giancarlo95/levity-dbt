@@ -45,4 +45,4 @@ models:
     description: This table shows for every workspace the count of predictions made
       the previous day, with visibility of the predictions source. This table will
       eventually trigger a daily Slack notification through the mechanism explained
-      [https://towardsdatascience.com/slack-alerts-from-a-sql-query-on-bigquery-f626b767304c](url).
+      [https://towardsdatascience.com/slack-alerts-from-a-sql-query-on-bigquery-f626b767304c](here).
