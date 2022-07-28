@@ -4,7 +4,7 @@ WITH d_data AS (
         new_user_id,
         new_dataset_id,
         new_id,
-        new_created_at,
+        created_at,
         new_workspace_id
     FROM 
         {{ref('normalized_d_data')}}
@@ -61,11 +61,11 @@ SELECT
     new_name AS dataset_name,
     new_description AS dataset_description,
     COUNT(dd.new_id) AS net_data_points, 
-    MAX(dd.new_created_at) AS time_stamp
+    MAX(dd.created_at) AS time_stamp
 FROM d_data dd
 INNER JOIN d_dataset_unioned ddu ON ddu.new_id = dd.new_dataset_id
 LEFT JOIN userflow_ai_blocks uab ON ddu.new_id = uab.dataset_id
-WHERE TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), dd.new_created_at, MINUTE)<10
+WHERE TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), dd.created_at, MINUTE)<10
 GROUP BY 
     1, 
     2, 
