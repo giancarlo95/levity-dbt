@@ -29,13 +29,6 @@ WITH datasets_data AS (
     FROM {{ref('datasets_dataset')}} dd
     LEFT JOIN userflow_ai_blocks uab ON dd.aiblock_id = uab.dataset_id
 
-), workspaces AS (
-
-    SELECT
-        workspace_id
-    FROM
-        {{ref('workspaces')}}
-        
 ), final AS (
     
     SELECT 
