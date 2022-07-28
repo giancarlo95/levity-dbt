@@ -90,7 +90,7 @@ SELECT
     new_description AS dataset_description,
     new_is_hitl AS is_hitl,
     is_userflow_data AS is_userflow_data,
-    new_source AS new_origin,
+    new_source AS origin,
     new_workflow_id AS workflow_id,
     COUNT(pmp.new_id) AS total_predictions,
     MAX(pmp.created_at) AS time_stamp
