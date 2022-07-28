@@ -3,7 +3,7 @@ schedules:
     schedule: "0 * * * *" 
     environment: production
     commands:
-         - dbt run --exclude data_upload_events training_events
+         - dbt run --exclude staging.segment_events.*
     owner_email: giancarlo@levity.ai 
     slack_notify:
          - "#analytics"
@@ -13,7 +13,7 @@ schedules:
     schedule: "*/10 * * * *" 
     environment: production
     commands:
-         - dbt run --models +data_upload_events +training_events
+         - dbt run --models +staging.segment_events.*
     owner_email: giancarlo@levity.ai 
     slack_notify:
          - "#analytics"
