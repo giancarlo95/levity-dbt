@@ -56,7 +56,7 @@ SELECT
     CASE WHEN dd.new_user_id IS NULL THEN "yes" ELSE "no" END AS is_human_in_the_loop,
     dd.new_workspace_id AS workspace_id,
     dd.new_dataset_id AS dataset_id,                                       
-    new_is_template AS is_template,
+    CASE WHEN ddu.new_description IS NULL THEN "no" ELSE "yes" END AS is_template,
     COALESCE(is_userflow_data, "no") AS is_userflow_data,
     new_name AS dataset_name,
     new_description AS dataset_description,

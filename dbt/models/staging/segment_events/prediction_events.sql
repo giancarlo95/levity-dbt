@@ -85,7 +85,7 @@ SELECT
     COALESCE(pmp.new_user_id, pmcu.new_user_id) AS user_id,
     pmp.new_workspace_id AS workspace_id,
     pmcu.new_dataset_id AS dataset_id,
-    new_is_template AS is_template,
+    CASE WHEN ddu.new_description IS NULL THEN "no" ELSE "yes" END AS is_template,
     new_name AS dataset_name,
     new_description AS dataset_description,
     new_is_hitl AS is_hitl,
