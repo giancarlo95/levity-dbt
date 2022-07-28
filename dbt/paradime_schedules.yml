@@ -3,7 +3,7 @@ schedules:
     schedule: "0 * * * *" 
     environment: production
     commands:
-         - dbt run
+         - dbt run --exclude data_upload_events training_events
     owner_email: giancarlo@levity.ai 
     slack_notify:
          - "#analytics"
