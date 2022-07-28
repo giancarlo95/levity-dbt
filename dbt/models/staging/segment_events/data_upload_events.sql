@@ -81,4 +81,3 @@ SELECT
     net_data_points,
     time_stamp
 FROM final
-INNER JOIN workspaces ob ON final.workspace_id = ob.workspace_id
