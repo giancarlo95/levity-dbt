@@ -1,13 +1,13 @@
-WITH datasets_data AS (
+WITH d_data AS (
 
     SELECT 
-        user_id,
-        aiblock_id,
-        datapoint_id,
-        date_datapoint_uploaded,
-        workspace_id
+        new_user_id,
+        new_dataset_id,
+        new_id,
+        new_created_at,
+        new_workspace_id
     FROM 
-        {{ref('datasets_data')}}
+        {{ref('normalized_d_data')}}
 
 ), userflow_ai_blocks AS (
 
@@ -16,61 +16,62 @@ WITH datasets_data AS (
     FROM
         {{ref('userflow_ai_blocks')}}
 
-), datasets_dataset AS (
+), legacy_d_dataset AS (
 
     SELECT
-        user_id,
-        workspace_id,
-        aiblock_id,
-        is_template,
-        aiblock_name,
-        aiblock_description,
-        COALESCE(is_userflow_data, "no") AS is_userflow_data
-    FROM {{ref('datasets_dataset')}} dd
-    LEFT JOIN userflow_ai_blocks uab ON dd.aiblock_id = uab.dataset_id
+        user_id AS new_user_id,
+        workspace_id AS new_workspace_id,
+        aiblock_id AS new_id,
+        is_template AS new_is_template,
+        aiblock_name AS new_name,
+        aiblock_description AS new_description
+    FROM 
+        {{ref('datasets_dataset')}}
+    WHERE
+        date_aiblock_created<"2022-06-29 13:34:35.723000 UTC"
 
-), final AS (
+), d_dataset AS (
+
+    SELECT
+        new_user_id,
+        new_workspace_id,
+        new_id,
+        new_is_template,
+        new_name,
+        new_description
+    FROM
+        {{ref('normalized_d_dataset')}}
+    WHERE
+        op = "INSERT"
     
-    SELECT 
-        IFNULL(dsd.user_id, dst.user_id)                         AS user_id,
-        CASE 
-            WHEN dsd.user_id IS NULL THEN "yes"
-            ELSE "no"
-        END                                                      AS is_human_in_the_loop,
-        dsd.workspace_id,
-        dsd.aiblock_id                                           AS aiblock_id,
-        is_template,
-        is_userflow_data,
-        aiblock_name,
-        aiblock_description,
-        TIMESTAMP_TRUNC(date_datapoint_uploaded, HOUR)           AS relevant_day_hour,
-        COUNT(dsd.datapoint_id)                                  AS net_data_points, 
-        MAX(dsd.date_datapoint_uploaded)                         AS time_stamp,
-    FROM datasets_data dsd
-    INNER JOIN datasets_dataset dst ON dsd.aiblock_id = dst.aiblock_id
-    WHERE TIMESTAMP_TRUNC(date_datapoint_uploaded, HOUR) = TIMESTAMP_TRUNC(TIMESTAMP_SUB(CURRENT_TIMESTAMP(),INTERVAL 2 HOUR), HOUR)
-    GROUP BY 
-        1, 
-        2, 
-        3, 
-        4,
-        5,
-        6,
-        7,
-        8,
-        9
+), d_dataset_unioned AS (
 
+    SELECT * FROM legacy_d_dataset UNION ALL
+    SELECT * FROM d_dataset
+    
 )
-
+    
 SELECT 
-    final.user_id,
-    is_human_in_the_loop,
-    final.workspace_id,
-    aiblock_id,
-    is_template,
-    is_userflow_data,
-    aiblock_name,
-    aiblock_description,
-    net_data_points,
-    time_stamp
-FROM final
+    COALESCE(dd.new_user_id, ddu.new_user_id) AS user_id,
+    CASE WHEN dd.new_user_id IS NULL THEN "yes" ELSE "no" END AS is_human_in_the_loop,
+    dd.new_workspace_id AS workspace_id,
+    dd.new_dataset_id AS dataset_id,                                       
+    new_is_template AS is_template,
+    COALESCE(is_userflow_data, "no") AS is_userflow_data,
+    new_name AS dataset_name,
+    new_description AS dataset_description,
+    COUNT(dd.new_id) AS net_data_points, 
+    MAX(dd.new_created_at) AS time_stamp
+FROM d_data dd
+INNER JOIN d_dataset_unioned ddu ON ddu.new_id = dd.new_dataset_id
+LEFT JOIN userflow_ai_blocks uab ON ddu.new_id = uab.dataset_id
+WHERE TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), dd.new_created_at, MINUTE)<10
+GROUP BY 
+    1, 
+    2, 
+    3, 
+    4,
+    5,
+    6,
+    7,
+    8

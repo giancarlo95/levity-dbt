@@ -1,9 +1,19 @@
 schedules:
-  - name: hourly
-    schedule: "15 * * * *" 
+  - name: every_hour
+    schedule: "0 * * * *" 
     environment: production
     commands:
          - dbt run
+    owner_email: giancarlo@levity.ai 
+    slack_notify:
+         - "#analytics"
+         - "owner"
+  
+  - name: every_ten_minutes
+    schedule: "*/10 * * * *" 
+    environment: production
+    commands:
+         - dbt run --models +data_upload_events +training_events
     owner_email: giancarlo@levity.ai 
     slack_notify:
          - "#analytics"
