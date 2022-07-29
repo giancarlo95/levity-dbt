@@ -212,7 +212,7 @@ users AS (
 joined_tables AS (
 
     SELECT
-    *
+    distinct *
     FROM engagement_second
     INNER JOIN users USING(email)
     LEFT JOIN login_last7 USING(user_id)
